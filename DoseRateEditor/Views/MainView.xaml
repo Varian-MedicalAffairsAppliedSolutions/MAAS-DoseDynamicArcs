@@ -1,0 +1,157 @@
+﻿<metro:MetroWindow x:Class="DoseRateEditor.Views.MainView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DoseRateEditor.Views"
+        xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls" 
+        xmlns:ie="http://schemas.microsoft.com/xaml/behaviors" 
+        xmlns:oxy1="clr-namespace:OxyPlot.Series;assembly=OxyPlot" 
+        xmlns:oxy="http://oxyplot.org/wpf" 
+        xmlns:viewmodels="clr-namespace:DoseRateEditor.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
+                   mc:Ignorable="d"
+        Title="DoseRate Editor" Height="850" Width="1200">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition>
+
+            </ColumnDefinition>
+            <ColumnDefinition>
+
+            </ColumnDefinition>
+            <ColumnDefinition>
+
+            </ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="117*">
+
+            </RowDefinition>
+            <RowDefinition Height="55*">
+
+            </RowDefinition>
+            <RowDefinition Height="97*">
+
+            </RowDefinition>
+            <RowDefinition Height="93*">
+
+            </RowDefinition>
+            <RowDefinition Height="357*">
+
+            </RowDefinition>
+            <RowDefinition Height="100">
+
+            </RowDefinition>
+        </Grid.RowDefinitions>
+
+        <!-- Matt test
+        <StackPanel>
+            <TextBox Text="{Binding PatientId, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+            <Button Content="Open Patient" Command="{Binding OpenPatientCommand}"/>
+        </StackPanel>
+        <StackPanel>
+            <ListBox ItemsSource="{Binding Courses}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Id}">
+                            
+                        </TextBlock>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </StackPanel>
+        -->
+
+        <StackPanel Grid.Row="0">
+            <TextBlock HorizontalAlignment="Center" FontSize="12"> Patient Id:</TextBlock>
+            <TextBox Text="{Binding PatientId}"></TextBox>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1">
+            <Button Content="Open Patient" Command="{Binding OpenPatientCommand}"></Button>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="2">
+            <StackPanel>
+                <TextBlock HorizontalAlignment="Center">Courses</TextBlock>
+                <ListBox x:Name="CourseListBox" ItemsSource="{Binding Courses}" SelectedItem="{Binding SelectedCourse, Mode=TwoWay}">
+                    <ie:Interaction.Triggers>
+                        <ie:EventTrigger EventName="SelectionChanged">
+                            <ie:InvokeCommandAction Command="{Binding ViewCourseCommand}"/>
+                        </ie:EventTrigger>
+                    </ie:Interaction.Triggers>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Id}">
+
+                            </TextBlock>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </ScrollViewer>
+
+        <ScrollViewer Grid.Row="3">
+            <StackPanel>
+                <TextBlock HorizontalAlignment="Center">Plans</TextBlock>
+                <ListBox ItemsSource="{Binding Plans}" SelectedItem="{Binding SelectedPlan, Mode=TwoWay}">
+                    <ie:Interaction.Triggers>
+                        <ie:EventTrigger EventName="SelectionChanged">
+                            <ie:InvokeCommandAction Command="{Binding OnPlanSelectCommandd}"/>
+                        </ie:EventTrigger>
+                    </ie:Interaction.Triggers>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Id}">
+
+                            </TextBlock>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="4" Grid.Column="0">
+            <TextBlock HorizontalAlignment="Center">DR Edit Method</TextBlock>
+            <ComboBox ItemsSource="{Binding DRMethods}" SelectedItem="{Binding SelectedMethod}" IsSynchronizedWithCurrentItem="True">
+                <ie:Interaction.Triggers>
+                    <ie:EventTrigger EventName="SelectionChanged">
+                        <ie:InvokeCommandAction Command="{Binding OnMethodSelectCommand}"/>
+                    </ie:EventTrigger>
+                </ie:Interaction.Triggers>
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding}"></TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </StackPanel>
+
+        <StackPanel Grid.Row="5" Grid.Column="0">
+            <Button Content ="Edit Dose Rates" Command="{Binding EditDRCommand}">
+
+            </Button>
+        </StackPanel>
+
+        <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="4">
+            <Grid>
+                <oxy:PlotView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding DRPlot}" Margin="0,0,0,-394"/>
+            </Grid>
+        </StackPanel>
+
+        <StackPanel Grid.Row="4" Grid.Column="1">
+            <Button Content="&lt;-" HorizontalAlignment="Left" Width="100" Command="{Binding PrevBeamCommand}"/>
+            <Button  Content="-&gt;" VerticalAlignment="Top" Margin="298,-20,0,0" Command="{Binding NextBeamCommand}"/>
+            <TextBlock Text="{Binding CurrentBeamId}"></TextBlock>
+        </StackPanel>
+
+        <StackPanel Grid.Column="2" Grid.Row="0" Grid.RowSpan="4">
+            <oxy:PlotView Controller="{Binding TransController}"  Model="{Binding TransPlot}" Height="362"/>
+        </StackPanel>
+
+
+    </Grid>
+</metro:MetroWindow>
