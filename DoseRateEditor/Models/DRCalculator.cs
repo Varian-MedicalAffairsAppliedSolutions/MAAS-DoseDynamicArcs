@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using VMS.TPS.Common.Model.API;
+using VMS.TPS.Common.Model.Types;
 
 namespace DoseRateEditor.Models
 {
@@ -85,7 +87,7 @@ namespace DoseRateEditor.Models
             // Else compute and save Final DRS and GSs
             foreach(Beam b in Plan.Beams)
             {
-                var msws_new = GenerateMSWS(b, Delagate_dictionary[method], "deg");
+                var msws_new = GenerateMSWS(b, Delagate_dictionary[method]);
                 FinalMSWS.Add(b.Id, msws_new); // store the msws
 
                 var gantry = new List<double>();
@@ -107,44 +109,44 @@ namespace DoseRateEditor.Models
             var DRs = new List<DataPoint>();
             var GSs = new List<DataPoint>();
 
-            for(int i=1; i<msws.Count; i++)
+            double my_mod(double a, int n)
+            {
+                return a - (Math.Floor(a / n) * n);
+            }
+
+            for (int i=1; i < msws.Count; i++)
             {
                 var mu_last = msws[i - 1] * bm_meterset;
                 var mu_current = msws[i] * bm_meterset;
                 var delta_mu = mu_current - mu_last;
 
-                var delta_gantry = Math.Abs(gantry_angles[i] - gantry_angles[i - 1]);
+                var delta_gantry0 = gantry_angles[i] - gantry_angles[i - 1];
+                var delta_gantry = Math.Abs(my_mod((delta_gantry0 + 180), 360) - 180);
                 var rot_time = delta_gantry / gantry_speed_max;
                 var calcd_mu_rate = (delta_mu * 60) / rot_time;
 
+
                 if (calcd_mu_rate < DR_max)
                 {
-                    DRs.Add(new DataPoint(i - 1, calcd_mu_rate));
-                    GSs.Add(new DataPoint(i - 1, gantry_speed_max));
+                    DRs.Add(new DataPoint(i, calcd_mu_rate));
+                    GSs.Add(new DataPoint(i, gantry_speed_max));
                 }
                 else
                 {
-                    DRs.Add(new DataPoint(i - 1, DR_max));
+                    DRs.Add(new DataPoint(i, DR_max));
                     var L_i = (bm_meterset / delta_gantry) * (msws[i] - msws[i - 1]);
                     var GS = DR_max / L_i;
                     GS /= 60;
-                    GSs.Add(new DataPoint(i - 1, GS));
+                    GSs.Add(new DataPoint(i, GS));
                 }
             }
 
             return new Tuple<List<DataPoint>, List<DataPoint>>(DRs, GSs);
         }
-
  
-        private List<double> GenerateMSWS (Beam bm, func f, string mode="rad")
+        private List<double> GenerateMSWS (Beam bm, func f)
         {
             var msws = new List<double> { 0 };
-
-            // Check mode is valid
-            if (mode != "rad" && mode != "deg")
-            {
-                throw new Exception("Mode must be deg or rad");
-            }
 
             if (bm.IsSetupField) {
                 return msws;
@@ -160,15 +162,11 @@ namespace DoseRateEditor.Models
                 var gan = (cps[i].GantryAngle + cps[i-1].GantryAngle) / 2;
 
                 double arg = gan;
-                if (mode == "rad")
-                {
-                    gan *= (Math.PI / 180);
-                }
 
                 var delta = Math.Abs(f(arg));
                 
                 // Assert delta > 0
-                if ((delta < 0)) {
+                if (delta <= 0) {
                     throw new Exception("delta not gt 0!");
                 }
 
@@ -177,10 +175,12 @@ namespace DoseRateEditor.Models
             }
 
             var beta = dmsw.Sum();
-            for(int j=1; j<dmsw.Count; j++) 
+            for(int j=0; j<dmsw.Count; j++) 
             { 
                 dmsw[j] /= beta; 
             }
+
+            //MessageBox.Show($"Sum of dmsw is {dmsw.Sum()}");
 
             // build msws
             foreach(var delta in dmsw)
@@ -199,6 +199,11 @@ namespace DoseRateEditor.Models
 
             var cps = bm.GetEditableParameters().ControlPoints.ToList();
 
+            double my_mod(double a, int n)
+            {
+                return a - Math.Floor(a / n) * n;
+            }
+
             for (int i = 0; i < cps.Count(); i++)
             {
                 if (i > 0) // Skip first CP
@@ -209,7 +214,12 @@ namespace DoseRateEditor.Models
                     var delta_mu = mu_current - mu_last;
 
                     // 2. Calc d(MU)/dt from the time it takes to move between cps
-                    var delta_gantry = Math.Abs(cps[i].GantryAngle - cps[i-1].GantryAngle); // TODO: fix for angle devs that cross 0/360 mark
+                    
+                    var delta_gantry0 = cps[i].GantryAngle - cps[i-1].GantryAngle;
+                    var delta_gantry = Math.Abs(my_mod((delta_gantry0 + 180), 360) - 180); // corrected for passing 0/360 mark
+
+                    //MessageBox.Show($"{delta_gantry0}, {delta_gantry}");
+
                     var rotation_time = delta_gantry / gantry_speed_max;
                     var calcd_mu_rate = (delta_mu * 60) / rotation_time;
 
@@ -226,6 +236,134 @@ namespace DoseRateEditor.Models
             }
 
             return DRs;
+        }
+    
+        private List<DataPoint> ComputeDRBeamDNU(Beam bm, double gantry_speed_max=4.8, double DR_max=2400)
+        {
+            // Create a list of msws from current beam
+            var edits = bm.GetEditableParameters();
+            var msws = new List<double>();
+            var gantry = new List<double>();
+
+            foreach (var cp in edits.ControlPoints)
+            {
+                msws.Add(cp.MetersetWeight);
+                gantry.Add(cp.GantryAngle);
+            }
+
+            var result_tuple = ComputeDRFromMSWS(msws, bm.Meterset.Value, gantry);
+            return result_tuple.Item1;
+        }
+
+        public void CreateNewPlanWithMethod(DRMethod method) // TODO fix deletion within loop crash by tagging all beams to delete (somehow) and then deleing them after loop
+        {   
+            // Helper for copying beam
+            void copy_beam(Beam bm, List<double> msws, bool delete_original=false, ExternalPlanSetup new_plan=null)
+            {
+                // Lifted from my python code @ craman96/MAAS
+                var energy_mode_splits = bm.EnergyModeDisplayName.Split('-');
+
+                var energy_mode_id = energy_mode_splits[0];
+
+                var primary_fluence_mode = "";
+                if (energy_mode_splits.Length > 1)
+                {
+                    primary_fluence_mode = energy_mode_splits[1];
+                }
+
+                // ASSERT
+                if (!new String[] {"", "FFF", "SRS"}.Contains(primary_fluence_mode))
+                {
+                    throw new Exception($"Primary fluence mode {primary_fluence_mode} not one of the valid options");
+                }
+
+                var edits = bm.GetEditableParameters();
+                var cps = edits.ControlPoints.ToList();
+
+                var gantry_angles = cps.Select(x => x.GantryAngle).ToList();
+                var col_angles = cps.Select(x => x.CollimatorAngle).ToList();
+                var couch_angles = cps.Select(x => x.PatientSupportAngle).ToList();
+
+                var technique_id = "STATIC";
+                for (int i = 1; i < cps.Count(); i ++)
+                {
+                    if (gantry_angles[i] != gantry_angles[i - 1])
+                    {
+                        technique_id = "ARC";
+                        break;
+                    }
+                }
+
+                var ebmp = new ExternalBeamMachineParameters(
+                    bm.TreatmentUnit.Id,
+                    energy_mode_id,
+                    bm.DoseRate,
+                    technique_id,
+                    primary_fluence_mode
+                    );
+
+                ExternalPlanSetup plan = null;
+                if (new_plan == null)
+                {
+                    plan = (ExternalPlanSetup)bm.Plan;
+                }
+                else
+                {
+                    plan = new_plan;
+                }
+
+                var new_bm = plan.AddVMATBeam(
+                    ebmp,
+                    msws,
+                    col_angles.First(),
+                    gantry_angles.First(),
+                    gantry_angles.Last(),
+                    bm.GantryDirection,
+                    couch_angles.First(),
+                    bm.IsocenterPosition
+                    );
+
+                var edits_new = new_bm.GetEditableParameters();
+                var cps_new = edits_new.ControlPoints.ToList();
+
+                for (int j = 0; j < cps_new.Count(); j++)
+                {
+                    cps_new[j].JawPositions = cps[j].JawPositions;
+                    cps_new[j].LeafPositions = cps[j].LeafPositions;
+                }
+
+                new_bm.ApplyParameters(edits_new);
+                new_bm.Id = bm.Id +"_new"; // Truncate and add 'new' to the name
+
+                // Delete original beam if it's called for
+                if (delete_original)
+                {
+                    var orig_plan = bm.Plan as ExternalPlanSetup;
+                    orig_plan.RemoveBeam(bm);
+                }
+
+            }
+
+            // Compute the final DR using selected method
+            CalcFinalDR(Plan, method);
+
+            // Copy the plan, delete all beams
+            // Call begin mods
+            Plan.Course.Patient.BeginModifications();
+            var newplan = Plan.Course.CopyPlanSetup(Plan) as ExternalPlanSetup;
+            newplan.Id = Plan.Id.Substring(0, 4) + "_editDR";
+            
+            // TODO remove the beams from newplan
+
+            // Loop through each beam and copy it with new msws edit the msws
+            foreach (var bm in Plan.Beams)
+            {
+                var new_msws = FinalMSWS[bm.Id];
+
+                copy_beam(bm, new_msws, false, newplan);
+            }
+
+            MessageBox.Show($"New plan created with id: {newplan.Id}");
         }
     }
 }

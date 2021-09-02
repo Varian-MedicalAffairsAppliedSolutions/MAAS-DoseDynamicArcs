@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using VMS.TPS.Common.Model.API;
 
+[assembly: ESAPIScript(IsWriteable = true)]
 namespace DoseRateEditor
 {
     /// <summary>
@@ -22,7 +23,8 @@ namespace DoseRateEditor
     /// Interaction logic for App.xaml
 
     /// </summary>
-
+    // Allow script to edit patient data
+    
     public partial class App : System.Windows.Application
 
     {

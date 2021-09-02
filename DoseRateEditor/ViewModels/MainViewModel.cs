@@ -271,7 +271,7 @@ namespace DoseRateEditor.ViewModels
                 Position = AxisPosition.Top,
                 Palette = OxyPalettes.Gray(256),
                 Maximum = 1000, // TODO - Change!
-                Minimum = -1000
+                Minimum = 0
             };
             plotModel.Axes.Add(zAxis);
         }
@@ -359,7 +359,12 @@ namespace DoseRateEditor.ViewModels
                 return false;
             }
 
-            return (BeamIdx + 1 < DRCalc.numbeams);
+            if (DRCalc == null)
+            {
+                return false;
+            }
+
+            return BeamIdx + 1 < DRCalc.numbeams;
         }
 
         private void OnPrevBeam()
@@ -434,9 +439,19 @@ namespace DoseRateEditor.ViewModels
             DR0_series.Points.AddRange(DRCalc.InitialDRs[CurrentBeamId]);
             DRPlot.InvalidatePlot(true);
 
+            // IF selected method is not null calc new DR
+            if (SelectedMethod != null)
+            {
+                DRCalc.CalcFinalDR(SelectedPlan, SelectedMethod.Value);
+                DRf_series.Points.AddRange(DRCalc.FinalDRs[CurrentBeamId]);
+                DRPlot.InvalidatePlot(true);
+            }
+            
             // Update transplot
             SelectedSlice = 0;
             UpdateSeries(TransPlot);
+
+           
 
         }
 
@@ -447,7 +462,8 @@ namespace DoseRateEditor.ViewModels
 
         private void OnEditDR()
         {
-            MessageBox.Show($@"Calling Edit DR for method {SelectedMethod}");
+            DRCalc.CreateNewPlanWithMethod(SelectedMethod.Value);
+            _app.SaveModifications();
         }
 
         private bool CanEditDR()
