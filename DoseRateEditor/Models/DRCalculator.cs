@@ -20,6 +20,8 @@ namespace DoseRateEditor.Models
             Juha
         }
 
+        public Nullable<DRMethod> LastMethodCalculated;
+
         private static func sinfunc = (theta) => Math.Sin((theta * Math.PI) / 180);
         private static func cosmicfunc = (theta) => (16 * theta * (Math.PI - theta)) / ((5 * Math.PI * Math.PI) - 4 * theta * (Math.PI - theta));
         private static func parafunc = (theta) => (theta * (180 - theta)) / (90 * 90);
@@ -46,6 +48,12 @@ namespace DoseRateEditor.Models
         {
             Plan = plan;
 
+            if (plan.Dose == null)
+            {
+                // Warn user that beam.Meterset will be null
+                MessageBox.Show("Warning: Plan dose not calculated, this will lead to innacurate DR and GS calculations.");
+            }
+
             numbeams = Plan.Beams.Count();
             
             // Compute the initial DR for each beam in the plan
@@ -58,6 +66,8 @@ namespace DoseRateEditor.Models
             {
                 InitialDRs.Add(b.Id, ComputeDRBeam(b));
             }
+
+            LastMethodCalculated = null;
 
 
         }
@@ -102,6 +112,9 @@ namespace DoseRateEditor.Models
                 FinalGSs.Add(b.Id, dr_gs.Item2);
 
             }
+
+            // Set variabl LastCalcdMethod to show that we have the DR and GS for a final method
+            LastMethodCalculated = method;
         }
 
         private Tuple<List<DataPoint>, List<DataPoint>> ComputeDRFromMSWS(List<double> msws, double bm_meterset, List<double> gantry_angles, double gantry_speed_max=4.8, double DR_max=2400)
@@ -209,7 +222,7 @@ namespace DoseRateEditor.Models
                 if (i > 0) // Skip first CP
                 {
                     // 1. Calc delta MU
-                    var mu_last = cps[i - 1].MetersetWeight * bm.Meterset.Value;
+                    var mu_last = cps[i - 1].MetersetWeight * bm.Meterset.Value; // TODO: if dose not calculated bm.Meterset is null -> inaccurate DR calculation.
                     var mu_current = cps[i].MetersetWeight * bm.Meterset.Value;
                     var delta_mu = mu_current - mu_last;
 
@@ -354,6 +367,10 @@ namespace DoseRateEditor.Models
             newplan.Id = Plan.Id.Substring(0, 4) + "_editDR";
             
             // TODO remove the beams from newplan
+            foreach (var copiedbeam in newplan.Beams.ToList())
+            {
+                newplan.RemoveBeam(copiedbeam);
+            }
 
             // Loop through each beam and copy it with new msws edit the msws
             foreach (var bm in Plan.Beams)

@@ -13,6 +13,7 @@ using VMS.TPS.Common.Model.API;
 using static DoseRateEditor.Models.DRCalculator;
 
 // TODO: add check to see if DR is modulated and warn user if this is the case
+// TODO make buttons do something
 // if constant do nothing
 
 namespace DoseRateEditor.ViewModels
@@ -28,10 +29,48 @@ namespace DoseRateEditor.ViewModels
         public DelegateCommand OnMethodSelectCommand { get; private set; }
         public DelegateCommand PrevBeamCommand { get; private set; }
         public DelegateCommand NextBeamCommand { get; private set; }
+
+        public DelegateCommand PlotCurrentDRCommand { get; private set; }
+
+        public DelegateCommand PreviewGSCommand { get; private set; }
+        public DelegateCommand PreviewDRCommand { get; private set; }
+
         public IViewCommand<OxyMouseWheelEventArgs> TransScrollCommand { get; private set; } 
         public ObservableCollection<CourseModel> Courses { get; private set; }
 	    public ObservableCollection<PlanningItem> Plans { get; private set; }
         public ObservableCollection<Nullable<DRMethod>> DRMethods { get; private set; }
+
+
+        // CHECKBOXES
+        private bool _PreviewDR;
+        public bool PreviewDR
+        {
+            get { return _PreviewDR; }
+            set { SetProperty(ref _PreviewDR, value); }
+        }
+        
+        private bool _PreviewGS;
+        public bool PreviewGS
+        {
+            get { return _PreviewGS; }
+            set { SetProperty(ref _PreviewGS, value); }
+        }
+
+        private bool _CurrentDR;
+        public bool CurrentDR
+        {
+            get { return _CurrentDR; }
+            set { SetProperty(ref _CurrentDR, value); }
+        }
+
+        private bool _CurrentGS;
+        public bool CurrentGS
+        {
+            get { return _CurrentGS; }
+            set { SetProperty(ref _CurrentGS, value); }
+        }
+        // END CHECKBOXES
+
 
         private IPlotController _TransController;
         public IPlotController TransController { 
@@ -169,7 +208,7 @@ namespace DoseRateEditor.ViewModels
             _app = app;
 
             // Create delegate cmd
-            OpenPatientCommand = new DelegateCommand(OnOpenPatient);
+            //OpenPatientCommand = new DelegateCommand(OnOpenPatient); // DELETE!
             OpenPatientCommand = new DelegateCommand(OnOpenPatient, CanOpenPatient);
             ViewCourseCommand = new DelegateCommand(OnSelectCourse, CanSelectCourse);
             EditDRCommand = new DelegateCommand(OnEditDR, CanEditDR);
@@ -178,6 +217,11 @@ namespace DoseRateEditor.ViewModels
             NextBeamCommand = new DelegateCommand(OnNextBeam, CanNextBeam);
             PrevBeamCommand = new DelegateCommand(OnPrevBeam, CanPrevBeam);
             TransScrollCommand = new DelegatePlotCommand<OxyMouseWheelEventArgs>(OnScroll);
+            PlotCurrentDRCommand = new DelegateCommand(OnCurrentDR, CanCurrentDR);
+            PreviewDRCommand = new DelegateCommand(OnPreviewDR, CanPreviewDR);
+            PreviewGSCommand = new DelegateCommand(OnPreviewGS, CanPreviewGS);
+
+    
 
             Courses = new ObservableCollection<CourseModel>();
             Plans = new ObservableCollection<PlanningItem>();
@@ -418,6 +462,54 @@ namespace DoseRateEditor.ViewModels
             return CanEditDR();
         }
 
+        // Delegate methods for plotting ...
+        private void OnPreviewDR()
+        {
+            if (!DRCalc.LastMethodCalculated.HasValue)
+            {
+                if (DRCalc.LastMethodCalculated != SelectedMethod.Value)
+                {
+                    // Calculate final DR
+                    DRCalc.CalcFinalDR(SelectedPlan, SelectedMethod.Value);
+                }
+            }
+            
+
+            // Plot final DR
+            DRf_series.Points.AddRange(DRCalc.FinalDRs[CurrentBeamId]);
+            DRPlot.InvalidatePlot(true);
+
+        }
+
+        private bool CanPreviewDR() { return true; }
+
+        private void OnPreviewGS()
+        {
+            if (!DRCalc.LastMethodCalculated.HasValue)
+            {
+                if (DRCalc.LastMethodCalculated != SelectedMethod.Value)
+                {
+                    // Calculate final DR
+                    DRCalc.CalcFinalDR(SelectedPlan, SelectedMethod.Value);
+                }
+            }
+
+            GSf_series.Points.AddRange(DRCalc.FinalGSs[CurrentBeamId]);
+            DRPlot.InvalidatePlot(true);
+
+        }
+
+        private bool CanPreviewGS() { return true; }
+
+        private void OnCurrentDR()
+        {
+            DR0_series.Points.AddRange(DRCalc.InitialDRs[CurrentBeamId]);
+            DRPlot.InvalidatePlot(true);
+        }
+
+        private bool CanCurrentDR() { return true; }
+
+        
 
 
         private void OnPlanSelect()
@@ -436,9 +528,14 @@ namespace DoseRateEditor.ViewModels
             
             CurrentBeamId = DRCalc.InitialDRs.Keys.ToList()[BeamIdx];
 
-            DR0_series.Points.AddRange(DRCalc.InitialDRs[CurrentBeamId]);
-            DRPlot.InvalidatePlot(true);
+            //DR0_series.Points.AddRange(DRCalc.InitialDRs[CurrentBeamId]);
+            //DRPlot.InvalidatePlot(true);
 
+            // Reset transaxial plot
+            SelectedSlice = 0;
+            UpdateSeries(TransPlot);
+
+            /* REPLACE WITH DELEGATE FUNCTION CALLS FOR PLOTTING BASED ON CHECK BOX status
             // IF selected method is not null calc new DR
             if (SelectedMethod != null)
             {
@@ -450,8 +547,7 @@ namespace DoseRateEditor.ViewModels
             // Update transplot
             SelectedSlice = 0;
             UpdateSeries(TransPlot);
-
-           
+            */
 
         }
 

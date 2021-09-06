@@ -44,7 +44,7 @@ namespace DoseRateEditor
 
                 DateTime endDate = DateTime.Now;
 
-                if (DateTime.TryParse("9/30/2021", provider, DateTimeStyles.None, out endDate))
+                if (DateTime.TryParse("1/30/2022", provider, DateTimeStyles.None, out endDate))
 
                 {
 

@@ -146,10 +146,10 @@
             <Button Content="&lt;-" HorizontalAlignment="Left" Width="100" Command="{Binding PrevBeamCommand}"/>
             <Button  Content="-&gt;" VerticalAlignment="Top" Margin="298,-20,0,0" Command="{Binding NextBeamCommand}"/>
             <TextBlock Text="{Binding CurrentBeamId}"></TextBlock>
-            <CheckBox Margin="5">Doserate Preview</CheckBox>
-            <CheckBox Margin="5">Gantry Speed Preview</CheckBox>
-            <CheckBox Margin="5">Current Doserate</CheckBox>
-            <CheckBox Margin="5">Current Gantry Speed</CheckBox>
+            <CheckBox Margin="5" Command="{Binding PreviewDRCommand}" IsChecked="{Binding PreviewDR}">Doserate Preview</CheckBox>
+            <CheckBox Margin="5" Command="{Binding PreviewGSCommand}" IsChecked="{Binding PreviewGS}">Gantry Speed Preview</CheckBox>
+            <CheckBox Margin="5" Command="{Binding PlotCurrentDRCommand}" IsChecked="{Binding CurrentDR}">Current Doserate</CheckBox>
+            <CheckBox Margin="5" IsChecked="{Binding CurrentGS}">Current Gantry Speed</CheckBox>
             <CheckBox Margin="5">Effective DR Preview</CheckBox>
         </StackPanel>
 
