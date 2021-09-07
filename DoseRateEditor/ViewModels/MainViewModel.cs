@@ -130,7 +130,11 @@ namespace DoseRateEditor.ViewModels
         public Nullable<DRMethod> SelectedMethod
         {
             get { return  _SelectedMethod; }
-            set { SetProperty(ref _SelectedMethod, value); EditDRCommand.RaiseCanExecuteChanged(); }
+            set { 
+                SetProperty(ref _SelectedMethod, value); 
+                EditDRCommand.RaiseCanExecuteChanged();
+                PreviewDRCommand.RaiseCanExecuteChanged();
+            }
         }
 
 
@@ -452,9 +456,9 @@ namespace DoseRateEditor.ViewModels
             DRCalc.CalcFinalDR(SelectedPlan, SelectedMethod.Value);
 
             CurrentBeamId = DRCalc.FinalDRs.Keys.ToList()[BeamIdx];
-            DRf_series.Points.AddRange(DRCalc.FinalDRs[CurrentBeamId]);
 
             DRPlot.InvalidatePlot(true);
+
         }
 
         private bool CanMethodSelect()
@@ -465,23 +469,33 @@ namespace DoseRateEditor.ViewModels
         // Delegate methods for plotting ...
         private void OnPreviewDR()
         {
-            if (!DRCalc.LastMethodCalculated.HasValue)
+            if (PreviewDR) // See if check button is checked
             {
-                if (DRCalc.LastMethodCalculated != SelectedMethod.Value)
+                if (!DRCalc.LastMethodCalculated.HasValue) // if the DRCalc dosen't already have the DRf calculated
                 {
-                    // Calculate final DR
-                    DRCalc.CalcFinalDR(SelectedPlan, SelectedMethod.Value);
+                    if (DRCalc.LastMethodCalculated != SelectedMethod.Value)
+                    {
+                        // Calculate final DR
+                        DRCalc.CalcFinalDR(SelectedPlan, SelectedMethod.Value);
+                    }
                 }
-            }
-            
 
-            // Plot final DR
-            DRf_series.Points.AddRange(DRCalc.FinalDRs[CurrentBeamId]);
+                // Plot final DR
+                DRf_series.Points.AddRange(DRCalc.FinalDRs[CurrentBeamId]);
+            }
+            else
+            {
+                // Else clear DRf
+                DRf_series.Points.Clear();
+            }
+
             DRPlot.InvalidatePlot(true);
 
         }
 
-        private bool CanPreviewDR() { return true; }
+        private bool CanPreviewDR() {
+            return SelectedMethod.HasValue && (SelectedPlan != null);
+        }
 
         private void OnPreviewGS()
         {
