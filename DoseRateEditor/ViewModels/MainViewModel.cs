@@ -238,8 +238,6 @@ namespace DoseRateEditor.ViewModels
             DRPlot = new PlotModel { Title = "Doserate and Gantry Speed"};
 
             // Create the different axes with respective keys
-            //DRPlot.Axes.Add(new LinearAxis {Title="Control Point Index", Position=AxisPosition.Bottom});
-
             var DRAxis = new LinearAxis
             {
                 Title = "Doserate",
@@ -258,18 +256,25 @@ namespace DoseRateEditor.ViewModels
 
             DR0_series = new LineSeries
             {
-                YAxisKey = "DRAxis"
+                YAxisKey = "DRAxis",
+                Color = OxyColors.Red
             };
             DRPlot.Series.Add(DR0_series);
 
             DRf_series = new LineSeries
             {
-                YAxisKey = "DRAxis"
+                YAxisKey = "DRAxis",
+                Color = OxyColors.OrangeRed,
+                LineStyle = LineStyle.Dot,
+                StrokeThickness = 4
             };
             DRPlot.Series.Add(DRf_series);
 
             GSf_series = new LineSeries { 
-                YAxisKey = "GSAxis"
+                YAxisKey = "GSAxis",
+                Color = OxyColors.DeepSkyBlue,
+                LineStyle = LineStyle.Dot,
+                StrokeThickness = 4
             };
             DRPlot.Series.Add(GSf_series);
 
