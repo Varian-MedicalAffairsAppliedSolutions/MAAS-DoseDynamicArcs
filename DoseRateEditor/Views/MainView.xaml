@@ -10,7 +10,7 @@
         xmlns:oxy="http://oxyplot.org/wpf" 
         xmlns:viewmodels="clr-namespace:DoseRateEditor.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
                    mc:Ignorable="d"
-        Title="DoseRate Editor" Height="850" Width="1200">
+        Title="DoseRate Editor" Height="650" Width="1200">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition>
@@ -25,19 +25,19 @@
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="117*">
+            <RowDefinition Height="72*">
 
             </RowDefinition>
-            <RowDefinition Height="55*">
+            <RowDefinition Height="41*">
 
             </RowDefinition>
-            <RowDefinition Height="97*">
+            <RowDefinition Height="105*">
 
             </RowDefinition>
-            <RowDefinition Height="93*">
+            <RowDefinition Height="135*">
 
             </RowDefinition>
-            <RowDefinition Height="357*">
+            <RowDefinition Height="166*">
 
             </RowDefinition>
             <RowDefinition Height="100">
@@ -64,18 +64,18 @@
         -->
 
         <StackPanel Grid.Row="0">
-            <TextBlock HorizontalAlignment="Center" FontSize="12"> Patient Id:</TextBlock>
-            <TextBox Text="{Binding PatientId}"></TextBox>
+            <TextBlock Margin="8" HorizontalAlignment="Center" FontSize="12"> Patient Id:</TextBlock>
+            <TextBox Margin ="8" Text="{Binding PatientId}"></TextBox>
         </StackPanel>
 
         <StackPanel Grid.Row="1">
-            <Button Content="Open Patient" Command="{Binding OpenPatientCommand}"></Button>
+            <Button Margin="8" Content="Open Patient" Command="{Binding OpenPatientCommand}"></Button>
         </StackPanel>
 
         <ScrollViewer Grid.Row="2">
             <StackPanel>
-                <TextBlock HorizontalAlignment="Center">Courses</TextBlock>
-                <ListBox x:Name="CourseListBox" ItemsSource="{Binding Courses}" SelectedItem="{Binding SelectedCourse, Mode=TwoWay}">
+                <TextBlock Margin="5" HorizontalAlignment="Center">Courses</TextBlock>
+                <ListBox  Margin="8" x:Name="CourseListBox" ItemsSource="{Binding Courses}" SelectedItem="{Binding SelectedCourse, Mode=TwoWay}">
                     <ie:Interaction.Triggers>
                         <ie:EventTrigger EventName="SelectionChanged">
                             <ie:InvokeCommandAction Command="{Binding ViewCourseCommand}"/>
@@ -94,8 +94,8 @@
 
         <ScrollViewer Grid.Row="3">
             <StackPanel>
-                <TextBlock HorizontalAlignment="Center">Plans</TextBlock>
-                <ListBox ItemsSource="{Binding Plans}" SelectedItem="{Binding SelectedPlan, Mode=TwoWay}">
+                <TextBlock Margin="5" HorizontalAlignment="Center">Plans</TextBlock>
+                <ListBox Margin="8" ItemsSource="{Binding Plans}" SelectedItem="{Binding SelectedPlan, Mode=TwoWay}">
                     <ie:Interaction.Triggers>
                         <ie:EventTrigger EventName="SelectionChanged">
                             <ie:InvokeCommandAction Command="{Binding OnPlanSelectCommandd}"/>
@@ -113,8 +113,8 @@
         </ScrollViewer>
 
         <StackPanel Grid.Row="4" Grid.Column="0">
-            <TextBlock HorizontalAlignment="Center">DR Edit Method</TextBlock>
-            <ComboBox ItemsSource="{Binding DRMethods}" SelectedItem="{Binding SelectedMethod}" IsSynchronizedWithCurrentItem="True">
+            <TextBlock Margin="5" HorizontalAlignment="Center">DR Edit Method</TextBlock>
+            <ComboBox Margin="10" ItemsSource="{Binding DRMethods}" SelectedItem="{Binding SelectedMethod}" IsSynchronizedWithCurrentItem="True">
                 <ie:Interaction.Triggers>
                     <ie:EventTrigger EventName="SelectionChanged">
                         <ie:InvokeCommandAction Command="{Binding OnMethodSelectCommand}"/>
@@ -128,17 +128,18 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-        </StackPanel>
-
-        <StackPanel Grid.Row="5" Grid.Column="0">
-            <Button Content ="Edit Dose Rates" Command="{Binding EditDRCommand}">
+            <Button Margin="8" Content ="Edit Dose Rates" Command="{Binding EditDRCommand}">
 
             </Button>
         </StackPanel>
 
+        <StackPanel Grid.Row="5" Grid.Column="0">
+
+        </StackPanel>
+
         <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="4">
             <Grid>
-                <oxy:PlotView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding DRPlot}" Margin="0,0,0,-394"/>
+                <oxy:PlotView Margin="8,8,8,-341" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding DRPlot}"/>
             </Grid>
         </StackPanel>
 
@@ -150,13 +151,12 @@
             <CheckBox Margin="5" Command="{Binding PreviewGSCommand}" IsChecked="{Binding PreviewGS}">Gantry Speed Preview</CheckBox>
             <CheckBox Margin="5" Command="{Binding PlotCurrentDRCommand}" IsChecked="{Binding CurrentDR}">Current Doserate</CheckBox>
             <CheckBox Margin="5" IsChecked="{Binding CurrentGS}">Current Gantry Speed</CheckBox>
-            <CheckBox Margin="5">Effective DR Preview</CheckBox>
         </StackPanel>
 
 
 
         <StackPanel Grid.Column="2" Grid.Row="0" Grid.RowSpan="4">
-            <oxy:PlotView Controller="{Binding TransController}"  Model="{Binding TransPlot}" Height="362"/>
+            <oxy:PlotView Margin="8" Controller="{Binding TransController}"  Model="{Binding TransPlot}" Height="362"/>
         </StackPanel>
 
 

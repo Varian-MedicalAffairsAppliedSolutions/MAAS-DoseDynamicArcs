@@ -29,5 +29,10 @@ namespace DoseRateEditor.Views
         {
 
         }
+
+        private void CheckBox_Checked_1()
+        {
+
+        }
     }
 }
