@@ -230,18 +230,9 @@ namespace DoseRateEditor.ViewModels
             Courses = new ObservableCollection<CourseModel>();
             Plans = new ObservableCollection<PlanningItem>();
 
+            // DR PLOT
             DRPlot = new PlotModel { Title = "Doserate and Gantry Speed"};
             DRPlot.Axes.Add(new LinearAxis {Title="Test X title", Position=AxisPosition.Bottom});
-
-            TransPlot = new PlotModel { Title = "IsoPlot Transverse" };
-            //TransSeries = new HeatMapSeries();
-            //TransPlot.Series.Add(TransSeries);
-            AddAxes(TransPlot);
-            TransController = new PlotController();
-
-            TransController.UnbindAll();
-            //TransController.BindMouseWheel((IViewCommand<OxyMouseWheelEventArgs>)TransScrollCommand2);
-            TransController.BindMouseWheel(TransScrollCommand);
 
             DR0_series = new LineSeries();
             DRPlot.Series.Add(DR0_series);
@@ -252,10 +243,15 @@ namespace DoseRateEditor.ViewModels
             GSf_series = new LineSeries();
             DRPlot.Series.Add(GSf_series);
 
-            CT = new double[0][,];
 
-            //var img = SelectedCourse.Plans.First().Value.StructureSet.Image;
-            
+            // TRANS PLOT
+            TransPlot = new PlotModel { Title = "IsoPlot Transverse" };
+            AddAxes(TransPlot);
+            TransController = new PlotController();
+
+            TransController.UnbindAll();
+            TransController.BindMouseWheel(TransScrollCommand);
+            CT = new double[0][,];
 
             // Set the DR EDIT methods
             
@@ -268,15 +264,7 @@ namespace DoseRateEditor.ViewModels
             };
 
 
-            
-
-
         }
-
-        //private void OnScroll(IView arg1, IController arg2, OxyMouseWheelEventArgs arg3)
-        //{
-        //    throw new NotImplementedException();
-        //}
 
         private void OnScroll(IPlotView arg1, IController arg2, OxyMouseWheelEventArgs arg3)
         {
@@ -498,17 +486,26 @@ namespace DoseRateEditor.ViewModels
         }
 
         private void OnPreviewGS()
-        {
-            if (!DRCalc.LastMethodCalculated.HasValue)
+        {   
+            if (PreviewGS) // See if check button is checked, else delete GSf plot
             {
-                if (DRCalc.LastMethodCalculated != SelectedMethod.Value)
+                if (!DRCalc.LastMethodCalculated.HasValue)
                 {
-                    // Calculate final DR
-                    DRCalc.CalcFinalDR(SelectedPlan, SelectedMethod.Value);
+                    if (DRCalc.LastMethodCalculated != SelectedMethod.Value)
+                    {
+                        // Calculate final DR
+                        DRCalc.CalcFinalDR(SelectedPlan, SelectedMethod.Value);
+                    }
                 }
+                GSf_series.Points.AddRange(DRCalc.FinalGSs[CurrentBeamId]);
             }
+            else
+            {
+                GSf_series.Points.Clear();
+            }
+            
 
-            GSf_series.Points.AddRange(DRCalc.FinalGSs[CurrentBeamId]);
+            
             DRPlot.InvalidatePlot(true);
 
         }
