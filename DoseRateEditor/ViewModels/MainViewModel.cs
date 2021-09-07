@@ -134,6 +134,7 @@ namespace DoseRateEditor.ViewModels
                 SetProperty(ref _SelectedMethod, value); 
                 EditDRCommand.RaiseCanExecuteChanged();
                 PreviewDRCommand.RaiseCanExecuteChanged();
+                PreviewGSCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -163,6 +164,9 @@ namespace DoseRateEditor.ViewModels
                 EditDRCommand.RaiseCanExecuteChanged();
                 PrevBeamCommand.RaiseCanExecuteChanged();
                 NextBeamCommand.RaiseCanExecuteChanged();
+                PreviewDRCommand.RaiseCanExecuteChanged();
+                PlotCurrentDRCommand.RaiseCanExecuteChanged();
+                PreviewGSCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -232,15 +236,41 @@ namespace DoseRateEditor.ViewModels
 
             // DR PLOT
             DRPlot = new PlotModel { Title = "Doserate and Gantry Speed"};
-            DRPlot.Axes.Add(new LinearAxis {Title="Test X title", Position=AxisPosition.Bottom});
 
-            DR0_series = new LineSeries();
+            // Create the different axes with respective keys
+            //DRPlot.Axes.Add(new LinearAxis {Title="Control Point Index", Position=AxisPosition.Bottom});
+
+            var DRAxis = new LinearAxis
+            {
+                Title = "Doserate",
+                Position = AxisPosition.Left,
+                Key = "DRAxis"   
+            };
+            DRPlot.Axes.Add(DRAxis);
+
+            var GSAxis = new LinearAxis
+            {
+                Title = "Gantry Speed",
+                Position = AxisPosition.Right,
+                Key = "GSAxis"
+            };
+            DRPlot.Axes.Add(GSAxis);
+
+            DR0_series = new LineSeries
+            {
+                YAxisKey = "DRAxis"
+            };
             DRPlot.Series.Add(DR0_series);
 
-            DRf_series = new LineSeries();
+            DRf_series = new LineSeries
+            {
+                YAxisKey = "DRAxis"
+            };
             DRPlot.Series.Add(DRf_series);
 
-            GSf_series = new LineSeries();
+            GSf_series = new LineSeries { 
+                YAxisKey = "GSAxis"
+            };
             DRPlot.Series.Add(GSf_series);
 
 
@@ -510,15 +540,22 @@ namespace DoseRateEditor.ViewModels
 
         }
 
-        private bool CanPreviewGS() { return true; }
+        private bool CanPreviewGS() { return CanPreviewDR(); }
 
         private void OnCurrentDR()
         {
-            DR0_series.Points.AddRange(DRCalc.InitialDRs[CurrentBeamId]);
+            if (CurrentDR) // If checkbox is checked
+            {
+                DR0_series.Points.AddRange(DRCalc.InitialDRs[CurrentBeamId]);
+            }
+            else
+            {
+                DR0_series.Points.Clear();
+            }
             DRPlot.InvalidatePlot(true);
         }
 
-        private bool CanCurrentDR() { return true; }
+        private bool CanCurrentDR() { return SelectedPlan != null; }
 
         
 
