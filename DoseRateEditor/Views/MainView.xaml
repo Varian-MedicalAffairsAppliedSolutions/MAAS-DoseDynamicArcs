@@ -37,10 +37,10 @@
             <RowDefinition Height="135*">
 
             </RowDefinition>
-            <RowDefinition Height="166*">
+            <RowDefinition Height="234*">
 
             </RowDefinition>
-            <RowDefinition Height="100">
+            <RowDefinition Height="32">
 
             </RowDefinition>
         </Grid.RowDefinitions>
@@ -149,8 +149,11 @@
             <TextBlock Text="{Binding CurrentBeamId}"></TextBlock>
             <CheckBox Margin="5" Command="{Binding PreviewDRCommand}" IsChecked="{Binding PreviewDR}">Doserate Preview</CheckBox>
             <CheckBox Margin="5" Command="{Binding PreviewGSCommand}" IsChecked="{Binding PreviewGS}">Gantry Speed Preview</CheckBox>
+            <CheckBox Margin="5" Command="{Binding PreviewdMUCommand}" IsChecked="{Binding PreviewdMU}">Delta MU Preview</CheckBox>
+
             <CheckBox Margin="5" Command="{Binding PlotCurrentDRCommand}" IsChecked="{Binding CurrentDR}">Current Doserate</CheckBox>
             <CheckBox Margin="5" Command="{Binding PlotCurrentGSCommand}" IsChecked="{Binding CurrentGS}">Current Gantry Speed</CheckBox>
+            <CheckBox Margin="5" Command="{Binding PlotCurrentdMUCommand}" IsChecked="{Binding CurrentdMU}">Current Delta MU</CheckBox>
         </StackPanel>
 
 

@@ -29,13 +29,12 @@ namespace DoseRateEditor.ViewModels
         public DelegateCommand OnMethodSelectCommand { get; private set; }
         public DelegateCommand PrevBeamCommand { get; private set; }
         public DelegateCommand NextBeamCommand { get; private set; }
-
         public DelegateCommand PlotCurrentDRCommand { get; private set; }
-
         public DelegateCommand PlotCurrentGSCommand { get; private set; }
-
         public DelegateCommand PreviewGSCommand { get; private set; }
         public DelegateCommand PreviewDRCommand { get; private set; }
+        public DelegateCommand PreviewdMUCommand { get; private set; }
+        public DelegateCommand PlotCurrentdMUCommand { get; private set; }
 
         public IViewCommand<OxyMouseWheelEventArgs> TransScrollCommand { get; private set; } 
         public ObservableCollection<CourseModel> Courses { get; private set; }
@@ -70,6 +69,20 @@ namespace DoseRateEditor.ViewModels
         {
             get { return _CurrentGS; }
             set { SetProperty(ref _CurrentGS, value); }
+        }
+
+        private bool _CurrentdMU;
+        public bool CurrentdMU
+        {
+            get { return _CurrentdMU; }
+            set { SetProperty(ref _CurrentdMU, value); }
+        }
+
+        private bool _PreviewdMU;
+        public bool PreviewdMU
+        {
+            get { return _PreviewdMU; }
+            set { SetProperty(ref _PreviewdMU, value); }
         }
         // END CHECKBOXES
 
@@ -170,6 +183,8 @@ namespace DoseRateEditor.ViewModels
                 PlotCurrentDRCommand.RaiseCanExecuteChanged();
                 PreviewGSCommand.RaiseCanExecuteChanged();
                 PlotCurrentGSCommand.RaiseCanExecuteChanged();
+                PreviewdMUCommand.RaiseCanExecuteChanged();
+                PlotCurrentdMUCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -219,6 +234,20 @@ namespace DoseRateEditor.ViewModels
             set { SetProperty(ref _GS0_series, value); }
         }
 
+        private LineSeries _dMU0_series;
+        public LineSeries dMU0_series
+        {
+            get { return _dMU0_series; }
+            set { SetProperty(ref _dMU0_series, value); }
+        }
+
+        private LineSeries _dMUf_series;
+        public LineSeries dMUf_series
+        {
+            get { return _dMUf_series; }
+            set { SetProperty(ref _dMUf_series, value); }
+        }
+
 
 
         public MainViewModel(VMS.TPS.Common.Model.API.Application app)
@@ -239,7 +268,8 @@ namespace DoseRateEditor.ViewModels
             PreviewDRCommand = new DelegateCommand(OnPreviewDR, CanPreviewDR);
             PreviewGSCommand = new DelegateCommand(OnPreviewGS, CanPreviewGS);
             PlotCurrentGSCommand = new DelegateCommand(OnCurrentGS, CanCurrentGS);
-
+            PreviewdMUCommand = new DelegateCommand(OnPreviewdMU, CanPreviewdMU);
+            PlotCurrentdMUCommand = new DelegateCommand(OnCurrentdMU, CanCurrentdMU);
     
 
             Courses = new ObservableCollection<CourseModel>();
@@ -265,6 +295,15 @@ namespace DoseRateEditor.ViewModels
             };
             DRPlot.Axes.Add(GSAxis);
 
+            var dMUAxis = new LinearAxis
+            {
+                Title = "Delta MU",
+                Position = AxisPosition.Left,
+                Key = "dMUAxis"
+            };
+            DRPlot.Axes.Add(dMUAxis);
+
+            // Add the series
             DR0_series = new LineSeries
             {
                 YAxisKey = "DRAxis",
@@ -295,6 +334,22 @@ namespace DoseRateEditor.ViewModels
                 StrokeThickness = 4
             };
             DRPlot.Series.Add(GSf_series);
+
+            dMU0_series = new LineSeries
+            {
+                YAxisKey = "dMUAxis",
+                Color = OxyColors.Gold
+            };
+            DRPlot.Series.Add(dMU0_series);
+
+            dMUf_series = new LineSeries { 
+                YAxisKey = "dMU Axis",
+                Color = OxyColors.LightGoldenrodYellow,
+                LineStyle = LineStyle.Dot,
+                StrokeThickness = 4 
+            };
+
+
 
 
             // TRANS PLOT
@@ -476,6 +531,21 @@ namespace DoseRateEditor.ViewModels
                 DRf_series.Points.AddRange(DRCalc.FinalDRs[CurrentBeamId]);
             }
         }
+
+        private void OnCurrentdMU() {
+            dMU0_series.Points.Clear();
+            if (CurrentdMU)
+            {
+                dMU0_series.Points.AddRange(DRCalc.InitialdMU[CurrentBeamId]);
+            }
+            DRPlot.InvalidatePlot(true);
+        }
+
+        private bool CanCurrentdMU() { return CanCurrentDR(); }
+
+        private void OnPreviewdMU() { return; }
+
+        private bool CanPreviewdMU() { return true; }
 
         private bool CanPrevBeam()
         {
