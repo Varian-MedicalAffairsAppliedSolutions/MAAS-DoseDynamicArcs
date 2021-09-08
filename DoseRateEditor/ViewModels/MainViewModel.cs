@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using DoseRateEditor.Models;
 using OxyPlot;
+using OxyPlot.Annotations;
 using OxyPlot.Axes;
 using OxyPlot.Series;
 using Prism.Commands;
@@ -297,8 +298,9 @@ namespace DoseRateEditor.ViewModels
 
             var dMUAxis = new LinearAxis
             {
-                Title = "Delta MU",
+                //Title = "Delta MU",
                 Position = AxisPosition.Left,
+                TickStyle = TickStyle.None,
                 Key = "dMUAxis"
             };
             DRPlot.Axes.Add(dMUAxis);
@@ -545,7 +547,7 @@ namespace DoseRateEditor.ViewModels
 
         private void OnPreviewdMU() { return; }
 
-        private bool CanPreviewdMU() { return true; }
+        private bool CanPreviewdMU() { return false; }
 
         private bool CanPrevBeam()
         {
