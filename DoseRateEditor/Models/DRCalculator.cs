@@ -34,6 +34,10 @@ namespace DoseRateEditor.Models
         };
 
         public Dictionary<string, List<DataPoint>> InitialDRs { get; set; }
+        
+        public Dictionary<string, List<DataPoint>> InitialGSs { get; set; }
+
+        public Dictionary<string, List<DataPoint>> InitialdMU { get; set; }
 
         public Dictionary<string, List<DataPoint>> FinalDRs { get; set; }
 
@@ -58,13 +62,20 @@ namespace DoseRateEditor.Models
             
             // Compute the initial DR for each beam in the plan
             InitialDRs = new Dictionary<string, List<DataPoint>>();
+            InitialGSs = new Dictionary<string, List<DataPoint>>();
+            InitialdMU = new Dictionary<string, List<DataPoint>>();
+
             FinalMSWS = new Dictionary<string, List<double>>();
             FinalDRs = new Dictionary<string, List<DataPoint>>();
             FinalGSs = new Dictionary<string, List<DataPoint>>();
 
+
             foreach (Beam b in Plan.Beams)
             {
-                InitialDRs.Add(b.Id, ComputeDRBeam(b));
+                var tup = ComputeDRBeam(b);
+                InitialDRs.Add(b.Id, tup.Item1);
+                InitialGSs.Add(b.Id, tup.Item2);
+                InitialdMU.Add(b.Id, tup.Item3);
             }
 
             LastMethodCalculated = null;
@@ -179,7 +190,7 @@ namespace DoseRateEditor.Models
                 var delta = Math.Abs(f(arg));
                 
                 // Assert delta > 0
-                if (delta <= 0) {
+                if (delta < 0) {
                     throw new Exception("delta not gt 0!");
                 }
 
@@ -205,10 +216,13 @@ namespace DoseRateEditor.Models
 
         }
 
-        private List<DataPoint> ComputeDRBeam(Beam bm, double gantry_speed_max=4.8, double DR_max=2400) // Calculates current msws given an existing beam
+        private Tuple<List<DataPoint>, List<DataPoint>, List<DataPoint>>
+            ComputeDRBeam(Beam bm, double gantry_speed_max=4.8, double DR_max=2400) // Calculates current msws given an existing beam
         {
 
             var DRs = new List<DataPoint>();
+            var dMU = new List<DataPoint>();
+            var GSs = new List<DataPoint>();
 
             var cps = bm.GetEditableParameters().ControlPoints.ToList();
 
@@ -222,8 +236,11 @@ namespace DoseRateEditor.Models
                 if (i > 0) // Skip first CP
                 {
                     // 1. Calc delta MU
-                    var mu_last = cps[i - 1].MetersetWeight * bm.Meterset.Value; // TODO: if dose not calculated bm.Meterset is null -> inaccurate DR calculation.
-                    var mu_current = cps[i].MetersetWeight * bm.Meterset.Value;
+                    var msw_current = cps[i].MetersetWeight;
+                    var msw_prev = cps[i - 1].MetersetWeight;
+
+                    var mu_last = msw_prev * bm.Meterset.Value; // TODO: if dose not calculated bm.Meterset is null -> inaccurate DR calculation.
+                    var mu_current = msw_current * bm.Meterset.Value;
                     var delta_mu = mu_current - mu_last;
 
                     // 2. Calc d(MU)/dt from the time it takes to move between cps
@@ -239,16 +256,23 @@ namespace DoseRateEditor.Models
                     if (calcd_mu_rate < DR_max)
                     {
                         DRs.Add(new DataPoint(i, calcd_mu_rate));
+                        GSs.Add(new DataPoint(i, gantry_speed_max));
                     }
                     else
                     {
                         DRs.Add(new DataPoint(i, DR_max));
+                        var bm_meterset = bm.Meterset.Value;
+                        var L_i = (bm_meterset / delta_gantry) * (msw_current - msw_prev);
+                        var GS = DR_max / L_i;
+                        GS /= 60;
+                        GSs.Add(new DataPoint(i, GS));
                     }
+                    dMU.Add(new DataPoint(i, delta_mu));
 
                 }
             }
 
-            return DRs;
+            return new Tuple<List<DataPoint>, List<DataPoint>, List<DataPoint>>(DRs, GSs, dMU);
         }
     
         private List<DataPoint> ComputeDRBeamDNU(Beam bm, double gantry_speed_max=4.8, double DR_max=2400)
