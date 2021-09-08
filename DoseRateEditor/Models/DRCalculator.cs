@@ -142,7 +142,7 @@ namespace DoseRateEditor.Models
                 if (calcd_mu_rate < DR_max)
                 {
                     DRs.Add(new DataPoint(i, calcd_mu_rate));
-                    GSs.Add(new DataPoint(i, gantry_speed_max));
+                    GSs.Add(new DataPoint(i, gantry_speed_max)); // TODO COPY GS CALC LOGIC TO DR0 CALC BELOW
                 }
                 else
                 {
