@@ -150,7 +150,7 @@
             <CheckBox Margin="5" Command="{Binding PreviewDRCommand}" IsChecked="{Binding PreviewDR}">Doserate Preview</CheckBox>
             <CheckBox Margin="5" Command="{Binding PreviewGSCommand}" IsChecked="{Binding PreviewGS}">Gantry Speed Preview</CheckBox>
             <CheckBox Margin="5" Command="{Binding PlotCurrentDRCommand}" IsChecked="{Binding CurrentDR}">Current Doserate</CheckBox>
-            <CheckBox Margin="5" IsChecked="{Binding CurrentGS}">Current Gantry Speed</CheckBox>
+            <CheckBox Margin="5" Command="{Binding PlotCurrentGSCommand}" IsChecked="{Binding CurrentGS}">Current Gantry Speed</CheckBox>
         </StackPanel>
 
 

@@ -32,6 +32,8 @@ namespace DoseRateEditor.ViewModels
 
         public DelegateCommand PlotCurrentDRCommand { get; private set; }
 
+        public DelegateCommand PlotCurrentGSCommand { get; private set; }
+
         public DelegateCommand PreviewGSCommand { get; private set; }
         public DelegateCommand PreviewDRCommand { get; private set; }
 
@@ -167,6 +169,7 @@ namespace DoseRateEditor.ViewModels
                 PreviewDRCommand.RaiseCanExecuteChanged();
                 PlotCurrentDRCommand.RaiseCanExecuteChanged();
                 PreviewGSCommand.RaiseCanExecuteChanged();
+                PlotCurrentGSCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -209,6 +212,13 @@ namespace DoseRateEditor.ViewModels
             set { SetProperty(ref _GSf_series, value); }
         }
 
+        private LineSeries _GS0_series;
+        public LineSeries GS0_series
+        {
+            get { return _GS0_series; }
+            set { SetProperty(ref _GS0_series, value); }
+        }
+
 
 
         public MainViewModel(VMS.TPS.Common.Model.API.Application app)
@@ -228,6 +238,7 @@ namespace DoseRateEditor.ViewModels
             PlotCurrentDRCommand = new DelegateCommand(OnCurrentDR, CanCurrentDR);
             PreviewDRCommand = new DelegateCommand(OnPreviewDR, CanPreviewDR);
             PreviewGSCommand = new DelegateCommand(OnPreviewGS, CanPreviewGS);
+            PlotCurrentGSCommand = new DelegateCommand(OnCurrentGS, CanCurrentGS);
 
     
 
@@ -260,6 +271,13 @@ namespace DoseRateEditor.ViewModels
                 Color = OxyColors.Red
             };
             DRPlot.Series.Add(DR0_series);
+
+            GS0_series = new LineSeries
+            {
+                YAxisKey = "GSAxis",
+                Color = OxyColors.Blue
+            };
+            DRPlot.Series.Add(GS0_series);
 
             DRf_series = new LineSeries
             {
@@ -490,6 +508,23 @@ namespace DoseRateEditor.ViewModels
         }
 
         // Delegate methods for plotting ...
+        private void OnCurrentGS()
+        {
+            if (CurrentGS) // If checkbox is checked
+            {
+                GS0_series.Points.AddRange(DRCalc.InitialGSs[CurrentBeamId]);
+            }
+            else
+            {
+                GS0_series.Points.Clear();
+            }
+            DRPlot.InvalidatePlot(true);
+        }
+
+        private bool CanCurrentGS()
+        {
+            return CanCurrentDR();
+        }
         private void OnPreviewDR()
         {
             if (PreviewDR) // See if check button is checked
