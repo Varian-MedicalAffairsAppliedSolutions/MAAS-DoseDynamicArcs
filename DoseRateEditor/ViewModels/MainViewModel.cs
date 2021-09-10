@@ -424,8 +424,8 @@ namespace DoseRateEditor.ViewModels
             // Add arc line
             var arcAxis = new AngleAxis
             {
-                Minimum = 90,
-                Maximum = 180,
+                Minimum = 0,
+                Maximum = 100,
                 TickStyle = TickStyle.None,
                 AxislineColor = OxyColors.Red,
                 ExtraGridlineColor = OxyColors.Red,
@@ -437,7 +437,9 @@ namespace DoseRateEditor.ViewModels
                 ExtraGridlineThickness = 5,
                 MajorGridlineThickness = 5,
                 MinorGridlineThickness = 5,
-                Layer = AxisLayer.AboveSeries
+                Layer = AxisLayer.AboveSeries,
+                EndAngle = 180,
+                StartAngle = 0
             };
             plt.Axes.Add(arcAxis);
 
@@ -457,8 +459,12 @@ namespace DoseRateEditor.ViewModels
                 ExtraGridlineThickness = 5,
                 MajorGridlineThickness = 5,
                 MinorGridlineThickness = 5,
-                Layer = AxisLayer.AboveSeries
+                Layer = AxisLayer.AboveSeries,
+                MajorStep = 500,
+
             };
+            
+
             plt.Axes.Add(magAxis);
 
 
