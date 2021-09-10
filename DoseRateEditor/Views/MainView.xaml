@@ -165,6 +165,11 @@
             <oxy:PlotView Margin="8" Controller="{Binding TransController}"  Model="{Binding TransPlot}" Height="362"/>
         </StackPanel>
 
+        <StackPanel Grid.Row="0" Grid.Column="3" Grid.RowSpan="4">
+            <oxy:PlotView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding View1}" Height="360" Width="360"></oxy:PlotView>
+        </StackPanel>
+
 
     </Grid>
 </metro:MetroWindow>
+ 

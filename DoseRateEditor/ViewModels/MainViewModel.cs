@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using DoseRateEditor.Models;
@@ -15,6 +16,7 @@ using static DoseRateEditor.Models.DRCalculator;
 
 // TODO: add check to see if DR is modulated and warn user if this is the case
 // TODO make buttons do something
+// Check machine if TB -> maxGS=6
 // if constant do nothing
 
 namespace DoseRateEditor.ViewModels
@@ -198,6 +200,15 @@ namespace DoseRateEditor.ViewModels
             set { SetProperty(ref _DRPlot, value); }
         }
 
+        private PlotModel _View1;
+
+        public PlotModel View1
+        {
+            get { return _View1; }
+            set { SetProperty(ref _View1, value); }
+        }
+
+
         private DRCalculator _DRCalc;
 
         public DRCalculator DRCalc
@@ -279,6 +290,9 @@ namespace DoseRateEditor.ViewModels
             // DR PLOT
             DRPlot = new PlotModel { Title = "Doserate and Gantry Speed"};
 
+            // Cosmo view 1
+            View1 = BuildCosmoPlot();
+
             // Create the different axes with respective keys
             var DRAxis = new LinearAxis
             {
@@ -301,7 +315,8 @@ namespace DoseRateEditor.ViewModels
                 //Title = "Delta MU",
                 Position = AxisPosition.Left,
                 TickStyle = TickStyle.None,
-                Key = "dMUAxis"
+                Key = "dMUAxis",
+           
             };
             DRPlot.Axes.Add(dMUAxis);
 
@@ -374,6 +389,35 @@ namespace DoseRateEditor.ViewModels
             };
 
 
+        }
+
+
+        private PlotModel BuildCosmoPlot()
+        {
+            var plt = new PlotModel { Title = "View1" };
+
+            // Add image
+            OxyImage image;
+            var assembly = Assembly.GetExecutingAssembly();
+            using (var stream = assembly.GetManifestResourceStream("DoseRateEditor.Resources.cosmo1.PNG"))
+            {
+                image = new OxyImage(stream);
+            }
+
+            // Centered in plot area, filling width
+            plt.Annotations.Add(new ImageAnnotation
+            {
+                ImageSource = image,
+                Opacity = 1,
+                Interpolate = false,
+                X = new PlotLength(0.5, PlotLengthUnit.RelativeToPlotArea),
+                Y = new PlotLength(0.5, PlotLengthUnit.RelativeToPlotArea),
+                Width = new PlotLength(1, PlotLengthUnit.RelativeToPlotArea),
+                HorizontalAlignment = OxyPlot.HorizontalAlignment.Center,
+                VerticalAlignment = OxyPlot.VerticalAlignment.Middle
+            });
+
+            return plt;
         }
 
         private void OnScroll(IPlotView arg1, IController arg2, OxyMouseWheelEventArgs arg3)
