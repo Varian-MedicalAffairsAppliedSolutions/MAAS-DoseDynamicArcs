@@ -399,7 +399,7 @@ namespace DoseRateEditor.ViewModels
             // Add image
             OxyImage image;
             var assembly = Assembly.GetExecutingAssembly();
-            using (var stream = assembly.GetManifestResourceStream("DoseRateEditor.Resources.cosmo1.PNG"))
+            using (var stream = assembly.GetManifestResourceStream("DoseRateEditor.Resources.cosmo1.1.PNG"))
             {
                 image = new OxyImage(stream);
             }
@@ -439,7 +439,7 @@ namespace DoseRateEditor.ViewModels
                 MinorGridlineThickness = 5,
                 Layer = AxisLayer.AboveSeries,
                 EndAngle = 180,
-                StartAngle = 0
+                StartAngle = 0,
             };
             plt.Axes.Add(arcAxis);
 
@@ -461,7 +461,6 @@ namespace DoseRateEditor.ViewModels
                 MinorGridlineThickness = 5,
                 Layer = AxisLayer.AboveSeries,
                 MajorStep = 500,
-
             };
             
 
