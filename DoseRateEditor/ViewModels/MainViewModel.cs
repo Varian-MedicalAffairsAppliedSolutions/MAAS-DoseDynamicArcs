@@ -405,6 +405,8 @@ namespace DoseRateEditor.ViewModels
             }
 
             // Centered in plot area, filling width
+            // From https://oxyplot.userecho.com/en/communities/1/topics/473-inserting-a-bitmap-into-axes
+
             plt.Annotations.Add(new ImageAnnotation
             {
                 ImageSource = image,
@@ -413,9 +415,52 @@ namespace DoseRateEditor.ViewModels
                 X = new PlotLength(0.5, PlotLengthUnit.RelativeToPlotArea),
                 Y = new PlotLength(0.5, PlotLengthUnit.RelativeToPlotArea),
                 Width = new PlotLength(1, PlotLengthUnit.RelativeToPlotArea),
+                //Height = new PlotLength(1, PlotLengthUnit.RelativeToPlotArea), // CR added
                 HorizontalAlignment = OxyPlot.HorizontalAlignment.Center,
-                VerticalAlignment = OxyPlot.VerticalAlignment.Middle
+                VerticalAlignment = OxyPlot.VerticalAlignment.Middle,
+                Layer = AnnotationLayer.BelowAxes
             });
+
+            // Add arc line
+            var arcAxis = new AngleAxis
+            {
+                Minimum = 90,
+                Maximum = 180,
+                TickStyle = TickStyle.None,
+                AxislineColor = OxyColors.Red,
+                ExtraGridlineColor = OxyColors.Red,
+                MajorGridlineColor = OxyColors.Red,
+                MinorGridlineColor = OxyColors.Red,
+                MinorTicklineColor = OxyColors.Red,
+                TicklineColor = OxyColors.Red,
+                AxislineThickness = 5,
+                ExtraGridlineThickness = 5,
+                MajorGridlineThickness = 5,
+                MinorGridlineThickness = 5,
+                Layer = AxisLayer.AboveSeries
+            };
+            plt.Axes.Add(arcAxis);
+
+            // Add mag axis (this appears to be required if we have angle axis)
+            var magAxis = new MagnitudeAxis
+            {
+                Minimum = 0,
+                Maximum = 100,
+                TickStyle = TickStyle.None,
+                AxislineColor = OxyColors.Red,
+                ExtraGridlineColor = OxyColors.Red,
+                MajorGridlineColor = OxyColors.Red,
+                MinorGridlineColor = OxyColors.Red,
+                MinorTicklineColor = OxyColors.Red,
+                TicklineColor = OxyColors.Red,
+                AxislineThickness = 5,
+                ExtraGridlineThickness = 5,
+                MajorGridlineThickness = 5,
+                MinorGridlineThickness = 5,
+                Layer = AxisLayer.AboveSeries
+            };
+            plt.Axes.Add(magAxis);
+
 
             return plt;
         }
