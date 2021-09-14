@@ -118,6 +118,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Models\CosmoPlot.cs" />
     <Compile Include="Models\CourseModel.cs" />
     <Compile Include="Models\DRCalculator.cs" />
     <Compile Include="Startup\Bootstrapper.cs" />
@@ -158,9 +159,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\cosmo1.PNG" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\cosmo1.1.PNG" />

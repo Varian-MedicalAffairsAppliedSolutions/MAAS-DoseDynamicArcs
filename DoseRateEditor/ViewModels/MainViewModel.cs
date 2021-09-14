@@ -125,7 +125,6 @@ namespace DoseRateEditor.ViewModels
             set => SetProperty(ref _CurrentBeamId, value);
         }
 
-
         private PlotModel _TransPlot;
 
         public PlotModel TransPlot
@@ -200,9 +199,9 @@ namespace DoseRateEditor.ViewModels
             set { SetProperty(ref _DRPlot, value); }
         }
 
-        private PlotModel _View1;
+        private CosmoPlot _View1;
 
-        public PlotModel View1
+        public CosmoPlot View1
         {
             get { return _View1; }
             set { SetProperty(ref _View1, value); }
@@ -291,9 +290,11 @@ namespace DoseRateEditor.ViewModels
             DRPlot = new PlotModel { Title = "Doserate and Gantry Speed"};
 
             // Cosmo view 1
-            View1 = BuildCosmoPlot();
+            View1 = new CosmoPlot("ArcTest", "DoseRateEditor.Resources.cosmo1.1.PNG");
+            //View1.DrawRects(new List<double> { 1, 2, 3, 4, 5, 6, 7, 8 }, 4, 4);
+            
 
-            // Create the different axes with respective keys
+            // Create the different axes with respect/ive keys
             var DRAxis = new LinearAxis
             {
                 Title = "Doserate",
@@ -461,13 +462,31 @@ namespace DoseRateEditor.ViewModels
                 MinorGridlineThickness = 5,
                 Layer = AxisLayer.AboveSeries,
                 MajorStep = 500,
+             
             };
             
 
             plt.Axes.Add(magAxis);
 
+            //FunctionSeries f = new FunctionSeries((x) => 500, 0, 360, 0.1);
+            //plt.Series.Add(f);
+            // See: https://stackoverflow.com/questions/59501561/how-to-draw-a-circle-within-oxyplot-angleaxis-and-magnitudeaxis
 
             return plt;
+        }
+
+        private List<PolygonAnnotation> GenerateRects(List<double> dMU)
+        {
+            // Generate a list of polygon annotations given a dMU list
+            // Outline as follows:
+            // 1. How many dMU values (same as number of cps)
+            // 2. Start and stop angle (in view one I believe this is the couch??? ask about that)
+            // 3. Define max rect height to be the max dMU value
+            // 4. For each dMU generate a rect with width = ? and height = (dMU current / dMU max) * Max heigth value
+            // 5. Rotate appropriatly using some kind of transform (what angle tho???)
+            // 6. Translate to be tangential to the pre drawn arc, we wont always need this to be drawn, but nice to have now.
+
+            return new List<PolygonAnnotation>();
         }
 
         private void OnScroll(IPlotView arg1, IController arg2, OxyMouseWheelEventArgs arg3)
@@ -632,7 +651,9 @@ namespace DoseRateEditor.ViewModels
             dMU0_series.Points.Clear();
             if (CurrentdMU)
             {
-                dMU0_series.Points.AddRange(DRCalc.InitialdMU[CurrentBeamId]);
+                var dMU = DRCalc.InitialdMU[CurrentBeamId];
+                dMU0_series.Points.AddRange(dMU);
+                View1.DrawRects(dMU.Select(x => x.Y).ToList(), 5, 5);
             }
             DRPlot.InvalidatePlot(true);
         }
