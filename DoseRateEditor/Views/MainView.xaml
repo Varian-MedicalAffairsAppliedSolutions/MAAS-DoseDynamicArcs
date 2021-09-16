@@ -23,27 +23,27 @@
 
             </ColumnDefinition>
             <ColumnDefinition>
-                
+
             </ColumnDefinition>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="72*">
+            <RowDefinition Height="97*">
 
             </RowDefinition>
-            <RowDefinition Height="41*">
+            <RowDefinition Height="55*">
 
             </RowDefinition>
-            <RowDefinition Height="105*">
+            <RowDefinition Height="141*">
 
             </RowDefinition>
-            <RowDefinition Height="135*">
+            <RowDefinition Height="181*">
 
             </RowDefinition>
-            <RowDefinition Height="234*">
+            <RowDefinition Height="200*">
 
             </RowDefinition>
-            <RowDefinition Height="32">
+            <RowDefinition Height="145">
 
             </RowDefinition>
         </Grid.RowDefinitions>
@@ -101,7 +101,7 @@
                 <ListBox Margin="8" ItemsSource="{Binding Plans}" SelectedItem="{Binding SelectedPlan, Mode=TwoWay}">
                     <ie:Interaction.Triggers>
                         <ie:EventTrigger EventName="SelectionChanged">
-                            <ie:InvokeCommandAction Command="{Binding OnPlanSelectCommandd}"/>
+                            <ie:InvokeCommandAction Command="{Binding OnPlanSelectCommand}"/>
                         </ie:EventTrigger>
                     </ie:Interaction.Triggers>
                     <ListBox.ItemTemplate>
@@ -115,7 +115,27 @@
             </StackPanel>
         </ScrollViewer>
 
-        <StackPanel Grid.Row="4" Grid.Column="0">
+        <ScrollViewer Grid.Row="4">
+            <StackPanel>
+                <TextBlock Margin="5" HorizontalAlignment="Center">Fields</TextBlock>
+                <ListBox Margin="8" ItemsSource="{Binding Beams}" SelectedItem="{Binding CurrentBeam, Mode=TwoWay}">
+                    <ie:Interaction.Triggers>
+                        <ie:EventTrigger EventName="SelectionChanged">
+                            <ie:InvokeCommandAction Command="{Binding OnBeamSelectCommand}"/>
+                        </ie:EventTrigger>
+                    </ie:Interaction.Triggers>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Id}">
+
+                            </TextBlock>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="5" Grid.Column="0">
             <TextBlock Margin="5" HorizontalAlignment="Center">DR Edit Method</TextBlock>
             <ComboBox Margin="10" ItemsSource="{Binding DRMethods}" SelectedItem="{Binding SelectedMethod}" IsSynchronizedWithCurrentItem="True">
                 <ie:Interaction.Triggers>
@@ -147,16 +167,26 @@
         </StackPanel>
 
         <StackPanel Grid.Row="4" Grid.Column="1">
-            <Button Content="&lt;-" HorizontalAlignment="Left" Width="100" Command="{Binding PrevBeamCommand}"/>
-            <Button  Content="-&gt;" VerticalAlignment="Top" Margin="298,-20,0,0" Command="{Binding NextBeamCommand}"/>
-            <TextBlock Text="{Binding CurrentBeamId}"></TextBlock>
-            <CheckBox Margin="5" Command="{Binding PreviewDRCommand}" IsChecked="{Binding PreviewDR}">Doserate Preview</CheckBox>
-            <CheckBox Margin="5" Command="{Binding PreviewGSCommand}" IsChecked="{Binding PreviewGS}">Gantry Speed Preview</CheckBox>
-            <CheckBox Margin="5" Command="{Binding PreviewdMUCommand}" IsChecked="{Binding PreviewdMU}">Delta MU Preview</CheckBox>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
 
-            <CheckBox Margin="5" Command="{Binding PlotCurrentDRCommand}" IsChecked="{Binding CurrentDR}">Current Doserate</CheckBox>
-            <CheckBox Margin="5" Command="{Binding PlotCurrentGSCommand}" IsChecked="{Binding CurrentGS}">Current Gantry Speed</CheckBox>
-            <CheckBox Margin="5" Command="{Binding PlotCurrentdMUCommand}" IsChecked="{Binding CurrentdMU}">Current Delta MU</CheckBox>
+                <CheckBox Grid.Column="0" Grid.Row="0" Margin="5" Command="{Binding PreviewDRCommand}" IsChecked="{Binding PreviewDR}">Doserate Preview</CheckBox>
+                <CheckBox Grid.Column="0" Grid.Row="1" Margin="5" Command="{Binding PreviewGSCommand}" IsChecked="{Binding PreviewGS}">Gantry Speed Preview</CheckBox>
+                <CheckBox Grid.Column="0" Grid.Row="2" Margin="5" Command="{Binding PreviewdMUCommand}" IsChecked="{Binding PreviewdMU}">Delta MU Preview</CheckBox>
+
+                <CheckBox Grid.Column="1" Grid.Row="0" Margin="5" Command="{Binding PlotCurrentDRCommand}" IsChecked="{Binding CurrentDR}">Current Doserate</CheckBox>
+                <CheckBox Grid.Column="1" Grid.Row="1" Margin="5" Command="{Binding PlotCurrentGSCommand}" IsChecked="{Binding CurrentGS}">Current Gantry Speed</CheckBox>
+                <CheckBox Grid.Column="1" Grid.Row="2" Margin="5" Command="{Binding PlotCurrentdMUCommand}" IsChecked="{Binding CurrentdMU}">Current Delta MU</CheckBox>
+            </Grid>
+
         </StackPanel>
 
 

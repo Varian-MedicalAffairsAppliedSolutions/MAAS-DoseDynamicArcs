@@ -28,10 +28,10 @@ namespace DoseRateEditor.ViewModels
         public DelegateCommand OpenPatientCommand { get; private set; } // 1) in dcmd
         public DelegateCommand ViewCourseCommand { get; private set; }
         public DelegateCommand EditDRCommand { get; private set; }
-        public DelegateCommand OnPlanSelectCommandd { get; private set; }
+        public DelegateCommand OnPlanSelectCommand { get; private set; }
         public DelegateCommand OnMethodSelectCommand { get; private set; }
-        public DelegateCommand PrevBeamCommand { get; private set; }
-        public DelegateCommand NextBeamCommand { get; private set; }
+        
+        public DelegateCommand OnBeamSelectCommand { get; private set; }
         public DelegateCommand PlotCurrentDRCommand { get; private set; }
         public DelegateCommand PlotCurrentGSCommand { get; private set; }
         public DelegateCommand PreviewGSCommand { get; private set; }
@@ -42,6 +42,7 @@ namespace DoseRateEditor.ViewModels
         public IViewCommand<OxyMouseWheelEventArgs> TransScrollCommand { get; private set; } 
         public ObservableCollection<CourseModel> Courses { get; private set; }
 	    public ObservableCollection<PlanningItem> Plans { get; private set; }
+        public ObservableCollection<Beam> Beams { get; private set; }
         public ObservableCollection<Nullable<DRMethod>> DRMethods { get; private set; }
 
 
@@ -113,16 +114,8 @@ namespace DoseRateEditor.ViewModels
             set 
             { 
                 SetProperty(ref _BeamIdx, value);
-                PrevBeamCommand.RaiseCanExecuteChanged();
-                NextBeamCommand.RaiseCanExecuteChanged();
             }
 
-        }
-
-        private string _CurrentBeamId;
-        public string CurrentBeamId { 
-            get => _CurrentBeamId; 
-            set => SetProperty(ref _CurrentBeamId, value);
         }
 
         private PlotModel _TransPlot;
@@ -179,8 +172,6 @@ namespace DoseRateEditor.ViewModels
             set { 
                 SetProperty(ref _SelectedPlan, value); 
                 EditDRCommand.RaiseCanExecuteChanged();
-                PrevBeamCommand.RaiseCanExecuteChanged();
-                NextBeamCommand.RaiseCanExecuteChanged();
                 PreviewDRCommand.RaiseCanExecuteChanged();
                 PlotCurrentDRCommand.RaiseCanExecuteChanged();
                 PreviewGSCommand.RaiseCanExecuteChanged();
@@ -189,6 +180,15 @@ namespace DoseRateEditor.ViewModels
                 PlotCurrentdMUCommand.RaiseCanExecuteChanged();
             }
         }
+
+        private Beam _SelectedBeam;
+
+        public Beam SelectedBeam
+        {
+            get { return _SelectedBeam; }
+            set { SetProperty(ref _SelectedBeam, value); }
+        }
+
 
 
         private PlotModel _DRPlot;
@@ -270,10 +270,8 @@ namespace DoseRateEditor.ViewModels
             OpenPatientCommand = new DelegateCommand(OnOpenPatient, CanOpenPatient);
             ViewCourseCommand = new DelegateCommand(OnSelectCourse, CanSelectCourse);
             EditDRCommand = new DelegateCommand(OnEditDR, CanEditDR);
-            OnPlanSelectCommandd = new DelegateCommand(OnPlanSelect, CanPlanSelect);
+            OnPlanSelectCommand = new DelegateCommand(OnPlanSelect, CanPlanSelect);
             OnMethodSelectCommand = new DelegateCommand(OnMethodSelect, CanMethodSelect);
-            NextBeamCommand = new DelegateCommand(OnNextBeam, CanNextBeam);
-            PrevBeamCommand = new DelegateCommand(OnPrevBeam, CanPrevBeam);
             TransScrollCommand = new DelegatePlotCommand<OxyMouseWheelEventArgs>(OnScroll);
             PlotCurrentDRCommand = new DelegateCommand(OnCurrentDR, CanCurrentDR);
             PreviewDRCommand = new DelegateCommand(OnPreviewDR, CanPreviewDR);
@@ -285,12 +283,13 @@ namespace DoseRateEditor.ViewModels
 
             Courses = new ObservableCollection<CourseModel>();
             Plans = new ObservableCollection<PlanningItem>();
+            Beams = new ObservableCollection<Beam>();
 
             // DR PLOT
             DRPlot = new PlotModel { Title = "Doserate and Gantry Speed"};
 
             // Cosmo view 1
-            View1 = new CosmoPlot("ArcTest", "DoseRateEditor.Resources.cosmo1.1.PNG");
+            View1 = new CosmoPlot("", "DoseRateEditor.Resources.cosmo1.1.PNG");
             //View1.DrawRects(new List<double> { 1, 2, 3, 4, 5, 6, 7, 8 }, 4, 4);
             
 
@@ -366,8 +365,6 @@ namespace DoseRateEditor.ViewModels
                 LineStyle = LineStyle.Dot,
                 StrokeThickness = 4 
             };
-
-
 
 
             // TRANS PLOT
@@ -544,17 +541,6 @@ namespace DoseRateEditor.ViewModels
         }
 
        
-            /*private double[][,] BuildCTMatrix()
-        {
-            var image = SelectedPlan.StructureSet.Image;
-            //var mtx = new double[image.XSize, image.YSize, image.ZSize];
-            var mtx = new List<double[,]>();
-            for(int sl = 0; sl < image.ZSize; sl++)
-            {
-                mtx.Add(GetCTData(sl)); 
-            }
-            return mtx.ToArray();
-        }*/
 
         private HeatMapSeries CreateHeatMap(int slice)
         {
@@ -583,75 +569,12 @@ namespace DoseRateEditor.ViewModels
 
         }
 
-        //private double[,] ConvertToCTMatrix(int[,] ints)
-        //{
-            //var ct = SelectedPlan.StructureSet.Image.Series.Images;
-            //var ctMatrix = new double[ct.First().XSize, ct.First().YSize];
-            //for (int i = 0; i < ct.First().XSize; i++)
-            //    for (int j = 0; j < ct.First().YSize; j++)
-            //        ctMatrix[i, j] = (double)ct.First().VoxelToDisplayValue(ints[i, j]);
-            //return ctMatrix;
-         
-        //}
-
-        private void OnNextBeam()
-        {
-            BeamIdx++;
-
-            // Clear Inital DR plot
-            DR0_series.Points.Clear();
-            CurrentBeamId = DRCalc.InitialDRs.Keys.ToList()[BeamIdx];
-            DR0_series.Points.AddRange(DRCalc.InitialDRs[CurrentBeamId]);
-            
-            // If we have a method selected, plot the final dr too
-            if (SelectedMethod.HasValue)
-            {
-                DRf_series.Points.Clear();
-                DRf_series.Points.AddRange(DRCalc.FinalDRs[CurrentBeamId]);
-            }
-        }
-
-        private bool CanNextBeam()
-        {
-            if (SelectedPlan == null)
-            {
-                return false;
-            }
-
-            if (DRCalc == null)
-            {
-                return false;
-            }
-
-            return BeamIdx + 1 < DRCalc.numbeams;
-        }
-
-        private void OnPrevBeam()
-        {
-            // Move beam idx      
-            BeamIdx--;
-
-            DR0_series.Points.Clear();
-            CurrentBeamId = DRCalc.InitialDRs.Keys.ToList()[BeamIdx];
-
-            // Clear Inital DR plot
-            DR0_series.Points.Clear();
-            CurrentBeamId = DRCalc.InitialDRs.Keys.ToList()[BeamIdx];
-            DR0_series.Points.AddRange(DRCalc.InitialDRs[CurrentBeamId]);
-
-            // If we have a method selected, plot the final dr too
-            if (SelectedMethod.HasValue)
-            {
-                DRf_series.Points.Clear();
-                DRf_series.Points.AddRange(DRCalc.FinalDRs[CurrentBeamId]);
-            }
-        }
 
         private void OnCurrentdMU() {
             dMU0_series.Points.Clear();
             if (CurrentdMU)
             {
-                var dMU = DRCalc.InitialdMU[CurrentBeamId];
+                var dMU = DRCalc.InitialdMU[SelectedBeam.Id];
                 dMU0_series.Points.AddRange(dMU);
                 View1.DrawRects(dMU.Select(x => x.Y).ToList(), 5, 5);
             }
@@ -664,15 +587,6 @@ namespace DoseRateEditor.ViewModels
 
         private bool CanPreviewdMU() { return false; }
 
-        private bool CanPrevBeam()
-        {
-            if (SelectedPlan == null)
-            {
-                return false;
-            }
-            return BeamIdx > 0;
-        }
-
 
         private void OnMethodSelect()
         {
@@ -683,7 +597,7 @@ namespace DoseRateEditor.ViewModels
             // Calculate final dr and gs
             DRCalc.CalcFinalDR(SelectedPlan, SelectedMethod.Value);
 
-            CurrentBeamId = DRCalc.FinalDRs.Keys.ToList()[BeamIdx];
+            SelectedBeam.Id = DRCalc.FinalDRs.Keys.ToList()[BeamIdx];
 
             DRPlot.InvalidatePlot(true);
 
@@ -699,7 +613,7 @@ namespace DoseRateEditor.ViewModels
         {
             if (CurrentGS) // If checkbox is checked
             {
-                GS0_series.Points.AddRange(DRCalc.InitialGSs[CurrentBeamId]);
+                GS0_series.Points.AddRange(DRCalc.InitialGSs[SelectedBeam.Id]);
             }
             else
             {
@@ -726,7 +640,7 @@ namespace DoseRateEditor.ViewModels
                 }
 
                 // Plot final DR
-                DRf_series.Points.AddRange(DRCalc.FinalDRs[CurrentBeamId]);
+                DRf_series.Points.AddRange(DRCalc.FinalDRs[SelectedBeam.Id]);
             }
             else
             {
@@ -754,7 +668,7 @@ namespace DoseRateEditor.ViewModels
                         DRCalc.CalcFinalDR(SelectedPlan, SelectedMethod.Value);
                     }
                 }
-                GSf_series.Points.AddRange(DRCalc.FinalGSs[CurrentBeamId]);
+                GSf_series.Points.AddRange(DRCalc.FinalGSs[SelectedBeam.Id]);
             }
             else
             {
@@ -773,7 +687,7 @@ namespace DoseRateEditor.ViewModels
         {
             if (CurrentDR) // If checkbox is checked
             {
-                DR0_series.Points.AddRange(DRCalc.InitialDRs[CurrentBeamId]);
+                DR0_series.Points.AddRange(DRCalc.InitialDRs[SelectedBeam.Id]);
             }
             else
             {
@@ -789,40 +703,22 @@ namespace DoseRateEditor.ViewModels
 
         private void OnPlanSelect()
         {
-            // Set beam index to first beam
-            BeamIdx = 0; 
 
             // Create a DR calculator for selected plan
             DRCalc = new DRCalculator(SelectedPlan);
 
             // Clear the previous initial and final dr/gs plots
-
             DR0_series.Points.Clear();
             DRf_series.Points.Clear();
             GSf_series.Points.Clear();
-            
-            CurrentBeamId = DRCalc.InitialDRs.Keys.ToList()[BeamIdx];
 
-            //DR0_series.Points.AddRange(DRCalc.InitialDRs[CurrentBeamId]);
-            //DRPlot.InvalidatePlot(true);
+            // Clear prev list of beams
+            Beams.Clear();
+            foreach(var bm in SelectedPlan.Beams) { Beams.Add(bm); }
 
             // Reset transaxial plot
             SelectedSlice = 0;
             UpdateSeries(TransPlot);
-
-            /* REPLACE WITH DELEGATE FUNCTION CALLS FOR PLOTTING BASED ON CHECK BOX status
-            // IF selected method is not null calc new DR
-            if (SelectedMethod != null)
-            {
-                DRCalc.CalcFinalDR(SelectedPlan, SelectedMethod.Value);
-                DRf_series.Points.AddRange(DRCalc.FinalDRs[CurrentBeamId]);
-                DRPlot.InvalidatePlot(true);
-            }
-            
-            // Update transplot
-            SelectedSlice = 0;
-            UpdateSeries(TransPlot);
-            */
 
         }
 
@@ -850,6 +746,7 @@ namespace DoseRateEditor.ViewModels
             // List all courses
             Courses.Clear();
             Plans.Clear();
+            Beams.Clear();
             SelectedCourse = null;
             SelectedPlan = null;
             SelectedMethod = null;
@@ -858,6 +755,7 @@ namespace DoseRateEditor.ViewModels
             {
                 Courses.Add(new CourseModel(crs));
             }
+
         }
 
         private bool CanOpenPatient()
@@ -875,6 +773,9 @@ namespace DoseRateEditor.ViewModels
             {
                 Plans.Add(p);
             }
+
+            Beams.Clear();
+
 
         }
 

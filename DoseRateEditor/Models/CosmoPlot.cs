@@ -72,16 +72,19 @@ namespace DoseRateEditor.Models
 
         }
 
-        public void UpdateRects() // Call whenever Rects set is called
+        public void ClearRects() // Call whenever Rects set is called
         {
-            // Clear annotations
-            Annotations.Clear();
-
-            // Draw all rectangle annotations
-            foreach(var annotation in Rects)
+            // Clear annotations except image
+            foreach (var ann in Annotations)
             {
-                Annotations.Add(annotation);
+                if (ann is ImageAnnotation)
+                {
+                    continue;
+                }
+                Annotations.Remove(ann);
             }
+
+            Annotations.Clear();
 
             // Refresh
             InvalidatePlot(true);
