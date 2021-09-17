@@ -3,9 +3,10 @@
 # Project Name
 Project Description
 
-### Column Name
-- [ ] Task title ~3d #type @name yyyy-mm-dd  
-  - [ ] Sub-task or description  
+### TODO
+- [ ] Add launcher script to pass patient to script
+- [ ] Get 3 views of cosimo with dr plot and sin/cos scaleing per angle
+- [ ] Finalize field selection pane
+- [ ] Debug Anthony's wierd patiend plot  
 
-### Completed Column ✓
-- [x] Completed task title  
+
