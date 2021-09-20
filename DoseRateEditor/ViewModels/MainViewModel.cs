@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection;
-using System.Windows;
-using System.Windows.Input;
 using DoseRateEditor.Models;
 using OxyPlot;
-using OxyPlot.Annotations;
 using OxyPlot.Axes;
 using OxyPlot.Series;
 using Prism.Commands;
@@ -23,7 +18,7 @@ namespace DoseRateEditor.ViewModels
 {
     public class MainViewModel: Prism.Mvvm.BindableBase
     {
-        private VMS.TPS.Common.Model.API.Application _app;
+        private Application _app;
 
         public DelegateCommand OpenPatientCommand { get; private set; } // 1) in dcmd
         public DelegateCommand ViewCourseCommand { get; private set; }
@@ -105,18 +100,6 @@ namespace DoseRateEditor.ViewModels
             set { SetProperty(ref _SelectedSlice, value); }
         }
 
-        /*
-        private int _BeamIdx;
-
-        public int BeamIdx
-        {
-            get { return _BeamIdx; }
-            set 
-            { 
-                SetProperty(ref _BeamIdx, value);
-            }
-
-        }*/
 
         private PlotModel _TransPlot;
 
@@ -204,9 +187,9 @@ namespace DoseRateEditor.ViewModels
             set { SetProperty(ref _DRPlot, value); }
         }
 
-        private CosmoPlot _View1;
+        private CosmoTrans _View1;
 
-        public CosmoPlot View1
+        public CosmoTrans View1
         {
             get { return _View1; }
             set { SetProperty(ref _View1, value); }
@@ -266,7 +249,7 @@ namespace DoseRateEditor.ViewModels
 
 
 
-        public MainViewModel(VMS.TPS.Common.Model.API.Application app)
+        public MainViewModel(Application app)
         {
             _app = app;
 
@@ -294,10 +277,8 @@ namespace DoseRateEditor.ViewModels
             DRPlot = new PlotModel { Title = "Doserate and Gantry Speed"};
 
             // Cosmo view 1
-            View1 = new CosmoPlot("", "DoseRateEditor.Resources.cosmo1.1.PNG");
-            //View1.DrawRects(new List<double> { 1, 2, 3, 4, 5, 6, 7, 8 }, 4, 4);
+            View1 = new CosmoTrans();
             
-
             // Create the different axes with respect/ive keys
             var DRAxis = new LinearAxis
             {
@@ -395,101 +376,7 @@ namespace DoseRateEditor.ViewModels
         }
 
 
-        private PlotModel BuildCosmoPlot()
-        {
-            var plt = new PlotModel { Title = "View1" };
-
-            // Add image
-            OxyImage image;
-            var assembly = Assembly.GetExecutingAssembly();
-            using (var stream = assembly.GetManifestResourceStream("DoseRateEditor.Resources.cosmo1.1.PNG"))
-            {
-                image = new OxyImage(stream);
-            }
-
-            // Centered in plot area, filling width
-            // From https://oxyplot.userecho.com/en/communities/1/topics/473-inserting-a-bitmap-into-axes
-
-            plt.Annotations.Add(new ImageAnnotation
-            {
-                ImageSource = image,
-                Opacity = 1,
-                Interpolate = false,
-                X = new PlotLength(0.5, PlotLengthUnit.RelativeToPlotArea),
-                Y = new PlotLength(0.5, PlotLengthUnit.RelativeToPlotArea),
-                Width = new PlotLength(1, PlotLengthUnit.RelativeToPlotArea),
-                //Height = new PlotLength(1, PlotLengthUnit.RelativeToPlotArea), // CR added
-                HorizontalAlignment = OxyPlot.HorizontalAlignment.Center,
-                VerticalAlignment = OxyPlot.VerticalAlignment.Middle,
-                Layer = AnnotationLayer.BelowAxes
-            });
-
-            // Add arc line
-            var arcAxis = new AngleAxis
-            {
-                Minimum = 0,
-                Maximum = 100,
-                TickStyle = TickStyle.None,
-                AxislineColor = OxyColors.Red,
-                ExtraGridlineColor = OxyColors.Red,
-                MajorGridlineColor = OxyColors.Red,
-                MinorGridlineColor = OxyColors.Red,
-                MinorTicklineColor = OxyColors.Red,
-                TicklineColor = OxyColors.Red,
-                AxislineThickness = 5,
-                ExtraGridlineThickness = 5,
-                MajorGridlineThickness = 5,
-                MinorGridlineThickness = 5,
-                Layer = AxisLayer.AboveSeries,
-                EndAngle = 180,
-                StartAngle = 0,
-            };
-            plt.Axes.Add(arcAxis);
-
-            // Add mag axis (this appears to be required if we have angle axis)
-            var magAxis = new MagnitudeAxis
-            {
-                Minimum = 0,
-                Maximum = 100,
-                TickStyle = TickStyle.None,
-                AxislineColor = OxyColors.Red,
-                ExtraGridlineColor = OxyColors.Red,
-                MajorGridlineColor = OxyColors.Red,
-                MinorGridlineColor = OxyColors.Red,
-                MinorTicklineColor = OxyColors.Red,
-                TicklineColor = OxyColors.Red,
-                AxislineThickness = 5,
-                ExtraGridlineThickness = 5,
-                MajorGridlineThickness = 5,
-                MinorGridlineThickness = 5,
-                Layer = AxisLayer.AboveSeries,
-                MajorStep = 500,
-             
-            };
-            
-
-            plt.Axes.Add(magAxis);
-
-            //FunctionSeries f = new FunctionSeries((x) => 500, 0, 360, 0.1);
-            //plt.Series.Add(f);
-            // See: https://stackoverflow.com/questions/59501561/how-to-draw-a-circle-within-oxyplot-angleaxis-and-magnitudeaxis
-
-            return plt;
-        }
-
-        private List<PolygonAnnotation> GenerateRects(List<double> dMU)
-        {
-            // Generate a list of polygon annotations given a dMU list
-            // Outline as follows:
-            // 1. How many dMU values (same as number of cps)
-            // 2. Start and stop angle (in view one I believe this is the couch??? ask about that)
-            // 3. Define max rect height to be the max dMU value
-            // 4. For each dMU generate a rect with width = ? and height = (dMU current / dMU max) * Max heigth value
-            // 5. Rotate appropriatly using some kind of transform (what angle tho???)
-            // 6. Translate to be tangential to the pre drawn arc, we wont always need this to be drawn, but nice to have now.
-
-            return new List<PolygonAnnotation>();
-        }
+       
 
         private void OnScroll(IPlotView arg1, IController arg2, OxyMouseWheelEventArgs arg3)
         {
@@ -577,12 +464,12 @@ namespace DoseRateEditor.ViewModels
 
         private void OnCurrentdMU() {
             dMU0_series.Points.Clear();
-            View1.ClearRects();
+            View1.ClearPlot();
             if (CurrentdMU)
             {
                 var dMU = DRCalc.InitialdMU[SelectedBeam.Id];
                 dMU0_series.Points.AddRange(dMU);
-                View1.DrawRects(dMU.Select(x => x.Y).ToList(), 5, 5);
+                View1.DrawRects(dMU.Select(x => x.Y).ToList(), 5, 5, 5);
             }
             DRPlot.InvalidatePlot(true);
         }

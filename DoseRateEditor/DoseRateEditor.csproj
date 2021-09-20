@@ -118,7 +118,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Models\CosmoCoro.cs" />
     <Compile Include="Models\CosmoPlot.cs" />
+    <Compile Include="Models\CosmoSag.cs" />
+    <Compile Include="Models\CosmoTrans.cs" />
     <Compile Include="Models\CourseModel.cs" />
     <Compile Include="Models\DRCalculator.cs" />
     <Compile Include="Startup\Bootstrapper.cs" />
@@ -161,7 +164,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\cosmo1.1.PNG" />
+    <EmbeddedResource Include="Resources\cosmo_coro.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\cosmo_trans.PNG" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
