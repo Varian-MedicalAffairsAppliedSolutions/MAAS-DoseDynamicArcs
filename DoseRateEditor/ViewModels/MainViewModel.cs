@@ -105,7 +105,7 @@ namespace DoseRateEditor.ViewModels
             set { SetProperty(ref _SelectedSlice, value); }
         }
 
-
+        /*
         private int _BeamIdx;
 
         public int BeamIdx
@@ -116,7 +116,7 @@ namespace DoseRateEditor.ViewModels
                 SetProperty(ref _BeamIdx, value);
             }
 
-        }
+        }*/
 
         private PlotModel _TransPlot;
 
@@ -186,7 +186,12 @@ namespace DoseRateEditor.ViewModels
         public Beam SelectedBeam
         {
             get { return _SelectedBeam; }
-            set { SetProperty(ref _SelectedBeam, value); }
+            set { 
+                SetProperty(ref _SelectedBeam, value);
+                PlotCurrentdMUCommand.RaiseCanExecuteChanged();
+                PlotCurrentDRCommand.RaiseCanExecuteChanged();
+                PlotCurrentGSCommand.RaiseCanExecuteChanged();
+            }
         }
 
 
@@ -572,6 +577,7 @@ namespace DoseRateEditor.ViewModels
 
         private void OnCurrentdMU() {
             dMU0_series.Points.Clear();
+            View1.ClearRects();
             if (CurrentdMU)
             {
                 var dMU = DRCalc.InitialdMU[SelectedBeam.Id];
@@ -597,7 +603,7 @@ namespace DoseRateEditor.ViewModels
             // Calculate final dr and gs
             DRCalc.CalcFinalDR(SelectedPlan, SelectedMethod.Value);
 
-            SelectedBeam.Id = DRCalc.FinalDRs.Keys.ToList()[BeamIdx];
+            //SelectedBeam.Id = DRCalc.FinalDRs.Keys.ToList()[BeamIdx];
 
             DRPlot.InvalidatePlot(true);
 
@@ -696,7 +702,7 @@ namespace DoseRateEditor.ViewModels
             DRPlot.InvalidatePlot(true);
         }
 
-        private bool CanCurrentDR() { return SelectedPlan != null; }
+        private bool CanCurrentDR() { return SelectedPlan != null && SelectedBeam != null; }
 
         
 

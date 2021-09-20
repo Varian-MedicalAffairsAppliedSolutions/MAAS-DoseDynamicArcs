@@ -118,7 +118,7 @@
         <ScrollViewer Grid.Row="4">
             <StackPanel>
                 <TextBlock Margin="5" HorizontalAlignment="Center">Fields</TextBlock>
-                <ListBox Margin="8" ItemsSource="{Binding Beams}" SelectedItem="{Binding CurrentBeam, Mode=TwoWay}">
+                <ListBox Margin="8" ItemsSource="{Binding Beams}" SelectedItem="{Binding SelectedBeam, Mode=TwoWay}">
                     <ie:Interaction.Triggers>
                         <ie:EventTrigger EventName="SelectionChanged">
                             <ie:InvokeCommandAction Command="{Binding OnBeamSelectCommand}"/>
@@ -196,7 +196,15 @@
         </StackPanel>
 
         <StackPanel Grid.Row="0" Grid.Column="3" Grid.RowSpan="4">
-            <oxy:PlotView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding View1}" Height="360" Width="360"></oxy:PlotView>
+            <oxy:PlotView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding View1}" Height="300" Width="300"></oxy:PlotView>
+        </StackPanel>
+
+        <StackPanel Grid.Row="4" Grid.Column="3" Grid.RowSpan="2">
+            <oxy:PlotView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding}" Height="300" Width="300"></oxy:PlotView>
+        </StackPanel>
+
+        <StackPanel Grid.Row="4" Grid.Column="2" Grid.RowSpan="2">
+            <oxy:PlotView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding}" Height="300" Width="300"></oxy:PlotView>
         </StackPanel>
 
 

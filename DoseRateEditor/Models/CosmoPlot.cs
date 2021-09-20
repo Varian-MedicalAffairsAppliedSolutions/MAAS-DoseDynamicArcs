@@ -5,8 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace DoseRateEditor.Models
 {
@@ -24,6 +23,7 @@ namespace DoseRateEditor.Models
             Title = title;
 
             // Add the axis for plotting
+            // X axis
             Axes.Add(new LinearAxis()
             {
                 MajorGridlineStyle = LineStyle.Solid,
@@ -35,6 +35,7 @@ namespace DoseRateEditor.Models
 
             }) ;
 
+            // Y axis
             Axes.Add(new LinearAxis()
             {
                 MajorGridlineStyle = LineStyle.Solid,
@@ -45,11 +46,9 @@ namespace DoseRateEditor.Models
                 IsAxisVisible=false
             });
             
-           
-
             // Set the image
             var assembly = Assembly.GetExecutingAssembly();
-            using (var stream = assembly.GetManifestResourceStream(img_name)) ///"DoseRateEditor.Resources.cosmo1.1.PNG"
+            using (var stream = assembly.GetManifestResourceStream(img_name)) 
             {
                 image = new OxyImage(stream);
             }
@@ -62,7 +61,6 @@ namespace DoseRateEditor.Models
                 X = new PlotLength(0.5, PlotLengthUnit.RelativeToPlotArea),
                 Y = new PlotLength(0.5, PlotLengthUnit.RelativeToPlotArea),
                 Width = new PlotLength(1, PlotLengthUnit.RelativeToPlotArea),
-                //Height = new PlotLength(1, PlotLengthUnit.RelativeToPlotArea), // CR added
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Middle,
                 Layer = AnnotationLayer.BelowAxes
@@ -75,28 +73,20 @@ namespace DoseRateEditor.Models
         public void ClearRects() // Call whenever Rects set is called
         {
             // Clear annotations except image
-            foreach (var ann in Annotations)
-            {
-                if (ann is ImageAnnotation)
-                {
-                    continue;
-                }
-                Annotations.Remove(ann);
-            }
-
-            Annotations.Clear();
+            var anns = Annotations.OfType<PolygonAnnotation>().ToList();
+            foreach(var ann in anns) { Annotations.Remove(ann); }
 
             // Refresh
             InvalidatePlot(true);
         }
 
-        public Tuple<List<DataPoint>, List<double>> BuildArc(int steps, int R)
+        public Tuple<List<DataPoint>, List<double>> BuildArc(int steps, int R, double start_angle_deg, double stop_angle_deg)
         {
             var points = new List<DataPoint>();
             var slopes = new List<double>();
 
-            var t0 = -1 * Math.PI / 2;
-            var t1 = Math.PI / 2;
+            var t0 = (Math.PI * start_angle_deg/180);
+            var t1 = (Math.PI * stop_angle_deg / 180);
 
             var step = Math.Abs(t1 - t0) / steps;
 
@@ -138,7 +128,7 @@ namespace DoseRateEditor.Models
             // Generate a list of polygon annotations given a double list
             
             // Build list of DataPoint[] in this loop
-            var arc = BuildArc(values.Count, 45);
+            var arc = BuildArc(values.Count, 45, -90, 90);
             var maxHeight = 12;
             var maxVal = values.Max();
 
