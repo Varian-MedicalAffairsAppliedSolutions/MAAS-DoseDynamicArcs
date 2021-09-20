@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace DoseRateEditor.Models
 {
-    class CosmoSag
+    public class CosmoSag : CosmoPlot
     {
+        public CosmoSag() : base("Sagital", "DoseRateEditor.Resources.cosmo_trans.PNG")
+        {
+
+        }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using OxyPlot;
 using OxyPlot.Annotations;
 using OxyPlot.Axes;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -14,9 +12,6 @@ namespace DoseRateEditor.Models
         // The background phantom image
         public OxyImage image { get; private set; }
 
-        // Hold current rect annotations
-        public List<PolygonAnnotation> Rects { get; private set; }
-
         public CosmoPlot(string title, string img_name) : base()
         {
             // Set plotmodel title
@@ -24,27 +19,31 @@ namespace DoseRateEditor.Models
 
             // Add the axis for plotting
             // X axis
-            Axes.Add(new LinearAxis()
+            var xAxis = new LinearAxis()
             {
                 MajorGridlineStyle = LineStyle.Solid,
                 MajorGridlineThickness = 1,
                 Minimum = -50,
                 Maximum = 50,
                 Position = AxisPosition.Bottom,
-                IsAxisVisible = false
+                IsAxisVisible = false,
+                Tag = "XAX"
 
-            }) ;
+            };
+            Axes.Add(xAxis);
 
             // Y axis
-            Axes.Add(new LinearAxis()
+            var yAxes  = new LinearAxis()
             {
                 MajorGridlineStyle = LineStyle.Solid,
                 MajorGridlineThickness = 1,
                 Minimum = -50,
                 Maximum = 50,
                 Position = AxisPosition.Left,
-                IsAxisVisible=false
-            });
+                IsAxisVisible = false,
+                Tag = "YAX"
+            };
+            Axes.Add(yAxes);
             
             // Set the image
             var assembly = Assembly.GetExecutingAssembly();

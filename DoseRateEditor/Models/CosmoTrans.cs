@@ -19,7 +19,7 @@ namespace DoseRateEditor.Models
             var points = new List<DataPoint>();
             var slopes = new List<double>();
 
-            var t0 = (Math.PI * start_angle_deg / 180);
+            var t0 = Math.PI * start_angle_deg / 180;
             var t1 = Math.PI * stop_angle_deg / 180;
 
             var step = Math.Abs(t1 - t0) / steps;

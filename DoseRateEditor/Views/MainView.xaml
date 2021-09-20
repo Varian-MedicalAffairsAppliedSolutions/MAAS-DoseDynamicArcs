@@ -200,7 +200,7 @@
         </StackPanel>
 
         <StackPanel Grid.Row="4" Grid.Column="3" Grid.RowSpan="2">
-            <oxy:PlotView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding}" Height="300" Width="300"></oxy:PlotView>
+            <oxy:PlotView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding View2}" Height="300" Width="300"></oxy:PlotView>
         </StackPanel>
 
         <StackPanel Grid.Row="4" Grid.Column="2" Grid.RowSpan="2">

@@ -187,12 +187,29 @@ namespace DoseRateEditor.ViewModels
             set { SetProperty(ref _DRPlot, value); }
         }
 
+        // Cosmo views
         private CosmoTrans _View1;
 
         public CosmoTrans View1
         {
             get { return _View1; }
             set { SetProperty(ref _View1, value); }
+        }
+
+        private CosmoCoro _View2;
+
+        public CosmoCoro View2
+        {
+            get { return _View2; }
+            set { SetProperty(ref _View2, value); }
+        }
+
+        private CosmoSag _View3;
+
+        public CosmoSag View3
+        {
+            get { return _View3; }
+            set { SetProperty(ref _View3, value); }
         }
 
 
@@ -276,8 +293,9 @@ namespace DoseRateEditor.ViewModels
             // DR PLOT
             DRPlot = new PlotModel { Title = "Doserate and Gantry Speed"};
 
-            // Cosmo view 1
+            // Instantiate cosmo views
             View1 = new CosmoTrans();
+            View2 = new CosmoCoro();
             
             // Create the different axes with respect/ive keys
             var DRAxis = new LinearAxis
@@ -463,13 +481,21 @@ namespace DoseRateEditor.ViewModels
 
 
         private void OnCurrentdMU() {
+
+            // Clear line plot of dMU
             dMU0_series.Points.Clear();
+
+            // Clear cosmo plots
             View1.ClearPlot();
+            View2.ClearPlot();
+
+
             if (CurrentdMU)
             {
                 var dMU = DRCalc.InitialdMU[SelectedBeam.Id];
                 dMU0_series.Points.AddRange(dMU);
                 View1.DrawRects(dMU.Select(x => x.Y).ToList(), 5, 5, 5);
+                View2.DrawAngle(Math.PI / 2, 45);
             }
             DRPlot.InvalidatePlot(true);
         }

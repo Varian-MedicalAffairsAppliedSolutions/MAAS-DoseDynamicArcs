@@ -1,4 +1,5 @@
-﻿using OxyPlot.Annotations;
+﻿using OxyPlot;
+using OxyPlot.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,10 +21,16 @@ namespace DoseRateEditor.Models
             var line = new LineAnnotation
             {
                 Type = LineAnnotationType.LinearEquation,
-                Slope = Math.Tan(angle)
+                Slope = 1,
+                Intercept = 0,
+                Color = OxyColors.Red,
+                LineStyle = LineStyle.Dash,
+                StrokeThickness = 5,
             };
 
+            // Add line and refresh
             Annotations.Add(line);
+            InvalidatePlot(true);
         }
     }
 }
