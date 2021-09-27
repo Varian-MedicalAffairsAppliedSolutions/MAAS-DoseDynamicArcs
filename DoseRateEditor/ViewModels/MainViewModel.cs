@@ -495,7 +495,7 @@ namespace DoseRateEditor.ViewModels
                 var dMU = DRCalc.InitialdMU[SelectedBeam.Id];
                 dMU0_series.Points.AddRange(dMU);
                 View1.DrawRects(dMU.Select(x => x.Y).ToList(), 5, 5, 5);
-                View2.DrawAngle(Math.PI / 2, 45);
+                View2.DrawAngle(45);
             }
             DRPlot.InvalidatePlot(true);
         }
