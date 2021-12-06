@@ -170,5 +170,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\cosmo_trans.PNG" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\cosmo_sag.PNG" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

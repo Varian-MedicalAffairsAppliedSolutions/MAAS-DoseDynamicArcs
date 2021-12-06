@@ -16,6 +16,7 @@ namespace DoseRateEditor.Models
         {
             // Set plotmodel title
             Title = title;
+            PlotAreaBorderColor = OxyColors.Transparent;
 
             // Add the axis for plotting
             // X axis
@@ -59,7 +60,7 @@ namespace DoseRateEditor.Models
                 Interpolate = false,
                 X = new PlotLength(0.5, PlotLengthUnit.RelativeToPlotArea),
                 Y = new PlotLength(0.5, PlotLengthUnit.RelativeToPlotArea),
-                Width = new PlotLength(1, PlotLengthUnit.RelativeToPlotArea),
+                Width = new PlotLength(0.9, PlotLengthUnit.RelativeToPlotArea),
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Middle,
                 Layer = AnnotationLayer.BelowAxes

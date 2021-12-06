@@ -298,6 +298,7 @@ namespace DoseRateEditor.ViewModels
             // Instantiate cosmo views
             View1 = new CosmoTrans();
             View2 = new CosmoCoro();
+            View3 = new CosmoSag();
             
             // Create the different axes with respect/ive keys
             var DRAxis = new LinearAxis

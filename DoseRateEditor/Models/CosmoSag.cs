@@ -8,7 +8,7 @@ namespace DoseRateEditor.Models
 {
     public class CosmoSag : CosmoPlot
     {
-        public CosmoSag() : base("Sagital", "DoseRateEditor.Resources.cosmo_trans.PNG")
+        public CosmoSag() : base("Sagital", "DoseRateEditor.Resources.cosmo_sag.PNG")
         {
 
         }
