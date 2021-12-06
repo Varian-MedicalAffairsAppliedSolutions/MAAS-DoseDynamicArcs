@@ -124,6 +124,7 @@
     <Compile Include="Models\CosmoTrans.cs" />
     <Compile Include="Models\CourseModel.cs" />
     <Compile Include="Models\DRCalculator.cs" />
+    <Compile Include="Models\Utils.cs" />
     <Compile Include="Startup\Bootstrapper.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\MainView.xaml.cs">

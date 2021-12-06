@@ -174,6 +174,7 @@ namespace DoseRateEditor.ViewModels
                 PlotCurrentdMUCommand.RaiseCanExecuteChanged();
                 PlotCurrentDRCommand.RaiseCanExecuteChanged();
                 PlotCurrentGSCommand.RaiseCanExecuteChanged();
+
             }
         }
 
@@ -284,6 +285,7 @@ namespace DoseRateEditor.ViewModels
             PlotCurrentGSCommand = new DelegateCommand(OnCurrentGS, CanCurrentGS);
             PreviewdMUCommand = new DelegateCommand(OnPreviewdMU, CanPreviewdMU);
             PlotCurrentdMUCommand = new DelegateCommand(OnCurrentdMU, CanCurrentdMU);
+            OnBeamSelectCommand = new DelegateCommand(OnBeamSelect, CanBeamSelect);
     
 
             Courses = new ObservableCollection<CourseModel>();
@@ -393,8 +395,19 @@ namespace DoseRateEditor.ViewModels
 
         }
 
+        private void OnBeamSelect()
+        {
+            // Clear all DR related plots (3 of them!)
+            GS0_series.Points.Clear();
+            DR0_series.Points.Clear();
+            dMU0_series.Points.Clear();
+            DRPlot.InvalidatePlot(true);
+        }
 
-       
+        private bool CanBeamSelect()
+        {
+            return true;
+        }
 
         private void OnScroll(IPlotView arg1, IController arg2, OxyMouseWheelEventArgs arg3)
         {
@@ -450,8 +463,6 @@ namespace DoseRateEditor.ViewModels
             plotModel.InvalidatePlot(true);
         }
 
-       
-
         private HeatMapSeries CreateHeatMap(int slice)
         {
             var data = GetCTData(slice);
@@ -494,8 +505,11 @@ namespace DoseRateEditor.ViewModels
             {
                 var dMU = DRCalc.InitialdMU[SelectedBeam.Id];
                 dMU0_series.Points.AddRange(dMU);
-                View1.DrawRects(dMU.Select(x => x.Y).ToList(), 5, 5, 5);
-                View2.DrawAngle(45);
+                //View1.DrawRects(dMU.Select(x => x.Y).ToList(), 5, 5, 5);
+
+                // Get table angle to feed to coronal view
+                //var tbl_angle = Utils.GetBeamAngles(_SelectedBeam).Item3[0];
+                //View2.DrawAngle(tbl_angle);
             }
             DRPlot.InvalidatePlot(true);
         }
@@ -545,6 +559,7 @@ namespace DoseRateEditor.ViewModels
         {
             return CanCurrentDR();
         }
+        
         private void OnPreviewDR()
         {
             if (PreviewDR) // See if check button is checked
@@ -616,9 +631,6 @@ namespace DoseRateEditor.ViewModels
         }
 
         private bool CanCurrentDR() { return SelectedPlan != null && SelectedBeam != null; }
-
-        
-
 
         private void OnPlanSelect()
         {

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using VMS.TPS.Common.Model.API;
 using VMS.TPS.Common.Model.Types;
+using static DoseRateEditor.Models.Utils;
 
 namespace DoseRateEditor.Models
 {
@@ -314,12 +315,12 @@ namespace DoseRateEditor.Models
                     throw new Exception($"Primary fluence mode {primary_fluence_mode} not one of the valid options");
                 }
 
-                var edits = bm.GetEditableParameters();
-                var cps = edits.ControlPoints.ToList();
+                var angles = Utils.GetBeamAngles(bm);
 
-                var gantry_angles = cps.Select(x => x.GantryAngle).ToList();
-                var col_angles = cps.Select(x => x.CollimatorAngle).ToList();
-                var couch_angles = cps.Select(x => x.PatientSupportAngle).ToList();
+                var gantry_angles = angles.Item1;
+                var col_angles = angles.Item2;
+                var couch_angles = angles.Item3;
+                var cps = angles.Item4;
 
                 var technique_id = "STATIC";
                 for (int i = 1; i < cps.Count(); i ++)
