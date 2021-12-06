@@ -402,6 +402,27 @@ namespace DoseRateEditor.ViewModels
             DR0_series.Points.Clear();
             dMU0_series.Points.Clear();
             DRPlot.InvalidatePlot(true);
+
+            // Check what is checked and Replot if needed
+            OnCurrentdMU();
+            OnCurrentDR();
+            OnCurrentGS();
+
+            // Cosmoplot stuff ...
+            // View1 = Trans, View2 = Coro
+            View1.ClearPlot();
+            View2.ClearPlot();
+
+            var dMU = DRCalc.InitialdMU[SelectedBeam.Id];
+            var angles = Utils.GetBeamAngles(_SelectedBeam);
+
+            //View1.DrawRects(dMU.Select(x => x.Y).ToList(), 5, 5, 5);
+            var smallangle = Math.Min(angles.Item1.First(), angles.Item1.Last());
+            var largeangle = Math.Max(angles.Item1.First(), angles.Item1.Last());
+
+            View1.DrawRects(dMU.Select(x => x.Y).ToList(), smallangle, largeangle, 0);
+            View2.DrawAngle(angles.Item3[0]);
+
         }
 
         private bool CanBeamSelect()
@@ -496,20 +517,12 @@ namespace DoseRateEditor.ViewModels
             // Clear line plot of dMU
             dMU0_series.Points.Clear();
 
-            // Clear cosmo plots
-            View1.ClearPlot();
-            View2.ClearPlot();
-
 
             if (CurrentdMU)
             {
                 var dMU = DRCalc.InitialdMU[SelectedBeam.Id];
                 dMU0_series.Points.AddRange(dMU);
-                //View1.DrawRects(dMU.Select(x => x.Y).ToList(), 5, 5, 5);
 
-                // Get table angle to feed to coronal view
-                //var tbl_angle = Utils.GetBeamAngles(_SelectedBeam).Item3[0];
-                //View2.DrawAngle(tbl_angle);
             }
             DRPlot.InvalidatePlot(true);
         }

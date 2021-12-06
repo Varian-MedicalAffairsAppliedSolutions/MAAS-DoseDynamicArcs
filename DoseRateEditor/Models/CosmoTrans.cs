@@ -3,7 +3,7 @@ using OxyPlot.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Windows;
 
 namespace DoseRateEditor.Models
 {
@@ -51,7 +51,9 @@ namespace DoseRateEditor.Models
             // Generate a list of polygon annotations given a double list
 
             // Build list of DataPoint[] in this loop
-            var arc = BuildArc(values.Count, 45, -70, 110);
+            //MessageBox.Show($"start and stop {startangle} - {stopangle} ");
+
+            var arc = BuildArc(values.Count, 45, -90, 90);
             var maxHeight = 12;
             var maxVal = values.Max();
 
