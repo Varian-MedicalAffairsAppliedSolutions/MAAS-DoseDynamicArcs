@@ -410,9 +410,10 @@ namespace DoseRateEditor.ViewModels
             OnCurrentGS();
 
             // Cosmoplot stuff ...
-            // View1 = Trans, View2 = Coro
+            // View1 = Trans, View2 = Coro, View3 = Sag
             View1.ClearPlot();
             View2.ClearPlot();
+            View3.ClearPlot();
 
             var dMU = DRCalc.InitialdMU[SelectedBeam.Id];
             var angles = Utils.GetBeamAngles(_SelectedBeam);
@@ -421,7 +422,7 @@ namespace DoseRateEditor.ViewModels
             var smallangle = Math.Min(angles.Item1.First(), angles.Item1.Last());
             var largeangle = Math.Max(angles.Item1.First(), angles.Item1.Last());
 
-            View1.DrawRects(dMU.Select(x => x.Y).ToList(), smallangle, largeangle, 0);
+            View3.DrawRects(dMU.Select(x => x.Y).ToList(), smallangle, largeangle, 0);
             View2.DrawAngle(angles.Item3[0]);
 
         }

@@ -31,7 +31,13 @@ namespace DoseRateEditor.Models
 
             // TODO - handle 0 case
             var dx = R * Math.Cos(angle * (Math.PI / 180));
-            var dy = R * Math.Sin(angle * (Math.PI / 180));
+            
+            if (angle < 90)
+            {
+                dx *= -1;
+            }
+
+            var dy = Math.Abs(R * Math.Sin(angle * (Math.PI / 180)));
 
             line.Points.Add(new DataPoint(0, 0));
             line.Points.Add(new DataPoint((int)dx, (int)dy));
