@@ -19,13 +19,11 @@ namespace DoseRateEditor.ViewModels
     public class MainViewModel: Prism.Mvvm.BindableBase
     {
         private Application _app;
-
         public DelegateCommand OpenPatientCommand { get; private set; } // 1) in dcmd
         public DelegateCommand ViewCourseCommand { get; private set; }
         public DelegateCommand EditDRCommand { get; private set; }
         public DelegateCommand OnPlanSelectCommand { get; private set; }
-        public DelegateCommand OnMethodSelectCommand { get; private set; }
-        
+        public DelegateCommand OnMethodSelectCommand { get; private set; }    
         public DelegateCommand OnBeamSelectCommand { get; private set; }
         public DelegateCommand PlotCurrentDRCommand { get; private set; }
         public DelegateCommand PlotCurrentGSCommand { get; private set; }
@@ -33,7 +31,6 @@ namespace DoseRateEditor.ViewModels
         public DelegateCommand PreviewDRCommand { get; private set; }
         public DelegateCommand PreviewdMUCommand { get; private set; }
         public DelegateCommand PlotCurrentdMUCommand { get; private set; }
-
         public IViewCommand<OxyMouseWheelEventArgs> TransScrollCommand { get; private set; } 
         public ObservableCollection<CourseModel> Courses { get; private set; }
 	    public ObservableCollection<PlanningItem> Plans { get; private set; }
@@ -422,8 +419,9 @@ namespace DoseRateEditor.ViewModels
             var smallangle = Math.Min(angles.Item1.First(), angles.Item1.Last());
             var largeangle = Math.Max(angles.Item1.First(), angles.Item1.Last());
 
-            View3.DrawRects(dMU.Select(x => x.Y).ToList(), smallangle, largeangle, 0);
+            View3.DrawRects(dMU.Select(x => x.Y).ToList(), smallangle, largeangle, angles.Item3[0]);
             View2.DrawAngle(angles.Item3[0]);
+            View1.DrawRects(dMU.Select(x => x.Y).ToList(), smallangle, largeangle, 0);
 
         }
 

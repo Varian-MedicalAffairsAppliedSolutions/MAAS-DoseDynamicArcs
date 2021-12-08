@@ -10,7 +10,7 @@ namespace DoseRateEditor.Models
     public class CosmoTrans : CosmoPlot
     {
 
-        public CosmoTrans() : base("Cosmo Trans", "DoseRateEditor.Resources.cosmo_trans.PNG")
+        public CosmoTrans() : base("Transverse", "DoseRateEditor.Resources.cosmo_trans.PNG")
         {
             
         }
@@ -53,7 +53,7 @@ namespace DoseRateEditor.Models
             // Build list of DataPoint[] in this loop
             //MessageBox.Show($"start and stop {startangle} - {stopangle} ");
 
-            var arc = BuildArc(values.Count, 45, -90, 90);
+            var arc = BuildArc(values.Count, 40, startangle-180, stopangle-180);
             var maxHeight = 12;
             var maxVal = values.Max();
 

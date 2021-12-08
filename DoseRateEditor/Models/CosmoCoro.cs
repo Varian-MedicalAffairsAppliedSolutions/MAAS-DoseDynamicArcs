@@ -11,7 +11,7 @@ namespace DoseRateEditor.Models
 {
     public class CosmoCoro : CosmoPlot
     {
-        public CosmoCoro() : base("Cosmo Coro", "DoseRateEditor.Resources.cosmo_coro.PNG") 
+        public CosmoCoro() : base("Coronal", "DoseRateEditor.Resources.cosmo_coro.PNG") 
         {
            
         }

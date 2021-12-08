@@ -10,13 +10,15 @@ namespace DoseRateEditor.Models
 {
     public class CosmoSag : CosmoPlot
     {
-        public CosmoSag() : base("Sagital", "DoseRateEditor.Resources.cosmo_sag.PNG")
+        public CosmoSag() : base("Sagittal", "DoseRateEditor.Resources.cosmo_sag.PNG")
         {
 
         }
 
-        public Tuple<List<DataPoint>, List<double>> BuildArc(int steps, int R, double start_angle_deg, double stop_angle_deg)
+        public Tuple<List<DataPoint>, List<double>> BuildArc(int steps, int R, double start_angle_deg, double stop_angle_deg, double plane_angle)
         {
+            // TODO - start angle and delta angle instead of start/stop angle.
+
             var points = new List<DataPoint>();
             var slopes = new List<double>();
 
@@ -30,7 +32,7 @@ namespace DoseRateEditor.Models
             while (t_curr <= t1)
             {
                 var x = R * Math.Sin(t_curr);
-                var y = R * Math.Cos(t_curr);
+                var y = Math.Abs(Math.Sin(Math.PI * plane_angle / 180)) * R * Math.Cos(t_curr);
 
                 points.Add(new DataPoint(x, y));
 
@@ -56,8 +58,8 @@ namespace DoseRateEditor.Models
             // Build list of DataPoint[] in this loop
             //MessageBox.Show($"start and stop {startangle} - {stopangle} ");
 
-            var arc = BuildArc(values.Count, 45, -90, 90);
-            var maxHeight = 12;
+            var arc = BuildArc(values.Count, 42, startangle-90, stopangle-90, plane_angle); // minus 90 fix to rectify angles
+            var maxHeight = 12 * Math.Sin(Math.PI * plane_angle / 180);
             var maxVal = values.Max();
 
             for (int i = 0; i < values.Count; i++)
