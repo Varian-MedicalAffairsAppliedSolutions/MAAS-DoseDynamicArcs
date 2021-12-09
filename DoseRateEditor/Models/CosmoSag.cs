@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VMS.TPS.Common.Model.Types;
 
 namespace DoseRateEditor.Models
 {
@@ -15,7 +16,7 @@ namespace DoseRateEditor.Models
 
         }
 
-        public Tuple<List<DataPoint>, List<double>> BuildArc(int steps, int R, double start_angle_deg, double stop_angle_deg, double plane_angle)
+        public Tuple<List<DataPoint>, List<double>> BuildArc(int steps, int R, double start_angle_deg, double stop_angle_deg, double plane_angle, GantryDirection gan_dir)
         {
             // TODO - start angle and delta angle instead of start/stop angle.
 
@@ -27,9 +28,10 @@ namespace DoseRateEditor.Models
 
             var step = Math.Abs(t1 - t0) / steps;
 
-            var t_curr = t0;
+            var t_curr = Math.Min(t0, t1);
 
-            while (t_curr <= t1)
+
+            while (t_curr <= Math.Max(t0, t1))
             {
                 var x = R * Math.Sin(t_curr);
                 var y = Math.Abs(Math.Sin(Math.PI * plane_angle / 180)) * R * Math.Cos(t_curr);
@@ -47,7 +49,7 @@ namespace DoseRateEditor.Models
 
 
         }
-        public void DrawRects(List<double> values, double startangle, double stopangle, double plane_angle)
+        public void DrawRects(List<double> values, double startangle, double stopangle, double plane_angle, GantryDirection gan_dir)
         {
             // Draw rects proportional to the values
             // Note: Values could be delta MU at each cp (which is prop to the DR)
@@ -58,7 +60,7 @@ namespace DoseRateEditor.Models
             // Build list of DataPoint[] in this loop
             //MessageBox.Show($"start and stop {startangle} - {stopangle} ");
 
-            var arc = BuildArc(values.Count, 42, startangle-90, stopangle-90, plane_angle); // minus 90 fix to rectify angles
+            var arc = BuildArc(values.Count, 42, startangle-90, stopangle-90, plane_angle, gan_dir); // minus 90 to fix angles
             var maxHeight = 12 * Math.Sin(Math.PI * plane_angle / 180);
             var maxVal = values.Max();
 
@@ -76,7 +78,7 @@ namespace DoseRateEditor.Models
                 // Get the rect height
                 var h = values[i] / maxVal * maxHeight;
 
-                var polypoints = BuildRect(pi, 1, h, theta);
+                var polypoints = BuildRect(pi, 2, h, theta);
 
                 // Add the annotation
                 var poly = new PolygonAnnotation();

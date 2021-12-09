@@ -416,12 +416,13 @@ namespace DoseRateEditor.ViewModels
             var angles = Utils.GetBeamAngles(_SelectedBeam);
 
             //View1.DrawRects(dMU.Select(x => x.Y).ToList(), 5, 5, 5);
-            var smallangle = Math.Min(angles.Item1.First(), angles.Item1.Last());
-            var largeangle = Math.Max(angles.Item1.First(), angles.Item1.Last());
+            //var smallangle = Math.Min(angles.Item1.First(), angles.Item1.Last());
+            //var largeangle = Math.Max(angles.Item1.First(), angles.Item1.Last());
 
-            View3.DrawRects(dMU.Select(x => x.Y).ToList(), smallangle, largeangle, angles.Item3[0]);
+            var deltaMU = dMU.Select(x => x.Y).ToList();
+            View3.DrawRects(deltaMU, angles.Item1.First(), angles.Item1.Last(), angles.Item3[0], angles.Item5);
             View2.DrawAngle(angles.Item3[0]);
-            View1.DrawRects(dMU.Select(x => x.Y).ToList(), smallangle, largeangle, 0);
+            View1.DrawRects(deltaMU, angles.Item1.First(), angles.Item1.Last(), angles.Item3[0], angles.Item5);
 
         }
 
