@@ -78,11 +78,14 @@ namespace DoseRateEditor.Models
                 // Get the rect height
                 var h = values[i] / maxVal * maxHeight;
 
-                var polypoints = BuildRect(pi, 2, h, theta);
+                var polypoints = BuildRect(pi, 1, h, theta);
 
                 // Add the annotation
                 var poly = new PolygonAnnotation();
-                poly.Fill = OxyColors.Red;
+                poly.Fill = plane_angle < 180 ? OxyColors.Red : OxyColors.Transparent;
+                poly.LineStyle = LineStyle.Solid;
+                poly.Stroke = OxyColors.Red;
+                poly.StrokeThickness = 1;
                 poly.Points.AddRange(polypoints);
                 Annotations.Add(poly);
 

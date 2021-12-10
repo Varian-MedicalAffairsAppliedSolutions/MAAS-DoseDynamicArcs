@@ -23,7 +23,7 @@ namespace DoseRateEditor.Models
             {
                 Color = OxyColors.Red,
                 LineStyle = LineStyle.Dash,
-                StrokeThickness = 2,
+                StrokeThickness = 4,
             };
 
             //line.Points.Add()

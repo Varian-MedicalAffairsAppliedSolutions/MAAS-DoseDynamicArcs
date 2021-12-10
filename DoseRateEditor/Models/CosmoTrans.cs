@@ -20,21 +20,26 @@ namespace DoseRateEditor.Models
             var points = new List<DataPoint>();
             var slopes = new List<double>();
 
-            var t0 = Math.PI * start_angle_deg / 180;
-            var t1 = Math.PI * stop_angle_deg / 180;
+            var t_range = new double[] { 
+                Math.PI* start_angle_deg / 180,
+                Math.PI* stop_angle_deg / 180
+            };
 
-            if (gan_dir == GantryDirection.CounterClockwise)
+
+            var step = Math.Abs(t_range[1] - t_range[0]) / steps;
+
+            var t_curr = Math.Min(t_range[0], t_range[1]); // Start with the minimum t (could be negative)
+            var t_max = Math.Max(t_range[0], t_range[1]);
+
+            while (t_curr <= t_max)
             {
-                t1 *= -1;
-            }
+                var plane_factor = Math.Cos(Math.PI * plane_angle / 180); 
+                if (plane_angle > 180)
+                {
+                    plane_factor *= -1;
+                }
 
-            var step = Math.Abs(t1 - t0) / steps;
-
-            var t_curr = Math.Min(t0, t1);
-
-            while (t_curr <= Math.Max(t0, t1))
-            {
-                var x = Math.Abs(Math.Sin(Math.PI * plane_angle / 180)) * R * Math.Sin(t_curr);
+                var x = plane_factor * R * Math.Sin(t_curr);
                 var y = R * Math.Cos(t_curr);
 
                 points.Add(new DataPoint(x, y));
@@ -45,11 +50,9 @@ namespace DoseRateEditor.Models
                 t_curr += step;
             }
 
-
             return new Tuple<List<DataPoint>, List<double>>(points, slopes);
-
-
         }
+
         public void DrawRects(List<double> values, double startangle, double stopangle, double plane_angle, GantryDirection gan_dir)
         {
             // Draw rects proportional to the values
@@ -59,11 +62,11 @@ namespace DoseRateEditor.Models
             // Build list of DataPoint[] in this loop
             //MessageBox.Show($"start and stop {startangle} - {stopangle} ");
 
-            var arc = BuildArc(values.Count, 40, startangle, stopangle, plane_angle, gan_dir);
-            var maxHeight = 12;
+            var arc = BuildArc(values.Count(), 40, startangle, stopangle, plane_angle, gan_dir);
+            var maxHeight = 15;
             var maxVal = values.Max();
 
-            for (int i = 0; i < values.Count; i++)
+            for (int i = 0; i < values.Count(); i++)
             {
                 // pi represents point on arc
                 var pi = arc.Item1[i];
@@ -77,11 +80,14 @@ namespace DoseRateEditor.Models
                 // Get the rect height
                 var h = values[i] / maxVal * maxHeight;
 
-                var polypoints = BuildRect(pi, 2, h, theta);
+                var polypoints = BuildRect(pi, h, 2, theta);
 
                 // Add the annotation
                 var poly = new PolygonAnnotation();
-                poly.Fill = OxyColors.Red;
+                poly.Fill = OxyColors.Transparent;
+                poly.LineStyle = LineStyle.Solid;
+                poly.Stroke = OxyColors.Red;
+                poly.StrokeThickness = 1;
                 poly.Points.AddRange(polypoints);
                 Annotations.Add(poly);
 
@@ -96,10 +102,14 @@ namespace DoseRateEditor.Models
         {
             var retval = new DataPoint[]
             {
-                RotatePoint(new DataPoint(centerpoint.X - (width/2), centerpoint.Y + (height/2)), centerpoint, theta),
-                RotatePoint(new DataPoint(centerpoint.X + (width/2), centerpoint.Y + (height/2)), centerpoint, theta),
-                RotatePoint(new DataPoint(centerpoint.X + (width/2), centerpoint.Y - (height/2)), centerpoint, theta),
-                RotatePoint(new DataPoint(centerpoint.X - (width/2), centerpoint.Y - (height/2)), centerpoint, theta),
+                //RotatePoint(new DataPoint(centerpoint.X - (width/2), centerpoint.Y + (height/2)), centerpoint, theta),
+                //RotatePoint(new DataPoint(centerpoint.X + (width/2), centerpoint.Y + (height/2)), centerpoint, theta),
+                //RotatePoint(new DataPoint(centerpoint.X + (width/2), centerpoint.Y - (height/2)), centerpoint, theta),
+                //RotatePoint(new DataPoint(centerpoint.X - (width/2), centerpoint.Y - (height/2)), centerpoint, theta),
+                new DataPoint(centerpoint.X - (width/2), centerpoint.Y + (height/2)),
+                new DataPoint(centerpoint.X + (width/2), centerpoint.Y + (height/2)),
+                new DataPoint(centerpoint.X + (width/2), centerpoint.Y - (height/2)),
+                new DataPoint(centerpoint.X - (width/2), centerpoint.Y - (height/2))
             };
 
             return retval;
