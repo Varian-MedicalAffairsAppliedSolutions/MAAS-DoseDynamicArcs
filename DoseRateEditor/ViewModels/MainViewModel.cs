@@ -171,6 +171,9 @@ namespace DoseRateEditor.ViewModels
                 PlotCurrentdMUCommand.RaiseCanExecuteChanged();
                 PlotCurrentDRCommand.RaiseCanExecuteChanged();
                 PlotCurrentGSCommand.RaiseCanExecuteChanged();
+                PreviewdMUCommand.RaiseCanExecuteChanged();
+                PreviewDRCommand.RaiseCanExecuteChanged();
+                PreviewGSCommand.RaiseCanExecuteChanged();
 
             }
         }
@@ -395,6 +398,11 @@ namespace DoseRateEditor.ViewModels
 
         private void OnBeamSelect()
         {
+            if (SelectedBeam == null)
+            {
+                return;
+            }
+
             // Clear all DR related plots (3 of them!)
             GS0_series.Points.Clear();
             DR0_series.Points.Clear();
@@ -413,7 +421,7 @@ namespace DoseRateEditor.ViewModels
             View3.ClearPlot();
 
             var dMU = DRCalc.InitialdMU[SelectedBeam.Id];
-            var angles = Utils.GetBeamAngles(_SelectedBeam);
+            var angles = Utils.GetBeamAngles(SelectedBeam);
 
             //View1.DrawRects(dMU.Select(x => x.Y).ToList(), 5, 5, 5);
             //var smallangle = Math.Min(angles.Item1.First(), angles.Item1.Last());
@@ -423,6 +431,10 @@ namespace DoseRateEditor.ViewModels
             View3.DrawRects(deltaMU, angles.Item1.First(), angles.Item1.Last(), angles.Item3[0], angles.Item5);
             View2.DrawAngle(angles.Item3[0]);
             View1.DrawRects(deltaMU, angles.Item1.First(), angles.Item1.Last(), angles.Item3[0], angles.Item5);
+
+            // Update all DR, GS, dMU plots
+            OnPreviewGS();
+
 
         }
 
@@ -629,7 +641,10 @@ namespace DoseRateEditor.ViewModels
 
         }
 
-        private bool CanPreviewGS() { return CanPreviewDR(); }
+        private bool CanPreviewGS() {
+            var res = SelectedMethod.HasValue && (SelectedPlan != null);
+            return res; 
+        }
 
         private void OnCurrentDR()
         {
@@ -648,6 +663,8 @@ namespace DoseRateEditor.ViewModels
 
         private void OnPlanSelect()
         {
+            // Unselect Beam
+            _SelectedBeam = null;
 
             // Create a DR calculator for selected plan
             DRCalc = new DRCalculator(SelectedPlan);
