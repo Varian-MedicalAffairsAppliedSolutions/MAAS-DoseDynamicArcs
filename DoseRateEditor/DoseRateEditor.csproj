@@ -118,6 +118,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Launchers\DREditExplicitPathLauncher.cs" />
     <Compile Include="Models\CosmoCoro.cs" />
     <Compile Include="Models\CosmoPlot.cs" />
     <Compile Include="Models\CosmoSag.cs" />

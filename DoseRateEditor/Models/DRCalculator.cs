@@ -21,6 +21,14 @@ namespace DoseRateEditor.Models
             Juha
         }
 
+        public static List<string> DRCredits = new List<string>
+        {
+            "Sin Creds",
+            "Para Creds",
+            "Cosmic Creds",
+            "Juha Creds"
+        };
+
         public Nullable<DRMethod> LastMethodCalculated;
 
         private static func sinfunc = (theta) => Math.Sin((theta * Math.PI) / 180);

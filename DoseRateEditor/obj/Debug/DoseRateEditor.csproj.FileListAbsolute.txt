@@ -58,3 +58,4 @@ C:\Users\craman96\source\repos\DoseRateEditor\DoseRateEditor\bin\Debug\OxyPlot.W
 C:\Users\craman96\source\repos\DoseRateEditor\DoseRateEditor\bin\Debug\OxyPlot.xml
 C:\Users\craman96\source\repos\DoseRateEditor\DoseRateEditor\bin\Debug\OxyPlot.Wpf.xml
 C:\Users\craman96\source\repos\DoseRateEditor\DoseRateEditor\obj\Debug\DoseRateEditor.csproj.AssemblyReference.cache
+C:\Users\craman96\source\repos\DoseRateEditor\DoseRateEditor\obj\Debug\DoseRateEditor.csproj.SuggestedBindingRedirects.cache

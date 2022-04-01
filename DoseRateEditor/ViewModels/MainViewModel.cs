@@ -11,7 +11,11 @@ using static DoseRateEditor.Models.DRCalculator;
 
 // TODO: add check to see if DR is modulated and warn user if this is the case
 // TODO make buttons do something
+// TODO: add credit pane for selected DR edit method
 // Check machine if TB -> maxGS=6
+// TODO: add not for clinical use warning sign
+// TODO: add waiver key in config to switch off the date dialog box and the not validated for clinical use banner
+// Add liscence .txt
 // if constant do nothing
 
 namespace DoseRateEditor.ViewModels
@@ -267,10 +271,10 @@ namespace DoseRateEditor.ViewModels
 
 
 
-        public MainViewModel(Application app)
+        public MainViewModel(Application app, Patient patient, Course course, PlanSetup plan)
         {
             _app = app;
-
+            
             // Create delegate cmd
             //OpenPatientCommand = new DelegateCommand(OnOpenPatient); // DELETE!
             OpenPatientCommand = new DelegateCommand(OnOpenPatient, CanOpenPatient);
@@ -393,6 +397,13 @@ namespace DoseRateEditor.ViewModels
                DRCalculator.DRMethod.Juha
             };
 
+
+            PatientId = patient.Id;
+            OpenPatient(patient);
+            SelectedCourse = Courses.FirstOrDefault(x => x.Id == course.Id);
+            OnSelectCourse();
+            SelectedPlan = Plans.FirstOrDefault(x => x.Id == plan.Id) as ExternalPlanSetup;
+            OnPlanSelect();
 
         }
 
@@ -702,10 +713,17 @@ namespace DoseRateEditor.ViewModels
 
         private void OnOpenPatient() // 2) in dcmd
         {
+
             _app.ClosePatient();
             var pat = _app.OpenPatientById(PatientId);
-            
+
             // List all courses
+            OpenPatient(pat);
+
+        }
+
+        private void OpenPatient(Patient pat)
+        {
             Courses.Clear();
             Plans.Clear();
             Beams.Clear();
@@ -717,7 +735,6 @@ namespace DoseRateEditor.ViewModels
             {
                 Courses.Add(new CourseModel(crs));
             }
-
         }
 
         private bool CanOpenPatient()

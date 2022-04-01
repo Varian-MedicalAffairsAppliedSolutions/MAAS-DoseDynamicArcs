@@ -12,12 +12,15 @@ namespace DoseRateEditor.Startup
 {
     public class Bootstrapper
     {
-        public IContainer Bootstrap(User user, Application app)
+        public IContainer Bootstrap(User user, Application app, Patient pat, Course crs, PlanSetup plan)
         {
             var container = new ContainerBuilder();
             //esapi components.            
             container.RegisterInstance<User>(user);
             container.RegisterInstance<Application>(app);
+            container.RegisterInstance<Patient>(pat);
+            container.RegisterInstance<Course>(crs);
+            container.RegisterInstance<PlanSetup>(plan);
 
             //startup components.
             container.RegisterType<MainView>().AsSelf();

@@ -31,6 +31,12 @@ namespace DoseRateEditor
 
         private VMS.TPS.Common.Model.API.Application _app;
         private MainView MV;
+        private string _patientId;
+        private string _courseId;
+        private string _planId;
+        private Patient _patient;
+        private Course _course;
+        private PlanSetup _plan;
 
         private void Application_Startup(object sender, StartupEventArgs e)
 
@@ -44,7 +50,7 @@ namespace DoseRateEditor
 
                 DateTime endDate = DateTime.Now;
 
-                if (DateTime.TryParse("1/30/2022", provider, DateTimeStyles.None, out endDate))
+                if (DateTime.TryParse("6/30/2022", provider, DateTimeStyles.None, out endDate))
 
                 {
 
@@ -66,10 +72,48 @@ namespace DoseRateEditor
 
                             {
 
+                                if (e.Args.Count() > 0 && !String.IsNullOrWhiteSpace(e.Args.First()))
+                                {
+
+                                    _patientId = e.Args.First().Split(';').First().Trim('\"');
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Patient not specified at application start.");
+                                    App.Current.Shutdown();
+                                    return;
+
+                                }
+                                if (e.Args.First().Split(';').Count() > 1)
+                                {
+                                    _courseId = e.Args.First().Split(';').ElementAt(1).TrimEnd('\"');
+                                }
+                                if (e.Args.First().Split(';').Count() > 2)
+                                {
+                                    _planId = e.Args.First().Split(';').ElementAt(2).TrimEnd('\"');
+                                }
+                                if (String.IsNullOrWhiteSpace(_patientId) || String.IsNullOrWhiteSpace(_courseId))
+                                {
+                                    MessageBox.Show("Patient and/or Course not specified at application start. Please open a patient and course.");
+                                    App.Current.Shutdown();
+                                    return;
+                                }
+                                _patient = _app.OpenPatientById(_patientId);
+
+
+
+                                if (!String.IsNullOrWhiteSpace(_courseId))
+                                {
+                                    _course = _patient.Courses.FirstOrDefault(x => x.Id == _courseId);
+                                }
+                                if (!String.IsNullOrEmpty(_planId))
+                                {
+                                    _plan = _course.PlanSetups.FirstOrDefault(x => x.Id == _planId);
+                                }
 
                                 var bootstrap = new Bootstrapper();
 
-                                var container = bootstrap.Bootstrap(_app.CurrentUser, _app);
+                                var container = bootstrap.Bootstrap(_app.CurrentUser, _app, _patient, _course, _plan);
 
                                 MV = container.Resolve<MainView>();
 
