@@ -50,6 +50,8 @@ namespace DoseRateEditor
 
                 DateTime endDate = DateTime.Now;
 
+                var isValidated = ConfigurationManager.AppSettings["Validated"] == "true";
+
                 if (DateTime.TryParse("6/30/2022", provider, DateTimeStyles.None, out endDate))
 
                 {
@@ -64,7 +66,7 @@ namespace DoseRateEditor
 
                             $"By Clicking 'Yes' you agree that this application will be evaluated and not utilized in providing planning decision support";
 
-                        if (MessageBox.Show(msg, "Agreement  ", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                        if ((MessageBox.Show(msg, "Agreement  ", MessageBoxButton.YesNo) == MessageBoxResult.Yes) || isValidated)
 
                         {
 
@@ -140,6 +142,7 @@ namespace DoseRateEditor
                     }
 
                 }
+                
 
             }
 
