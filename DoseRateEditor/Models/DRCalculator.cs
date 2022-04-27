@@ -21,14 +21,16 @@ namespace DoseRateEditor.Models
             Juha
         }
 
-        public static List<string> DRCredits = new List<string>
+        public static Dictionary<DRMethod, string> DRCredits = new Dictionary<DRMethod, string>
         {
-            "Sin Creds",
-            "Para Creds",
-            "Cosmic Creds",
-            "Juha Creds"
+            { DRMethod.Sin, "Sin Creds" },
+            { DRMethod.Parabola, "Para Creds" },
+            { DRMethod.Cosmic, "Cosmic Creds" },
+            { DRMethod.Juha, "Juha Creds" }
         };
 
+
+        public string DRCreditsString;
         public Nullable<DRMethod> LastMethodCalculated;
 
         private static func sinfunc = (theta) => Math.Sin((theta * Math.PI) / 180);
@@ -87,8 +89,8 @@ namespace DoseRateEditor.Models
                 InitialdMU.Add(b.Id, tup.Item3);
             }
 
-            LastMethodCalculated = null;
-
+            LastMethodCalculated = null; 
+            
 
         }
 
@@ -107,7 +109,6 @@ namespace DoseRateEditor.Models
             FinalGSs.Clear();
             FinalDRs.Clear();
             FinalMSWS.Clear();
-
 
             if (method == DRMethod.Juha)
             {
@@ -130,11 +131,12 @@ namespace DoseRateEditor.Models
 
                 FinalDRs.Add(b.Id, dr_gs.Item1);
                 FinalGSs.Add(b.Id, dr_gs.Item2);
-
+            
             }
 
             // Set variabl LastCalcdMethod to show that we have the DR and GS for a final method
             LastMethodCalculated = method;
+            DRCreditsString = DRCredits[method];
         }
 
         private Tuple<List<DataPoint>, List<DataPoint>> ComputeDRFromMSWS(List<double> msws, double bm_meterset, List<double> gantry_angles, double gantry_speed_max=4.8, double DR_max=2400)

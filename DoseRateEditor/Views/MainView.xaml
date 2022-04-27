@@ -188,6 +188,9 @@
             </Grid>
 
         </StackPanel>
+        <StackPanel Grid.Row="5" Grid.Column="1">
+            <TextBlock Text="{Binding CreditText}"></TextBlock>
+        </StackPanel>
 
 
 

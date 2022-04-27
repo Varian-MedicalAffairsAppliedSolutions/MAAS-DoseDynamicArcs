@@ -41,6 +41,14 @@ namespace DoseRateEditor.ViewModels
         public ObservableCollection<Beam> Beams { get; private set; }
         public ObservableCollection<Nullable<DRMethod>> DRMethods { get; private set; }
 
+        // DR EDIT METHOD CREDIT TEXT
+        private string _CreditText;
+        public string CreditText
+        {
+            get { return _CreditText; }
+            set { SetProperty(ref _CreditText, value); }
+        }
+
 
         // CHECKBOXES
         private bool _PreviewDR;
@@ -295,6 +303,8 @@ namespace DoseRateEditor.ViewModels
             Courses = new ObservableCollection<CourseModel>();
             Plans = new ObservableCollection<PlanningItem>();
             Beams = new ObservableCollection<Beam>();
+
+            CreditText = "PLACEHOLDER TEXT";
 
             // DR PLOT
             DRPlot = new PlotModel { Title = "Doserate and Gantry Speed"};
@@ -557,7 +567,6 @@ namespace DoseRateEditor.ViewModels
 
         private bool CanPreviewdMU() { return false; }
 
-
         private void OnMethodSelect()
         {
             // Clear final gs and dr series
@@ -567,7 +576,8 @@ namespace DoseRateEditor.ViewModels
             // Calculate final dr and gs
             DRCalc.CalcFinalDR(SelectedPlan, SelectedMethod.Value);
 
-            //SelectedBeam.Id = DRCalc.FinalDRs.Keys.ToList()[BeamIdx];
+            // Update Credit Text
+            CreditText = DRCalc.DRCreditsString;
 
             DRPlot.InvalidatePlot(true);
 
