@@ -39,7 +39,7 @@ namespace DoseRateEditor.ViewModels
         public ObservableCollection<CourseModel> Courses { get; private set; }
 	    public ObservableCollection<PlanningItem> Plans { get; private set; }
         public ObservableCollection<Beam> Beams { get; private set; }
-        public ObservableCollection<Nullable<DRMethod>> DRMethods { get; private set; }
+        public ObservableCollection<Tuple<Nullable<DRMethod>, Nullable<bool>>> DRMethods { get; private set; }
 
         // DR EDIT METHOD CREDIT TEXT
         private string _CreditText;
@@ -111,7 +111,7 @@ namespace DoseRateEditor.ViewModels
 
 
         private PlotModel _TransPlot;
-
+        
         public PlotModel TransPlot
         {
             get { return _TransPlot; }
@@ -398,13 +398,13 @@ namespace DoseRateEditor.ViewModels
             CT = new double[0][,];
 
             // Set the DR EDIT methods
-            
-            DRMethods = new ObservableCollection<Nullable<DRMethod>>
+
+            DRMethods = new ObservableCollection<Tuple<Nullable<DRMethod>, Nullable<bool>>>
             {
-               DRCalculator.DRMethod.Sin,
-               DRCalculator.DRMethod.Cosmic,
-               DRCalculator.DRMethod.Parabola,
-               DRCalculator.DRMethod.Juha
+               new Tuple<Nullable<DRMethod>, Nullable<bool>>(DRMethod.Sin, true),
+               new Tuple<Nullable<DRMethod>, Nullable<bool>>(DRMethod.Cosmic, true),
+               new Tuple<Nullable<DRMethod>, Nullable<bool>>(DRMethod.Parabola, true),
+               new Tuple<Nullable<DRMethod>, Nullable<bool>>(DRMethod.Juha, false)
             };
 
 

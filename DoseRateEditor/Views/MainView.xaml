@@ -137,17 +137,19 @@
 
         <StackPanel Grid.Row="5" Grid.Column="0">
             <TextBlock Margin="5" HorizontalAlignment="Center">DR Edit Method</TextBlock>
-            <ComboBox Margin="10" ItemsSource="{Binding DRMethods}" SelectedItem="{Binding SelectedMethod}" IsSynchronizedWithCurrentItem="True">
+            <ComboBox Margin="10" 
+                      ItemsSource="{Binding DRMethods}" 
+                      SelectedValuePath="Item1"
+                      SelectedValue="{Binding SelectedMethod}"
+                      IsSynchronizedWithCurrentItem="True">
                 <ie:Interaction.Triggers>
                     <ie:EventTrigger EventName="SelectionChanged">
                         <ie:InvokeCommandAction Command="{Binding OnMethodSelectCommand}"/>
                     </ie:EventTrigger>
                 </ie:Interaction.Triggers>
-                <ComboBox.ItemTemplate>
+                <ComboBox.ItemTemplate >
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding}"></TextBlock>
-                        </StackPanel>
+                        <ComboBoxItem  Content="{Binding Path=Item1}" IsEnabled="{Binding Path=Item2}"/>
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
