@@ -92,10 +92,13 @@ namespace DoseRateEditor.Models
             FinalDRs = new Dictionary<string, List<DataPoint>>();
             FinalGSs = new Dictionary<string, List<DataPoint>>();
 
+            // Get gantry speed max and dr max from machine
+
 
             foreach (Beam b in Plan.Beams)
             {
-                var tup = ComputeDRBeam(b);
+                var maxDR = b.DoseRate;
+                var tup = ComputeDRBeam(b, DR_max: maxDR);
                 InitialDRs.Add(b.Id, tup.Item1);
                 InitialGSs.Add(b.Id, tup.Item2);
                 InitialdMU.Add(b.Id, tup.Item3);
@@ -103,7 +106,6 @@ namespace DoseRateEditor.Models
 
             LastMethodCalculated = null; 
             
-
         }
 
         public void ClearFinal()
@@ -409,9 +411,16 @@ namespace DoseRateEditor.Models
 
             // Copy the plan, delete all beams
             // Call begin mods
-            Plan.Course.Patient.BeginModifications();
-            var newplan = Plan.Course.CopyPlanSetup(Plan) as ExternalPlanSetup;
-            newplan.Id = Plan.Id.Substring(0, 4) + "_editDR";
+            var pat = Plan.Course.Patient;
+            pat.BeginModifications();
+
+            // Create new course
+            var newcourse = pat.AddCourse();
+            var dt = DateTime.UtcNow.ToString("d");
+            newcourse.Id = $"EditDR {dt}";
+
+            var newplan = newcourse.CopyPlanSetup(Plan) as ExternalPlanSetup; 
+            newplan.Id = Plan.Id;
             
             // TODO remove the beams from newplan
             foreach (var copiedbeam in newplan.Beams.ToList())
@@ -427,7 +436,7 @@ namespace DoseRateEditor.Models
                 copy_beam(bm, new_msws, false, newplan);
             }
 
-            MessageBox.Show($"New plan created with id: {newplan.Id}");
+            MessageBox.Show($"New plan created with id: {newplan.Id} in course {newcourse.Id}");
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Configuration;
 using System.Linq;
 using DoseRateEditor.Models;
 using OxyPlot;
@@ -8,6 +9,11 @@ using OxyPlot.Series;
 using Prism.Commands;
 using VMS.TPS.Common.Model.API;
 using static DoseRateEditor.Models.DRCalculator;
+
+// TODO: Scale y axis to max DR
+// TODO: Color underline cb's as legend
+// TODO: Crop pictures to "Nose only" on coro/sag views
+// TODO: Fix id of new plan
 
 // TODO: add check to see if DR is modulated and warn user if this is the case
 // TODO make buttons do something
@@ -57,6 +63,14 @@ namespace DoseRateEditor.ViewModels
             get { return _PreviewDR; }
             set { SetProperty(ref _PreviewDR, value); }
         }
+
+        private string _AppTitle;
+        public string AppTitle
+        {
+            get { return _AppTitle; }
+            set { SetProperty(ref _AppTitle, value); }
+        }
+
         
         private bool _PreviewGS;
         public bool PreviewGS
@@ -298,7 +312,15 @@ namespace DoseRateEditor.ViewModels
             PreviewdMUCommand = new DelegateCommand(OnPreviewdMU, CanPreviewdMU);
             PlotCurrentdMUCommand = new DelegateCommand(OnCurrentdMU, CanCurrentdMU);
             OnBeamSelectCommand = new DelegateCommand(OnBeamSelect, CanBeamSelect);
-    
+
+            AppTitle = "Doserate Editor";
+            if (!(ConfigurationManager.AppSettings["Validated"] == "true"))
+            {
+                AppTitle += " *** NOT VALIDATED FOR CLINICAL USE ***";
+            }
+            
+
+
 
             Courses = new ObservableCollection<CourseModel>();
             Plans = new ObservableCollection<PlanningItem>();

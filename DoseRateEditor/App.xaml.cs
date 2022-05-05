@@ -66,8 +66,21 @@ namespace DoseRateEditor
 
                             $"By Clicking 'Yes' you agree that this application will be evaluated and not utilized in providing planning decision support";
 
-                        if ((MessageBox.Show(msg, "Agreement  ", MessageBoxButton.YesNo) == MessageBoxResult.Yes) || isValidated)
 
+                        bool clickyes = false;
+                        if (!isValidated)
+                        {
+                            clickyes = (MessageBox.Show(msg, "Agreement  ", MessageBoxButton.YesNo) == MessageBoxResult.Yes);
+                            if (!clickyes)
+                            {
+                                // Shutdown the app
+                                App.Current.Shutdown();
+                            }
+                        }
+
+
+
+                        if (isValidated || clickyes)
                         {
 
                             using (_app = VMS.TPS.Common.Model.API.Application.CreateApplication())
