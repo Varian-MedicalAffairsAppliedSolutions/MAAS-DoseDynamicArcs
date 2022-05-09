@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Linq;
+using System.Windows.Navigation;
 using DoseRateEditor.Models;
 using OxyPlot;
 using OxyPlot.Axes;
@@ -35,6 +36,7 @@ namespace DoseRateEditor.ViewModels
         public DelegateCommand OnPlanSelectCommand { get; private set; }
         public DelegateCommand OnMethodSelectCommand { get; private set; }    
         public DelegateCommand OnBeamSelectCommand { get; private set; }
+
         public DelegateCommand PlotCurrentDRCommand { get; private set; }
         public DelegateCommand PlotCurrentGSCommand { get; private set; }
         public DelegateCommand PreviewGSCommand { get; private set; }
@@ -313,6 +315,7 @@ namespace DoseRateEditor.ViewModels
             PlotCurrentdMUCommand = new DelegateCommand(OnCurrentdMU, CanCurrentdMU);
             OnBeamSelectCommand = new DelegateCommand(OnBeamSelect, CanBeamSelect);
 
+
             AppTitle = "Doserate Editor";
             if (!(ConfigurationManager.AppSettings["Validated"] == "true"))
             {
@@ -321,12 +324,11 @@ namespace DoseRateEditor.ViewModels
             
 
 
-
             Courses = new ObservableCollection<CourseModel>();
             Plans = new ObservableCollection<PlanningItem>();
             Beams = new ObservableCollection<Beam>();
 
-            CreditText = "PLACEHOLDER TEXT";
+            CreditText = "";
 
             // DR PLOT
             DRPlot = new PlotModel { Title = "Doserate and Gantry Speed"};
@@ -341,7 +343,9 @@ namespace DoseRateEditor.ViewModels
             {
                 Title = "Doserate",
                 Position = AxisPosition.Left,
-                Key = "DRAxis"   
+                Key = "DRAxis",
+                AbsoluteMinimum=0,
+                AbsoluteMaximum=2500
             };
             DRPlot.Axes.Add(DRAxis);
 
@@ -795,6 +799,7 @@ namespace DoseRateEditor.ViewModels
             return true;
         }
 
+      
 
     }
 }
