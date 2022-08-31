@@ -22,23 +22,30 @@ namespace DoseRateEditor.Models
         }
 
         private static string sincred = @"sin (gantry) : Richard A. Popple, Xingen Wu, Ivan A. Brezovich, James M. Markert
-        , Barton L. Guthrie, Evan M. Thomas, Markus Bredel, John B. Fiveash,
-        The virtual cone: A novel technique to generate spherical dose distributions using
-        a multileaf collimator and standardized control-point sequence for small target radiation surgery,
-        Advances in Radiation Oncology,
-        Volume 3, Issue 3,
-        2018,
-        Pages 421-430,
-        ISSN 2452-1094,
-        https://doi.org/10.1016/j.adro.2018.02.011.
-        (https://www.sciencedirect.com/science/article/pii/S2452109418300368)";
+            , Barton L. Guthrie, Evan M. Thomas, Markus Bredel, John B. Fiveash,
+            The virtual cone: A novel technique to generate spherical dose distributions using
+            a multileaf collimator and standardized control-point sequence for small target radiation surgery,
+            Advances in Radiation Oncology,
+            Volume 3, Issue 3,
+            2018,
+            Pages 421-430,
+            ISSN 2452-1094,
+            https://doi.org/10.1016/j.adro.2018.02.011.
+            (https://www.sciencedirect.com/science/article/pii/S2452109418300368)";
+
+        private static string paracred = "para";
+        private static string coscred = "cos";
+
+        private static string juhacred = @"Method and apparatus to deliver therapeutic radiation to a patient using field geography-based dose optimization
+            Inventors: Juha Kauppinen Anthony Magliari Martin SABEL Amir Talakoub. 
+            (https://patents.google.com/patent/WO2022063684A1)";
 
         public static Dictionary<DRMethod, string> DRCredits = new Dictionary<DRMethod, string>
         {
             { DRMethod.Sin, sincred },
-            { DRMethod.Parabola, "Para Creds" },
-            { DRMethod.Cosmic, "Cosmic Creds" },
-            { DRMethod.Juha, "Juha Creds" }
+            { DRMethod.Parabola, paracred },
+            { DRMethod.Cosmic, coscred },
+            { DRMethod.Juha, juhacred }
         };
 
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using VMS.TPS.Common.Model.API;
 
 namespace DoseRateEditor.Models
@@ -25,7 +26,12 @@ namespace DoseRateEditor.Models
                 if (Plans.Keys.Contains(plan.Id)) {
                     continue;
                 }
+
+                //MessageBox.Show(plan.Beams.FirstOrDefault().Technique.Id);
+                // Check plan type
+                //if (plan.Beams.FirstOrDefault().Technique.Id.Contains("ARC")) {
                 Plans.Add(plan.Id, plan);
+                //}
             }
         }
     }

@@ -332,6 +332,11 @@ namespace DoseRateEditor.ViewModels
 
             // DR PLOT
             DRPlot = new PlotModel { Title = "Doserate and Gantry Speed"};
+            //DRPlot.Legends.Add(new
+            //{
+            //    LegendTitle = "Legend",
+            //    LegendPosition = LegendPosition.RightBottom,
+            //});
 
             // Instantiate cosmo views
             View1 = new CosmoTrans();
@@ -341,7 +346,7 @@ namespace DoseRateEditor.ViewModels
             // Create the different axes with respect/ive keys
             var DRAxis = new LinearAxis
             {
-                Title = "Doserate",
+                Title = "Doserate (Gy/sec)",
                 Position = AxisPosition.Left,
                 Key = "DRAxis",
                 AbsoluteMinimum=0,
@@ -351,15 +356,20 @@ namespace DoseRateEditor.ViewModels
 
             var GSAxis = new LinearAxis
             {
-                Title = "Gantry Speed",
+                Title = "Gantry Speed (deg/sec)",
                 Position = AxisPosition.Right,
-                Key = "GSAxis"
+                Key = "GSAxis",
+                AbsoluteMinimum=0,
+                AbsoluteMaximum=6,
+                Minimum=0,
+                Maximum=6
             };
             DRPlot.Axes.Add(GSAxis);
 
             var dMUAxis = new LinearAxis
             {
                 //Title = "Delta MU",
+                IsAxisVisible = false,
                 Position = AxisPosition.Left,
                 TickStyle = TickStyle.None,
                 Key = "dMUAxis",
@@ -598,6 +608,7 @@ namespace DoseRateEditor.ViewModels
             // Clear final gs and dr series
             GSf_series.Points.Clear();
             DRf_series.Points.Clear();
+            
 
             // Calculate final dr and gs
             DRCalc.CalcFinalDR(SelectedPlan, SelectedMethod.Value);
@@ -723,7 +734,19 @@ namespace DoseRateEditor.ViewModels
 
             // Clear prev list of beams
             Beams.Clear();
-            foreach(var bm in SelectedPlan.Beams) { Beams.Add(bm); }
+            bool isEmpty = true;
+
+            foreach(var bm in SelectedPlan.Beams) {
+                if (bm.Technique.Id.ToLower().Contains("arc"))
+                {
+                    Beams.Add(bm);
+                    isEmpty = false;
+                } 
+            }
+            if (isEmpty)
+            {
+                System.Windows.MessageBox.Show($"Plan {SelectedPlan.Id} does not contain any fields with SRS ARC or ARC technique");
+            }
 
             // Reset transaxial plot
             SelectedSlice = 0;
@@ -784,10 +807,13 @@ namespace DoseRateEditor.ViewModels
             //MessageBox.Show($@"Calling OnSelect course for {SelectedCourse.Id}");
 
             Plans.Clear();
-            foreach(var p in SelectedCourse.Plans.Values)
-            {
-                Plans.Add(p);
+            if (SelectedCourse != null) {
+                foreach (var p in SelectedCourse.Plans.Values)
+                {
+                    Plans.Add(p);
+                }
             }
+            
 
             Beams.Clear();
 
