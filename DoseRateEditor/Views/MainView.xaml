@@ -157,7 +157,7 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-            <Button Margin="8" Content ="Edit Dose Rates" Command="{Binding EditDRCommand}">
+            <Button Margin="8" Content ="Edit DR for all fields" Command="{Binding EditDRCommand}">
 
             </Button>
         </StackPanel>
@@ -189,11 +189,11 @@
                 </CheckBox>
                 
                 <CheckBox Grid.Column="0" Grid.Row="1" Margin="5" Command="{Binding PreviewGSCommand}" IsChecked="{Binding PreviewGS}">
-                    <TextBlock>Gantry Speed Preview</TextBlock> 
+                    <TextBlock Background="LightBlue">Gantry Speed Preview</TextBlock> 
                 </CheckBox>
                 
                 <CheckBox Grid.Column="0" Grid.Row="2" Margin="5" Command="{Binding PreviewdMUCommand}" IsChecked="{Binding PreviewdMU}">
-                    <TextBlock Background="LightBlue">Delta MU Preview</TextBlock> 
+                    <TextBlock>Delta MU Preview</TextBlock> 
                 </CheckBox>
 
                 <CheckBox Grid.Column="1" Grid.Row="0" Margin="5" Command="{Binding PlotCurrentDRCommand}" IsChecked="{Binding CurrentDR}">

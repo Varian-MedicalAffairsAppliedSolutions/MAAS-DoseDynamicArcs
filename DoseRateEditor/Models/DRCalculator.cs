@@ -369,7 +369,7 @@ namespace DoseRateEditor.Models
                     bm.DoseRate,
                     technique_id,
                     primary_fluence_mode
-                    );
+                );
 
                 ExternalPlanSetup plan = null;
                 if (new_plan == null)
@@ -381,6 +381,7 @@ namespace DoseRateEditor.Models
                     plan = new_plan;
                 }
 
+
                 var new_bm = plan.AddVMATBeam(
                     ebmp,
                     msws,
@@ -391,6 +392,9 @@ namespace DoseRateEditor.Models
                     couch_angles.First(),
                     bm.IsocenterPosition
                     );
+
+
+
 
                 var edits_new = new_bm.GetEditableParameters();
                 var cps_new = edits_new.ControlPoints.ToList();

@@ -129,6 +129,9 @@
     <Compile Include="Models\CourseModel.cs" />
     <Compile Include="Models\DRCalculator.cs" />
     <Compile Include="Models\Utils.cs" />
+    <None Include="DREditLauncher.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Compile Include="Startup\Bootstrapper.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\MainView.xaml.cs">
@@ -184,4 +187,8 @@
     <EmbeddedResource Include="Resources\cos_coro.PNG" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
 </Project>

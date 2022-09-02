@@ -241,8 +241,14 @@ namespace DoseRateEditor.ViewModels
             set { SetProperty(ref _View3, value); }
         }
 
+        private LinearAxis DRAxis;
+
+        private LinearAxis dMUAxis;
+
+        private LinearAxis GSAxis;
 
         private DRCalculator _DRCalc;
+
 
         public DRCalculator DRCalc
         {
@@ -294,7 +300,6 @@ namespace DoseRateEditor.ViewModels
         }
 
 
-
         public MainViewModel(Application app, Patient patient, Course course, PlanSetup plan)
         {
             _app = app;
@@ -344,8 +349,9 @@ namespace DoseRateEditor.ViewModels
             View3 = new CosmoSag();
             
             // Create the different axes with respect/ive keys
-            var DRAxis = new LinearAxis
+            DRAxis = new LinearAxis
             {
+                IsAxisVisible = true,
                 Title = "Doserate (Gy/sec)",
                 Position = AxisPosition.Left,
                 Key = "DRAxis",
@@ -354,7 +360,7 @@ namespace DoseRateEditor.ViewModels
             };
             DRPlot.Axes.Add(DRAxis);
 
-            var GSAxis = new LinearAxis
+            GSAxis = new LinearAxis
             {
                 Title = "Gantry Speed (deg/sec)",
                 Position = AxisPosition.Right,
@@ -366,14 +372,13 @@ namespace DoseRateEditor.ViewModels
             };
             DRPlot.Axes.Add(GSAxis);
 
-            var dMUAxis = new LinearAxis
+            dMUAxis = new LinearAxis
             {
                 //Title = "Delta MU",
                 IsAxisVisible = false,
                 Position = AxisPosition.Left,
                 TickStyle = TickStyle.None,
-                Key = "dMUAxis",
-           
+                Key = "dMUAxis"
             };
             DRPlot.Axes.Add(dMUAxis);
 
@@ -461,10 +466,7 @@ namespace DoseRateEditor.ViewModels
             }
 
             // Clear all DR related plots (3 of them!)
-            GS0_series.Points.Clear();
-            DR0_series.Points.Clear();
-            dMU0_series.Points.Clear();
-            DRPlot.InvalidatePlot(true);
+            ResetPlot();
 
             // Check what is checked and Replot if needed
             OnCurrentdMU();
@@ -491,6 +493,9 @@ namespace DoseRateEditor.ViewModels
 
             // Update all DR, GS, dMU plots
             OnPreviewGS();
+            OnPreviewDR();
+            //OnPreviewdMU();
+            
 
 
         }
@@ -591,6 +596,22 @@ namespace DoseRateEditor.ViewModels
             if (CurrentdMU)
             {
                 var dMU = DRCalc.InitialdMU[SelectedBeam.Id];
+                var yvals = dMU.Select(x => x.Y);
+
+                // Get min and max dMU -> calc range -> if range < tol set axis y range
+                var range = yvals.Max() - yvals.Min();
+                if (range < 3) {
+                    dMUAxis.Minimum = yvals.Average() - 50;
+                    dMUAxis.Maximum = yvals.Average() + 50;
+                    //dMUAxis.M yvals.Average() - 50
+                }
+                else
+                {
+                    dMUAxis.Minimum = yvals.Min();
+                    dMUAxis.Maximum = yvals.Max(); 
+                }
+                
+
                 dMU0_series.Points.AddRange(dMU);
 
             }
@@ -746,7 +767,10 @@ namespace DoseRateEditor.ViewModels
             if (isEmpty)
             {
                 System.Windows.MessageBox.Show($"Plan {SelectedPlan.Id} does not contain any fields with SRS ARC or ARC technique");
+
             }
+            ResetPlot();
+
 
             // Reset transaxial plot
             SelectedSlice = 0;
@@ -813,6 +837,8 @@ namespace DoseRateEditor.ViewModels
                     Plans.Add(p);
                 }
             }
+
+            ResetPlot();
             
 
             Beams.Clear();
@@ -823,6 +849,26 @@ namespace DoseRateEditor.ViewModels
         private bool CanSelectCourse()
         {
             return true;
+        }
+
+
+        private void ResetPlot()
+        {
+            DR0_series.Points.Clear();
+            DRf_series.Points.Clear();
+            GS0_series.Points.Clear();
+            GSf_series.Points.Clear();
+            dMU0_series.Points.Clear();
+            dMUf_series.Points.Clear();
+
+            //CurrentDR = false;
+            //PreviewDR = false;
+            //CurrentGS = false;
+            //PreviewGS = false;
+            //CurrentdMU = false;
+            //PreviewdMU = false;
+
+            DRPlot.InvalidatePlot(true);
         }
 
       
