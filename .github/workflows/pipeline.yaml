@@ -49,7 +49,7 @@ jobs:
     - name: Add VIC GitHub NuGet repository
       run: nuget source add -Name github `
         -Source "https://nuget.pkg.github.com/Varian-Innovation-Center/index.json" `
-        -UserName pszentiv `
+        -UserName craman96 `
         -Password ${{ secrets.ESAPI_READ_TOKEN }} `
         -StorePasswordInClearText
 
