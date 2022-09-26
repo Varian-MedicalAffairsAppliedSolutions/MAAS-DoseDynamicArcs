@@ -200,7 +200,7 @@
                     <TextBlock Background="Red">Current Doserate</TextBlock>
                 </CheckBox>
                 <CheckBox Grid.Column="1" Grid.Row="1" Margin="5" Command="{Binding PlotCurrentGSCommand}" IsChecked="{Binding CurrentGS}">
-                    <TextBlock Background="Blue">Current Gantry Speed</TextBlock>
+                    <TextBlock Background="#3283a8">Current Gantry Speed</TextBlock>
                 </CheckBox>
                 <CheckBox Grid.Column="1" Grid.Row="2" Margin="5" Command="{Binding PlotCurrentdMUCommand}" IsChecked="{Binding CurrentdMU}">
                     <TextBlock Background="Yellow">Current Delta MU</TextBlock>

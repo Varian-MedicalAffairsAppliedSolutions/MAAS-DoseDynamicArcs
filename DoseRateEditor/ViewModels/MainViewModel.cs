@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Linq;
@@ -352,10 +353,11 @@ namespace DoseRateEditor.ViewModels
             DRAxis = new LinearAxis
             {
                 IsAxisVisible = true,
-                Title = "Doserate (Gy/sec)",
+                Title = "Doserate (MU/min)",
                 Position = AxisPosition.Left,
                 Key = "DRAxis",
-                AbsoluteMinimum=0,
+                TitleColor = OxyColor.Parse("#e60909"),
+                AbsoluteMinimum =0,
                 AbsoluteMaximum=2500
             };
             DRPlot.Axes.Add(DRAxis);
@@ -365,7 +367,8 @@ namespace DoseRateEditor.ViewModels
                 Title = "Gantry Speed (deg/sec)",
                 Position = AxisPosition.Right,
                 Key = "GSAxis",
-                AbsoluteMinimum=0,
+                TitleColor = OxyColor.Parse("#3283a8"),
+                AbsoluteMinimum =0,
                 AbsoluteMaximum=6,
                 Minimum=0,
                 Maximum=6
@@ -586,6 +589,25 @@ namespace DoseRateEditor.ViewModels
 
         }
 
+        // function to set axis range to avoid small fluctuations
+        private void PlotWithScale(LinearAxis axis, LineSeries series, PlotModel plot, List<DataPoint> pts, double tolerance)
+        {
+            var yvals = pts.Select(pt => pt.Y);
+            var range = Math.Abs(yvals.Max() - yvals.Min());
+
+            var axismin = yvals.Min();
+            var axismax = yvals.Max();
+            if (range < tolerance)
+            {
+                axismin = yvals.Average() - 50;
+                axismax = yvals.Average() + 50;
+            }
+            axis.Minimum = axismin;
+            axis.Maximum = axismax;
+            series.Points.AddRange(pts);
+            plot.InvalidatePlot(true);
+        }
+
 
         private void OnCurrentdMU() {
 
@@ -596,23 +618,7 @@ namespace DoseRateEditor.ViewModels
             if (CurrentdMU)
             {
                 var dMU = DRCalc.InitialdMU[SelectedBeam.Id];
-                var yvals = dMU.Select(x => x.Y);
-
-                // Get min and max dMU -> calc range -> if range < tol set axis y range
-                var range = yvals.Max() - yvals.Min();
-                if (range < 3) {
-                    dMUAxis.Minimum = yvals.Average() - 50;
-                    dMUAxis.Maximum = yvals.Average() + 50;
-                    //dMUAxis.M yvals.Average() - 50
-                }
-                else
-                {
-                    dMUAxis.Minimum = yvals.Min();
-                    dMUAxis.Maximum = yvals.Max(); 
-                }
-                
-
-                dMU0_series.Points.AddRange(dMU);
+                PlotWithScale(dMUAxis, dMU0_series, DRPlot, dMU, 3);
 
             }
             DRPlot.InvalidatePlot(true);
@@ -651,7 +657,8 @@ namespace DoseRateEditor.ViewModels
         {
             if (CurrentGS) // If checkbox is checked
             {
-                GS0_series.Points.AddRange(DRCalc.InitialGSs[SelectedBeam.Id]);
+                //GS0_series.Points.AddRange(DRCalc.InitialGSs[SelectedBeam.Id]);
+                PlotWithScale(GSAxis, GS0_series, DRPlot, DRCalc.InitialGSs[SelectedBeam.Id], 3);
             }
             else
             {
@@ -679,7 +686,8 @@ namespace DoseRateEditor.ViewModels
                 }
 
                 // Plot final DR
-                DRf_series.Points.AddRange(DRCalc.FinalDRs[SelectedBeam.Id]);
+                var DRf = DRCalc.FinalDRs[SelectedBeam.Id];
+                PlotWithScale(DRAxis, DRf_series, DRPlot, DRf, 3);
             }
             else
             {
@@ -707,7 +715,9 @@ namespace DoseRateEditor.ViewModels
                         DRCalc.CalcFinalDR(SelectedPlan, SelectedMethod.Value);
                     }
                 }
-                GSf_series.Points.AddRange(DRCalc.FinalGSs[SelectedBeam.Id]);
+                var GSf = DRCalc.FinalGSs[SelectedBeam.Id];
+                PlotWithScale(GSAxis, GSf_series, DRPlot, GSf, 3);
+
             }
             else
             {
@@ -729,7 +739,8 @@ namespace DoseRateEditor.ViewModels
         {
             if (CurrentDR) // If checkbox is checked
             {
-                DR0_series.Points.AddRange(DRCalc.InitialDRs[SelectedBeam.Id]);
+                var DR0 = DRCalc.InitialDRs[SelectedBeam.Id];
+                PlotWithScale(DRAxis, DR0_series, DRPlot, DR0, 3);
             }
             else
             {
