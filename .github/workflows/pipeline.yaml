@@ -1,6 +1,6 @@
 name: Build ESAPI Script - v15.6
 
-on: [push]:
+on: [push]
   workflow_dispatch:
     inputs:
       dateInput:
