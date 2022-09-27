@@ -59,7 +59,7 @@ jobs:
       run: nuget install ESAPI -Version 15.6.0 -OutputDirectory packages
 
     - name: Update hint paths in the csproj file
-      run: .\.github\workflows\Update-EsapiHintPaths.ps1 -CsprojFileName DateTimeLessTest.csproj
+      run: .\.github\workflows\Update-EsapiHintPaths.ps1 -CsprojFilePath ./DoseRateEditor -CsprojFileName DoseRateEditor.csproj 
 
     - name: Build Solution
       run: msbuild.exe DateTimeLessTest.sln /nologo /nr:false /p:DeleteExistingFiles=True /p:platform="x64" /p:configuration="Release"
