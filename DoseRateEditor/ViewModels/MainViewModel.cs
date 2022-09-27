@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Navigation;
 using DoseRateEditor.Models;
 using OxyPlot;
@@ -323,11 +324,15 @@ namespace DoseRateEditor.ViewModels
 
 
             AppTitle = "Doserate Editor";
-            if (!(ConfigurationManager.AppSettings["Validated"] == "true"))
+            if (!(ConfigurationManager.AppSettings["Validated"] == "false"))
             {
                 AppTitle += " *** NOT VALIDATED FOR CLINICAL USE ***";
             }
-            
+            var ver = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            AppTitle += " ";
+            AppTitle += ver;
+
+
 
 
             Courses = new ObservableCollection<CourseModel>();
