@@ -62,7 +62,7 @@ jobs:
       run: .\.github\workflows\Update-EsapiHintPaths.ps1 -CsprojFilePath ./DoseRateEditor -CsprojFileName DoseRateEditor.csproj 
 
     - name: Build Solution
-      run: msbuild.exe DoseRateEditor.sln /nologo /nr:false /p:DeleteExistingFiles=True /p:Configuration=Debug /p:Platform="x64"
+      run: msbuild.exe DoseRateEditor.sln /nologo /nr:false /p:DeleteExistingFiles=True /p:Configuration=Debug /p:Platform="Any CPU"
         
     - name: Zip
       run: |
