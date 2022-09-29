@@ -5,3 +5,4 @@
 - [ ] Recenter image on coronal image
 - [ ] Add splash screen with exp date and repo link
 - [ ] Go to central axis on scroll viewer
+- [ ] Formula listed
