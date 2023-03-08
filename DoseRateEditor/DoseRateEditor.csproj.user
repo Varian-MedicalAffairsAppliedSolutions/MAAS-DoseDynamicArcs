@@ -4,6 +4,6 @@
     <StartArguments>"Thalamotomy%3bC1%3bTHALAMOTOMY"</StartArguments>
   </PropertyGroup>
   <PropertyGroup>
-    <ProjectView>ProjectFiles</ProjectView>
+    <ProjectView>ShowAllFiles</ProjectView>
   </PropertyGroup>
 </Project>
