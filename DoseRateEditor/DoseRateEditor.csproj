@@ -124,7 +124,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Launchers\DREditExplicitPathLauncher.cs" />
+    <Compile Include="Launcher\DREditExplicitPathLauncher.cs" />
     <Compile Include="Models\CosmoCoro.cs" />
     <Compile Include="Models\CosmoPlot.cs" />
     <Compile Include="Models\CosmoSag.cs" />
@@ -132,7 +132,7 @@
     <Compile Include="Models\CourseModel.cs" />
     <Compile Include="Models\DRCalculator.cs" />
     <Compile Include="Models\Utils.cs" />
-    <None Include="DREditLauncher.cs">
+    <None Include="Launcher\DREditLauncher.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="Startup\Bootstrapper.cs" />
@@ -188,6 +188,11 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\cos_coro.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Converters\" />
+    <Folder Include="Events\" />
+    <Folder Include="Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
