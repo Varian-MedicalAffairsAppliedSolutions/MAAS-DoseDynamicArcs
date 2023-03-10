@@ -61,4 +61,5 @@ C:\Users\craman96\source\repos\DoseRateEditor\DoseRateEditor\obj\Debug\DoseRateE
 C:\Users\craman96\source\repos\DoseRateEditor\DoseRateEditor\obj\Debug\DoseRateEditor.csproj.SuggestedBindingRedirects.cache
 C:\Users\craman96\source\repos\DoseRateEditor\DoseRateEditor\bin\Debug\OxyPlot.Wpf.Shared.dll
 C:\Users\craman96\source\repos\DoseRateEditor\DoseRateEditor\bin\Debug\OxyPlot.Wpf.Shared.xml
-C:\Users\craman96\source\repos\DoseRateEditor\DoseRateEditor\bin\Debug\DREditLauncher.cs
+C:\Users\craman96\source\repos\DoseRateEditor\DoseRateEditor\bin\Debug\Launcher\DREditLauncher.cs
+C:\Users\craman96\source\repos\DoseRateEditor\DoseRateEditor\obj\Debug\DoseRateEditor_Content.g.cs

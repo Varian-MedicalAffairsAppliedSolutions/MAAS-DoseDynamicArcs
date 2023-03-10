@@ -52,7 +52,7 @@ namespace DoseRateEditor
 
                 var isValidated = ConfigurationManager.AppSettings["Validated"] == "true";
 
-                if (DateTime.TryParse("12/30/2022", provider, DateTimeStyles.None, out endDate))
+                if (DateTime.TryParse("12/30/2023", provider, DateTimeStyles.None, out endDate))
 
                 {
 
