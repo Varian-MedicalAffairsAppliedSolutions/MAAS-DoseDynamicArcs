@@ -177,7 +177,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\cosmo_coro.PNG" />
+    <EmbeddedResource Include="Resources\cosmo_coro_old.PNG" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\cosmo_trans.PNG" />
@@ -186,10 +186,10 @@
     <EmbeddedResource Include="Resources\cosmo_sag.PNG" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\cos_sag.PNG" />
+    <EmbeddedResource Include="Resources\cos_sag_old.PNG" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\cos_coro.PNG" />
+    <EmbeddedResource Include="Resources\cos_coro_old.PNG" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Commands\" />
@@ -199,6 +199,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore" />
+    <EmbeddedResource Include="Resources\Transversal_FFS.PNG" />
+    <EmbeddedResource Include="Resources\Sagittal_HFDLcrop.PNG" />
+    <EmbeddedResource Include="Resources\Frontal_crop.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

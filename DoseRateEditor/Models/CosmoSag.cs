@@ -12,7 +12,7 @@ namespace DoseRateEditor.Models
 {
     public class CosmoSag : CosmoPlot
     {
-        public CosmoSag() : base("Sagittal", "DoseRateEditor.Resources.cos_sag.PNG")
+        public CosmoSag() : base("Sagittal", "DoseRateEditor.Resources.Sagittal_HFDLcrop.PNG")
         {
 
         }

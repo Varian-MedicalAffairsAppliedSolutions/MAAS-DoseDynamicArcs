@@ -11,7 +11,7 @@ namespace DoseRateEditor.Models
     public class CosmoTrans : CosmoPlot
     {
 
-        public CosmoTrans() : base("Transverse", "DoseRateEditor.Resources.cosmo_trans.PNG")
+        public CosmoTrans() : base("Transverse", "DoseRateEditor.Resources.Transversal_FFS.PNG")
         {
             
         }

@@ -356,12 +356,14 @@ namespace DoseRateEditor.ViewModels
             View1 = new CosmoTrans();
             View2 = new CosmoCoro();
             View3 = new CosmoSag();
-            
+
             // Create the different axes with respect/ive keys
             DRAxis = new LinearAxis
             {
                 IsAxisVisible = true,
                 Title = "Doserate (MU/min)",
+                IsPanEnabled = false,
+                IsZoomEnabled = false,
                 Position = AxisPosition.Left,
                 Key = "DRAxis",
                 TitleColor = OxyColor.Parse("#e60909"),
@@ -374,6 +376,8 @@ namespace DoseRateEditor.ViewModels
             {
                 Title = "Gantry Speed (deg/sec)",
                 Position = AxisPosition.Right,
+                IsPanEnabled = false,
+                IsZoomEnabled = false,
                 Key = "GSAxis",
                 TitleColor = OxyColor.Parse("#3283a8"),
                 AbsoluteMinimum =0,
@@ -387,6 +391,8 @@ namespace DoseRateEditor.ViewModels
             {
                 //Title = "Delta MU",
                 IsAxisVisible = false,
+                IsPanEnabled = false,
+                IsZoomEnabled = false,
                 Position = AxisPosition.Left,
                 TickStyle = TickStyle.None,
                 Key = "dMUAxis"
@@ -421,7 +427,8 @@ namespace DoseRateEditor.ViewModels
                 YAxisKey = "GSAxis",
                 Color = OxyColors.DeepSkyBlue,
                 LineStyle = LineStyle.Dot,
-                StrokeThickness = 4
+                StrokeThickness = 4,
+               
             };
             DRPlot.Series.Add(GSf_series);
 
@@ -556,11 +563,17 @@ namespace DoseRateEditor.ViewModels
         private void AddAxes(PlotModel plotModel) // Lifted from CJA blog "Working with various plot types"
         {
             var xAxis = new LinearAxis
-            { Title = "X", Position = AxisPosition.Bottom, };
+            { Title = "X", Position = AxisPosition.Bottom,
+                IsPanEnabled = false,
+                IsZoomEnabled = false,
+            };
             plotModel.Axes.Add(xAxis);
 
             var yAxis = new LinearAxis
-            { Title = "Y", Position = AxisPosition.Left };
+            { Title = "Y", Position = AxisPosition.Left,
+                IsPanEnabled = false,
+                IsZoomEnabled = false,
+            };
             plotModel.Axes.Add(yAxis);
 
             var zAxis = new LinearColorAxis
@@ -612,6 +625,7 @@ namespace DoseRateEditor.ViewModels
         // function to set axis range to avoid small fluctuations
         private void PlotWithScale(LinearAxis axis, LineSeries series, PlotModel plot, List<DataPoint> pts, double tolerance)
         {
+            
             var yvals = pts.Select(pt => pt.Y);
             var range = Math.Abs(yvals.Max() - yvals.Min());
 
