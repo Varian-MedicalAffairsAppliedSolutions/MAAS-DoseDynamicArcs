@@ -63,3 +63,4 @@ C:\Users\craman96\source\repos\DoseRateEditor\DoseRateEditor\bin\Debug\OxyPlot.W
 C:\Users\craman96\source\repos\DoseRateEditor\DoseRateEditor\bin\Debug\OxyPlot.Wpf.Shared.xml
 C:\Users\craman96\source\repos\DoseRateEditor\DoseRateEditor\bin\Debug\Launcher\DREditLauncher.cs
 C:\Users\craman96\source\repos\DoseRateEditor\DoseRateEditor\obj\Debug\DoseRateEditor_Content.g.cs
+C:\Users\craman96\source\repos\DoseRateEditor\DoseRateEditor\bin\Debug\Models\CosmoCoro.cs

@@ -172,7 +172,7 @@
             </Grid>
         </StackPanel>
 
-        <StackPanel Grid.Row="4" Grid.Column="1">
+        <StackPanel Grid.Row="4" Grid.Column="1" Margin="50,0,0,0">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition></ColumnDefinition>
@@ -233,16 +233,12 @@
             <oxy:PlotView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding View3}" Height="300" Width="300"></oxy:PlotView>
         </StackPanel>
 
-        <TextBlock Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="4">
-            Bound by the terms of the 
-            <Hyperlink 
-            NavigateUri="http://medicalaffairs.varian.com/download/VarianLUSLA.pdf"
-            >
-            VarianLUSLA
-            </Hyperlink>    
-
+        <TextBlock Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="4" Background="PaleVioletRed">    
+            <Label Margin="0"><Hyperlink NavigateUri="http://medicalaffairs.varian.com/download/VarianLUSLA.pdf">
+                Bound by the terms of the Varian LUSLA
+            </Hyperlink></Label>
+            <Label Margin="0" Content="{Binding PostText}"/>
         </TextBlock>
-
     </Grid>
 </metro:MetroWindow>
  

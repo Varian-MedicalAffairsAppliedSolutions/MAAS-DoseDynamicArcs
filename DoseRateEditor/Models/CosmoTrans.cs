@@ -20,24 +20,50 @@ namespace DoseRateEditor.Models
             var points = new List<DataPoint>();
             var slopes = new List<double>();
 
+
+            // Need fxn to return t_range
+            // f(181 179, CW) -> 358
+            /*
+            double[] get_t_range(double start, double stop, GantryDirection dir)
+            {
+                var retval = new double[2];
+                retval[0] = Math.PI * (start / 180);
+
+                var delta = dir == GantryDirection.Clockwise? (Math.PI/180) * (start + stop) : (Math.PI/180) * Math.Abs(start - stop);
+                retval[1] = retval[0] + delta;
+
+                return retval;
+            }*/
+
+            
+
+            if (plane_angle == 0)
+            {
+                stop_angle_deg *= -1;
+            }
+
+            
             var t_range = new double[] { 
                 Math.PI* start_angle_deg / 180,
                 Math.PI* stop_angle_deg / 180
             };
 
+            //var t_range = get_t_range(start_angle_deg, stop_angle_deg, gan_dir);
 
             var step = Math.Abs(t_range[1] - t_range[0]) / steps;
 
             var t_curr = Math.Min(t_range[0], t_range[1]); // Start with the minimum t (could be negative)
             var t_max = Math.Max(t_range[0], t_range[1]);
 
+            var plane_factor = Math.Cos(Math.PI * plane_angle / 180);
+            if (plane_angle > 180)
+            {
+                plane_factor *= -1;
+            }
+
             while (t_curr <= t_max)
             {
-                var plane_factor = Math.Cos(Math.PI * plane_angle / 180); 
-                if (plane_angle > 180)
-                {
-                    plane_factor *= -1;
-                }
+               
 
                 var x = plane_factor * R * Math.Sin(t_curr);
                 var y = R * Math.Cos(t_curr);
@@ -61,6 +87,28 @@ namespace DoseRateEditor.Models
 
             // Build list of DataPoint[] in this loop
             //MessageBox.Show($"start and stop {startangle} - {stopangle} ");
+
+            
+
+            if (plane_angle == 90)
+            {
+                var line = new OxyPlot.Annotations.PolylineAnnotation
+                {
+                    Color = OxyColors.Red,
+                    LineStyle = LineStyle.Dash,
+                    StrokeThickness = 4,
+                };
+
+                //line.Points.Add()
+                var R = (int)(1.1 * 50);
+
+                line.Points.Add(new DataPoint(0, -R));
+                line.Points.Add(new DataPoint(0, R));
+
+                Annotations.Add(line);
+                InvalidatePlot(true);
+                return;
+            }
 
             var arc = BuildArc(values.Count(), 40, startangle, stopangle, plane_angle, gan_dir);
             var maxHeight = 15;

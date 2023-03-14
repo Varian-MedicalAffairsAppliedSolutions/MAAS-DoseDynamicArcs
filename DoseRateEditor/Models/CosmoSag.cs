@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using VMS.TPS.Common.Model.Types;
 
 namespace DoseRateEditor.Models
@@ -58,7 +59,27 @@ namespace DoseRateEditor.Models
             // plan angle will be table angle in this case ...
 
             // Build list of DataPoint[] in this loop
-            //MessageBox.Show($"start and stop {startangle} - {stopangle} ");
+            
+            // SPECIAL CASE: plane angle is zero -> draw a horizontal dotted line
+            if (plane_angle == 0)
+            {
+                var line = new OxyPlot.Annotations.PolylineAnnotation
+                {
+                    Color = OxyColors.Red,
+                    LineStyle = LineStyle.Dash,
+                    StrokeThickness = 4,
+                };
+
+                //line.Points.Add()
+                var R = (int)(1.1 * 50);
+
+                line.Points.Add(new DataPoint(-R, 0));
+                line.Points.Add(new DataPoint(R, 0));
+
+                Annotations.Add(line);
+                InvalidatePlot(true);
+                return;
+            }
 
             var arc = BuildArc(values.Count, 42, startangle-90, stopangle-90, plane_angle, gan_dir); // minus 90 to fix angles
             var maxHeight = 12 * Math.Sin(Math.PI * plane_angle / 180);

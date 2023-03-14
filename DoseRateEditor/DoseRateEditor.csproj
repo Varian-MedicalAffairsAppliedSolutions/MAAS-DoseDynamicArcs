@@ -125,7 +125,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Launcher\DREditExplicitPathLauncher.cs" />
-    <Compile Include="Models\CosmoCoro.cs" />
+    <Compile Include="Models\CosmoCoro.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
     <Compile Include="Models\CosmoPlot.cs" />
     <Compile Include="Models\CosmoSag.cs" />
     <Compile Include="Models\CosmoTrans.cs" />
@@ -190,6 +192,7 @@
     <EmbeddedResource Include="Resources\cos_coro.PNG" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Commands\" />
     <Folder Include="Converters\" />
     <Folder Include="Events\" />
     <Folder Include="Services\" />

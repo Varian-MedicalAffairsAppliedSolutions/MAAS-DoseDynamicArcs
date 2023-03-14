@@ -38,7 +38,7 @@ namespace DoseRateEditor.ViewModels
         public DelegateCommand OnPlanSelectCommand { get; private set; }
         public DelegateCommand OnMethodSelectCommand { get; private set; }    
         public DelegateCommand OnBeamSelectCommand { get; private set; }
-
+        public DelegateCommand HyperlinkCmd { get; private set; }
         public DelegateCommand PlotCurrentDRCommand { get; private set; }
         public DelegateCommand PlotCurrentGSCommand { get; private set; }
         public DelegateCommand PreviewGSCommand { get; private set; }
@@ -58,6 +58,8 @@ namespace DoseRateEditor.ViewModels
             get { return _CreditText; }
             set { SetProperty(ref _CreditText, value); }
         }
+
+
 
 
         // CHECKBOXES
@@ -323,6 +325,7 @@ namespace DoseRateEditor.ViewModels
             OnBeamSelectCommand = new DelegateCommand(OnBeamSelect, CanBeamSelect);
 
 
+
             AppTitle = "Doserate Editor";
             if (!(ConfigurationManager.AppSettings["Validated"] == "false"))
             {
@@ -466,6 +469,21 @@ namespace DoseRateEditor.ViewModels
 
         }
 
+        private bool CanHyperlink()
+        {
+            return true;
+        }
+
+        private void OnHyperlink(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        { 
+            System.Diagnostics.Process.Start(
+                new System.Diagnostics.ProcessStartInfo(e.Uri.AbsoluteUri)
+                );
+            e.Handled = true;
+        }
+
+      
+
         private void OnBeamSelect()
         {
             if (SelectedBeam == null)
@@ -490,9 +508,6 @@ namespace DoseRateEditor.ViewModels
             var dMU = DRCalc.InitialdMU[SelectedBeam.Id];
             var angles = Utils.GetBeamAngles(SelectedBeam);
 
-            //View1.DrawRects(dMU.Select(x => x.Y).ToList(), 5, 5, 5);
-            //var smallangle = Math.Min(angles.Item1.First(), angles.Item1.Last());
-            //var largeangle = Math.Max(angles.Item1.First(), angles.Item1.Last());
 
             var deltaMU = dMU.Select(x => x.Y).ToList();
             View3.DrawRects(deltaMU, angles.Item1.First(), angles.Item1.Last(), angles.Item3[0], angles.Item5);

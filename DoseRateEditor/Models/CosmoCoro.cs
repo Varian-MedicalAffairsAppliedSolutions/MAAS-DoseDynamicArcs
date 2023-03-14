@@ -39,12 +39,17 @@ namespace DoseRateEditor.Models
 
             var dy = Math.Abs(R * Math.Sin(angle * (Math.PI / 180)));
 
-            line.Points.Add(new DataPoint(0, 0));
-            line.Points.Add(new DataPoint((int)dx, (int)dy));
+            if (angle == 0)
+            {
+                line.Points.Add(new DataPoint(-(int)dx, 0));
+                line.Points.Add(new DataPoint((int)dx, 0));
+            }
 
-            // Test
-            //line.Points.Add(new DataPoint(0, 0));
-            //line.Points.Add(new DataPoint(40, 30));
+            else
+            {
+                line.Points.Add(new DataPoint(0, 0));
+                line.Points.Add(new DataPoint((int)dx, (int)dy));
+            }
 
             // Add line and refresh
             Annotations.Add(line);
