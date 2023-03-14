@@ -6,3 +6,4 @@
 - [ ] Add splash screen with exp date and repo link
 - [ ] Go to central axis on scroll viewer
 - [ ] Formula listed
+- [ ] Add launcher from PlanScorecard (with edits)
