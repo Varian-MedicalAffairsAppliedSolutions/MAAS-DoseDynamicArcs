@@ -126,6 +126,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Events\HyperlinkEvent.cs" />
     <Compile Include="Launcher\DREditExplicitPathLauncher.cs" />
     <Compile Include="Models\CosmoCoro.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -195,10 +196,7 @@
     <EmbeddedResource Include="Resources\cos_coro_old.PNG" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Addons\" />
-    <Folder Include="Commands\" />
     <Folder Include="Converters\" />
-    <Folder Include="Events\" />
     <Folder Include="Services\" />
   </ItemGroup>
   <ItemGroup>

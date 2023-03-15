@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
-using System.Windows.Navigation;
 using DoseRateEditor.Models;
 using OxyPlot;
 using OxyPlot.Axes;
@@ -38,13 +37,13 @@ namespace DoseRateEditor.ViewModels
         public DelegateCommand OnPlanSelectCommand { get; private set; }
         public DelegateCommand OnMethodSelectCommand { get; private set; }    
         public DelegateCommand OnBeamSelectCommand { get; private set; }
-        public DelegateCommand HyperlinkCmd { get; private set; }
         public DelegateCommand PlotCurrentDRCommand { get; private set; }
         public DelegateCommand PlotCurrentGSCommand { get; private set; }
         public DelegateCommand PreviewGSCommand { get; private set; }
         public DelegateCommand PreviewDRCommand { get; private set; }
         public DelegateCommand PreviewdMUCommand { get; private set; }
         public DelegateCommand PlotCurrentdMUCommand { get; private set; }
+        public DelegateCommand HyperlinkCmd { get; private set; }
         public IViewCommand<OxyMouseWheelEventArgs> TransScrollCommand { get; private set; } 
         public ObservableCollection<CourseModel> Courses { get; private set; }
 	    public ObservableCollection<PlanningItem> Plans { get; private set; }
@@ -324,6 +323,8 @@ namespace DoseRateEditor.ViewModels
             PlotCurrentdMUCommand = new DelegateCommand(OnCurrentdMU, CanCurrentdMU);
             OnBeamSelectCommand = new DelegateCommand(OnBeamSelect, CanBeamSelect);
 
+            HyperlinkCmd = new DelegateCommand(OnHyperlink, CanHyperlink);
+
 
 
             AppTitle = "Doserate Editor";
@@ -476,20 +477,18 @@ namespace DoseRateEditor.ViewModels
 
         }
 
+        private void OnHyperlink()
+        {
+            var url = "http://medicalaffairs.varian.com/download/VarianLUSLA.pdf";
+            System.Diagnostics.Process.Start(
+                new System.Diagnostics.ProcessStartInfo(url)
+                );
+        }
+
         private bool CanHyperlink()
         {
             return true;
         }
-
-        private void OnHyperlink(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
-        { 
-            System.Diagnostics.Process.Start(
-                new System.Diagnostics.ProcessStartInfo(e.Uri.AbsoluteUri)
-                );
-            e.Handled = true;
-        }
-
-      
 
         private void OnBeamSelect()
         {
@@ -905,13 +904,6 @@ namespace DoseRateEditor.ViewModels
             GSf_series.Points.Clear();
             dMU0_series.Points.Clear();
             dMUf_series.Points.Clear();
-
-            //CurrentDR = false;
-            //PreviewDR = false;
-            //CurrentGS = false;
-            //PreviewGS = false;
-            //CurrentdMU = false;
-            //PreviewdMU = false;
 
             DRPlot.InvalidatePlot(true);
         }
