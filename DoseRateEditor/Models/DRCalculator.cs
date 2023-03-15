@@ -393,9 +393,6 @@ namespace DoseRateEditor.Models
                     bm.IsocenterPosition
                     );
 
-
-
-
                 var edits_new = new_bm.GetEditableParameters();
                 var cps_new = edits_new.ControlPoints.ToList();
 
@@ -428,7 +425,14 @@ namespace DoseRateEditor.Models
             // Create new course
             var newcourse = pat.AddCourse();
             var dt = DateTime.UtcNow.ToString("d");
-            newcourse.Id = $"EditDR {dt}";
+
+            // Generate a new course name until we find a new name
+            int n = 1;
+            while(pat.Courses.Select(c => c.Id == $"EditDR_{dt}_{n}").Count() > 0)
+            {
+                n++;
+            }
+            var course_name = $"EditDR{dt}_{n}";
 
             var newplan = newcourse.CopyPlanSetup(Plan) as ExternalPlanSetup; 
             newplan.Id = Plan.Id;
