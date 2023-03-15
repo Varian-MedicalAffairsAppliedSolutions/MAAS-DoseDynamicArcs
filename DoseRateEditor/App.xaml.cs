@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -236,17 +237,19 @@ namespace DoseRateEditor
             // Initial EULA agreement
             if (!EULAAgreed)
             {
-                var res = MessageBox.Show("EULA GOES HERE", "EULA Agreement", (MessageBoxButton)MessageBoxButton.YesNo);
-                if (res == MessageBoxResult.No)
+                var msg0 = "You are bound by the terms of the Varian Limited Use Software License Agreement (LULSA).\nShow license agreement?";
+                string title = "Varian LULSA";
+                var buttons = System.Windows.MessageBoxButton.YesNo;
+                var result = MessageBox.Show(msg0, title, buttons);
+                if (result == System.Windows.MessageBoxResult.Yes)
                 {
-                    shutdown();
-                    return;
+                    Process.Start("notepad.exe", "license.txt");
                 }
-                else
-                {
-                    config.AppSettings.Settings["EULAAgreed"].Value = "true";
-                    config.Save(ConfigurationSaveMode.Modified);
-                }
+                
+                // Save that they have seen EULA
+                config.AppSettings.Settings["EULAAgreed"].Value = "true";
+                config.Save(ConfigurationSaveMode.Modified);
+                
             }
 
             // Display opening msg
