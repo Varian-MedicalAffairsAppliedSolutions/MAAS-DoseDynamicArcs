@@ -451,7 +451,10 @@ namespace DoseRateEditor.Models
                 copy_beam(bm, new_msws, false, newplan);
             }
 
-            MessageBox.Show($"New plan created with id: {newplan.Id} in course {newcourse.Id}");
+            MessageBox.Show(
+                $"New plan created with id: {newplan.Id} in course {newcourse.Id}" +
+                $"\nExit Dose Rate Editor and reload patient in Eclipse " +
+                $"to select new course and view plan");
         }
     }
 }
