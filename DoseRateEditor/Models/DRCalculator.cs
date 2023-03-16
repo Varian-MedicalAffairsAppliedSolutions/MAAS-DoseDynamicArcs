@@ -427,12 +427,25 @@ namespace DoseRateEditor.Models
             var dt = DateTime.UtcNow.ToString("d");
 
             // Generate a new course name until we find a new name
-            int n = 1;
-            while(pat.Courses.Select(c => c.Id == $"EditDR_{dt}_{n}").Count() > 0)
+            //int n = 1;
+            //while(pat.Courses.Select(c => c.Id == $"EditDR_{dt}_{n}").Count() > 0)
+            //{
+            //    n++;
+            //}
+            string proposed_name;
+            for(int n = 1; n < 100; n++)
             {
-                n++;
+                proposed_name = $"EditDR_{n}";
+                if (pat.Courses.Count(c => c.Id == proposed_name) == 0) // If we don't find that name
+                {
+                    // use proposed name and break the loop
+                    newcourse.Id = proposed_name;
+                    break;  
+                }else if (n == 99) {
+                    throw new Exception("Maximum new course index reached (99)");
+                }
+           
             }
-            var course_name = $"EditDR{dt}_{n}";
 
             var newplan = newcourse.CopyPlanSetup(Plan) as ExternalPlanSetup; 
             newplan.Id = Plan.Id;

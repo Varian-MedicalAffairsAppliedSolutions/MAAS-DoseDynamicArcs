@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
+
 using DoseRateEditor.Models;
 using OxyPlot;
 using OxyPlot.Axes;
@@ -829,7 +830,9 @@ namespace DoseRateEditor.ViewModels
 
         private void OnEditDR()
         {
+            System.Windows.MessageBox.Show("Creating new plan with DR method.");
             DRCalc.CreateNewPlanWithMethod(SelectedMethod.Value);
+            System.Windows.MessageBox.Show("Finished creating new plan with DR method.");
             _app.SaveModifications();
         }
 
