@@ -236,9 +236,9 @@
         
         <TextBlock Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="4" Background="PaleVioletRed">    
             <Label Margin="0">
-                Bound by the terms of the Varian LUSLA
+                <Hyperlink Command="{Binding HyperlinkCmd}">Bound by the terms of the Varian LUSLA</Hyperlink>
             </Label>
-            <Button Command="{Binding HyperlinkCmd}">View agreement</Button>
+            <!--Button Command="{Binding HyperlinkCmd}">View agreement</Button-->
             <Label Margin="0" Content="{Binding PostText}"/>
         </TextBlock>
     </Grid>
