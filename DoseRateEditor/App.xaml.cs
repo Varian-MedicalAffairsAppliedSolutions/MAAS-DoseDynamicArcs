@@ -237,13 +237,13 @@ namespace DoseRateEditor
             // Initial EULA agreement
             if (!EULAAgreed)
             {
-                var msg0 = "You are bound by the terms of the Varian Limited Use Software License Agreement (LULSA).\nShow license agreement?";
+                var msg0 = "You are bound by the terms of the Varian Limited Use Software License Agreement (LULSA). \"To stop viewing this message set EULA to \"true\" in DoseRateEditor.exe.config\"\nShow license agreement?";
                 string title = "Varian LULSA";
                 var buttons = System.Windows.MessageBoxButton.YesNo;
                 var result = MessageBox.Show(msg0, title, buttons);
                 if (result == System.Windows.MessageBoxResult.Yes)
                 {
-                    Process.Start("notepad.exe", "license.txt");
+                    Process.Start("notepad.exe", Path.Combine(path, "license.txt"));
                 }
                 
                 // Save that they have seen EULA
