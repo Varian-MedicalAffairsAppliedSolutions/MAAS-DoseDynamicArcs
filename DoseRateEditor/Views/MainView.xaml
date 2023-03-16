@@ -11,7 +11,7 @@
         xmlns:viewmodels="clr-namespace:DoseRateEditor.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
                    mc:Ignorable="d"
         Title="{Binding AppTitle}" Height="850" Width="1600">
-       
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition>
@@ -29,99 +29,76 @@
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="97*">
+            <RowDefinition Height="100*">
 
             </RowDefinition>
-            <RowDefinition Height="55*">
+            <RowDefinition Height="100*">
 
             </RowDefinition>
-            <RowDefinition Height="141*">
+            <RowDefinition Height="100*">
 
             </RowDefinition>
-            <RowDefinition Height="181*">
+            <RowDefinition Height="100*">
 
             </RowDefinition>
-            <RowDefinition Height="200*">
+            <RowDefinition Height="100*">
 
             </RowDefinition>
-            <RowDefinition Height="125">
+            <RowDefinition Height="100*">
 
             </RowDefinition>
-            <RowDefinition Height="30">
-                 
+            <RowDefinition Height="100*">
+
             </RowDefinition>
         </Grid.RowDefinitions>
 
-        <!-- Matt test
-        <StackPanel>
-            <TextBox Text="{Binding PatientId, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
-            <Button Content="Open Patient" Command="{Binding OpenPatientCommand}"/>
+        <StackPanel Grid.Row="0">
+            <TextBlock HorizontalAlignment="Center" FontWeight="Bold"> Patient Id</TextBlock>
+            <TextBox  Text="{Binding PatientId}"></TextBox>
+            <Button Content="Open Patient" Command="{Binding OpenPatientCommand}"></Button>
         </StackPanel>
-        <StackPanel>
-            <ListBox ItemsSource="{Binding Courses}">
-                <ListBox.ItemTemplate>
+
+        <StackPanel Grid.Row="1" Margin="0">
+            <TextBlock FontWeight="Bold" Margin="0" HorizontalAlignment="Center">Courses</TextBlock>
+            <ComboBox  Margin="0" x:Name="CourseListBox" ItemsSource="{Binding Courses}" SelectedItem="{Binding SelectedCourse, Mode=TwoWay}">
+                <ie:Interaction.Triggers>
+                    <ie:EventTrigger EventName="SelectionChanged">
+                        <ie:InvokeCommandAction Command="{Binding ViewCourseCommand}"/>
+                    </ie:EventTrigger>
+                </ie:Interaction.Triggers>
+                <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Id}">
-                            
+
                         </TextBlock>
                     </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </StackPanel>
-        -->
-
-        <StackPanel Grid.Row="0">
-            <TextBlock Margin="8" HorizontalAlignment="Center" FontSize="12"> Patient Id:</TextBlock>
-            <TextBox Margin ="8" Text="{Binding PatientId}"></TextBox>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
         </StackPanel>
 
-        <StackPanel Grid.Row="1">
-            <Button Margin="8" Content="Open Patient" Command="{Binding OpenPatientCommand}"></Button>
+        <StackPanel Grid.Row="2" Margin="0">
+            <TextBlock Margin="0" FontWeight="Bold" HorizontalAlignment="Center">Plans</TextBlock>
+            <ComboBox Margin="0" ItemsSource="{Binding Plans}" SelectedItem="{Binding SelectedPlan, Mode=TwoWay}">
+                <ie:Interaction.Triggers>
+                    <ie:EventTrigger EventName="SelectionChanged">
+                        <ie:InvokeCommandAction Command="{Binding OnPlanSelectCommand}"/>
+                    </ie:EventTrigger>
+                </ie:Interaction.Triggers>
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Id}">
+
+                        </TextBlock>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
         </StackPanel>
 
-        <ScrollViewer Grid.Row="2">
-            <StackPanel>
-                <TextBlock Margin="5" HorizontalAlignment="Center">Courses</TextBlock>
-                <ListBox  Margin="8" x:Name="CourseListBox" ItemsSource="{Binding Courses}" SelectedItem="{Binding SelectedCourse, Mode=TwoWay}">
-                    <ie:Interaction.Triggers>
-                        <ie:EventTrigger EventName="SelectionChanged">
-                            <ie:InvokeCommandAction Command="{Binding ViewCourseCommand}"/>
-                        </ie:EventTrigger>
-                    </ie:Interaction.Triggers>
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Id}">
-
-                            </TextBlock>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </StackPanel>
-        </ScrollViewer>
-
-        <ScrollViewer Grid.Row="3">
-            <StackPanel>
-                <TextBlock Margin="5" HorizontalAlignment="Center">Plans</TextBlock>
-                <ListBox Margin="8" ItemsSource="{Binding Plans}" SelectedItem="{Binding SelectedPlan, Mode=TwoWay}">
-                    <ie:Interaction.Triggers>
-                        <ie:EventTrigger EventName="SelectionChanged">
-                            <ie:InvokeCommandAction Command="{Binding OnPlanSelectCommand}"/>
-                        </ie:EventTrigger>
-                    </ie:Interaction.Triggers>
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Id}">
-
-                            </TextBlock>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </StackPanel>
-        </ScrollViewer>
-
-        <ScrollViewer Grid.Row="4">
-            <StackPanel>
-                <TextBlock Margin="5" HorizontalAlignment="Center">Fields</TextBlock>
+       
+        
+        <StackPanel Grid.Row="3">
+            <TextBlock Margin="0" FontWeight="Bold" HorizontalAlignment="Center">Fields</TextBlock>
+            <ScrollViewer Height="300">
                 <ListBox Margin="8" ItemsSource="{Binding Beams}" SelectedItem="{Binding SelectedBeam, Mode=TwoWay}">
                     <ie:Interaction.Triggers>
                         <ie:EventTrigger EventName="SelectionChanged">
@@ -136,11 +113,10 @@
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-            </StackPanel>
-        </ScrollViewer>
+            </ScrollViewer>
+        </StackPanel>
 
-        <StackPanel Grid.Row="5" Grid.Column="0">
-            <TextBlock Margin="5" HorizontalAlignment="Center">DR Edit Method</TextBlock>
+        <StackPanel Grid.Row="4" Grid.Column="0" Margin="0" Grid.RowSpan="2">
             <ComboBox Margin="10" 
                       ItemsSource="{Binding DRMethods}" 
                       SelectedValuePath="Item1"
@@ -162,17 +138,13 @@
             </Button>
         </StackPanel>
 
-        <StackPanel Grid.Row="5" Grid.Column="0">
-
-        </StackPanel>
-
         <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="4">
             <Grid>
-                <oxy:PlotView Margin="8,8,8,-341" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding DRPlot}"/>
+                <oxy:PlotView Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding DRPlot}"/>
             </Grid>
         </StackPanel>
 
-        <StackPanel Grid.Row="4" Grid.Column="1" Margin="50,0,0,0">
+        <StackPanel Grid.Row="4" Grid.Column="1" Margin="0">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition></ColumnDefinition>
@@ -187,13 +159,13 @@
                 <CheckBox Grid.Column="0" Grid.Row="0" Margin="5" Command="{Binding PreviewDRCommand}" IsChecked="{Binding PreviewDR}">
                     <TextBlock Background="Orange">Preview Doserate</TextBlock>
                 </CheckBox>
-                
+
                 <CheckBox Grid.Column="0" Grid.Row="1" Margin="5" Command="{Binding PreviewGSCommand}" IsChecked="{Binding PreviewGS}">
-                    <TextBlock Background="LightBlue">Gantry Speed Preview</TextBlock> 
+                    <TextBlock Background="LightBlue">Gantry Speed Preview</TextBlock>
                 </CheckBox>
-                
+
                 <CheckBox Grid.Column="0" Grid.Row="2" Margin="5" Command="{Binding PreviewdMUCommand}" IsChecked="{Binding PreviewdMU}">
-                    <TextBlock>Delta MU Preview</TextBlock> 
+                    <TextBlock>Delta MU Preview</TextBlock>
                 </CheckBox>
 
                 <CheckBox Grid.Column="1" Grid.Row="0" Margin="5" Command="{Binding PlotCurrentDRCommand}" IsChecked="{Binding CurrentDR}">
@@ -205,15 +177,15 @@
                 <CheckBox Grid.Column="1" Grid.Row="2" Margin="5" Command="{Binding PlotCurrentdMUCommand}" IsChecked="{Binding CurrentdMU}">
                     <TextBlock Background="Yellow">Current Delta MU</TextBlock>
                 </CheckBox>
-                
+
             </Grid>
 
         </StackPanel>
-        <StackPanel Grid.Row="5" Grid.Column="1">
+        <StackPanel Grid.Row="6" Grid.Column="1" Margin="0" Grid.RowSpan="2">
             <TextBlock Text="{Binding CreditText}"></TextBlock>
         </StackPanel>
 
-        
+
 
 
 
@@ -225,16 +197,16 @@
             <oxy:PlotView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding View1}" Height="300" Width="300"></oxy:PlotView>
         </StackPanel>
 
-        <StackPanel Grid.Row="4" Grid.Column="3" Grid.RowSpan="2">
+        <StackPanel Grid.Row="4" Grid.Column="3" Grid.RowSpan="2" Margin="0,60,0,0">
             <oxy:PlotView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding View2}" Height="300" Width="300"></oxy:PlotView>
         </StackPanel>
 
-        <StackPanel Grid.Row="4" Grid.Column="2" Grid.RowSpan="2">
+        <StackPanel Grid.Row="4" Grid.Column="2" Grid.RowSpan="2" Margin="0,60,0,0">
             <oxy:PlotView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding View3}" Height="300" Width="300"></oxy:PlotView>
         </StackPanel>
 
-        
-        <TextBlock Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="4" Background="PaleVioletRed">    
+
+        <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" Background="PaleVioletRed" Margin="0,125,0,0" Grid.RowSpan="2">    
             <Label Margin="0">
                 <Hyperlink Command="{Binding HyperlinkCmd}">Bound by the terms of the Varian LUSLA</Hyperlink>
             </Label>

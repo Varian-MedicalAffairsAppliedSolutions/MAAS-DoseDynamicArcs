@@ -59,7 +59,13 @@ namespace DoseRateEditor.ViewModels
             set { SetProperty(ref _CreditText, value); }
         }
 
-
+        // *** Not validated *** text
+        private string postText;
+        public string PostText
+        {
+            get { return postText; }
+            set { SetProperty(ref postText, value); }
+        }
 
 
         // CHECKBOXES
@@ -329,9 +335,10 @@ namespace DoseRateEditor.ViewModels
 
 
             AppTitle = "Doserate Editor";
-            if (!(ConfigurationManager.AppSettings["Validated"] == "false"))
+            if ((ConfigurationManager.AppSettings["Validated"] == "false"))
             {
                 AppTitle += " *** NOT VALIDATED FOR CLINICAL USE ***";
+                PostText = " *** NOT VALIDATED FOR CLINICAL USE ***";
             }
             var ver = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             AppTitle += " ";
@@ -830,9 +837,9 @@ namespace DoseRateEditor.ViewModels
 
         private void OnEditDR()
         {
-            System.Windows.MessageBox.Show("Creating new plan with DR method.");
+            //System.Windows.MessageBox.Show("Creating new plan with DR method.");
             DRCalc.CreateNewPlanWithMethod(SelectedMethod.Value);
-            System.Windows.MessageBox.Show("Finished creating new plan with DR method.");
+            //System.Windows.MessageBox.Show("Finished creating new plan with DR method.");
             _app.SaveModifications();
         }
 
