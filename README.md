@@ -1,6 +1,6 @@
 # DREditor
 
-### TODO
+### Future Changes
 - [x] 90 / 0 couch deg special case 
 - [x] Recenter image on coronal image
 - [ ] Add splash screen with exp date and repo link
