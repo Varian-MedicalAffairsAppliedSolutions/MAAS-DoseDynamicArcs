@@ -20,23 +20,6 @@ namespace DoseRateEditor.Models
             var points = new List<DataPoint>();
             var slopes = new List<double>();
 
-
-            // Need fxn to return t_range
-            // f(181 179, CW) -> 358
-            /*
-            double[] get_t_range(double start, double stop, GantryDirection dir)
-            {
-                var retval = new double[2];
-                retval[0] = Math.PI * (start / 180);
-
-                var delta = dir == GantryDirection.Clockwise? (Math.PI/180) * (start + stop) : (Math.PI/180) * Math.Abs(start - stop);
-                retval[1] = retval[0] + delta;
-
-                return retval;
-            }*/
-
-            
-
             if (plane_angle == 0)
             {
                 stop_angle_deg *= -1;
@@ -149,11 +132,12 @@ namespace DoseRateEditor.Models
         private DataPoint[] BuildRect(DataPoint centerpoint, double width, double height, double theta)
         {
             var retval = new DataPoint[]
-            {
-                //RotatePoint(new DataPoint(centerpoint.X - (width/2), centerpoint.Y + (height/2)), centerpoint, theta),
-                //RotatePoint(new DataPoint(centerpoint.X + (width/2), centerpoint.Y + (height/2)), centerpoint, theta),
-                //RotatePoint(new DataPoint(centerpoint.X + (width/2), centerpoint.Y - (height/2)), centerpoint, theta),
-                //RotatePoint(new DataPoint(centerpoint.X - (width/2), centerpoint.Y - (height/2)), centerpoint, theta),
+            { 
+                /*
+                RotatePoint(new DataPoint(centerpoint.X - (width/2), centerpoint.Y + (height/2)), centerpoint, theta),
+                RotatePoint(new DataPoint(centerpoint.X + (width/2), centerpoint.Y + (height/2)), centerpoint, theta),
+                RotatePoint(new DataPoint(centerpoint.X + (width/2), centerpoint.Y - (height/2)), centerpoint, theta),
+                RotatePoint(new DataPoint(centerpoint.X - (width/2), centerpoint.Y - (height/2)), centerpoint, theta),*/
                 new DataPoint(centerpoint.X - (width/2), centerpoint.Y + (height/2)),
                 new DataPoint(centerpoint.X + (width/2), centerpoint.Y + (height/2)),
                 new DataPoint(centerpoint.X + (width/2), centerpoint.Y - (height/2)),

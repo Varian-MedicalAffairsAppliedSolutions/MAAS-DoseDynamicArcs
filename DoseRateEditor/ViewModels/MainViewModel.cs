@@ -809,6 +809,7 @@ namespace DoseRateEditor.ViewModels
             Beams.Clear();
             bool isEmpty = true;
 
+            // Add all beams
             foreach(var bm in SelectedPlan.Beams) {
                 if (bm.Technique.Id.ToLower().Contains("arc"))
                 {
@@ -816,13 +817,24 @@ namespace DoseRateEditor.ViewModels
                     isEmpty = false;
                 } 
             }
+
+            ResetPlot();
+
             if (isEmpty)
             {
                 System.Windows.MessageBox.Show($"Plan {SelectedPlan.Id} does not contain any fields with SRS ARC or ARC technique");
-
+                UncheckAll();
             }
-            ResetPlot();
+            else
+            {
+                // If we have beams to select
+                // Select the first one
+                SelectedBeam = Beams.FirstOrDefault();
+                OnBeamSelect();
+            }
 
+
+            
 
             // Reset transaxial plot
             SelectedSlice = 0;
@@ -843,6 +855,16 @@ namespace DoseRateEditor.ViewModels
             _app.SaveModifications();
         }
 
+        private void UncheckAll()
+        {
+            CurrentdMU = false;
+            CurrentDR= false;
+            CurrentGS= false;
+            PreviewdMU=false;
+            PreviewDR=false;
+            PreviewGS=false;
+        }
+
         private bool CanEditDR()
         {
             return (SelectedMethod != null) && (SelectedCourse != null) && (SelectedPlan != null);
@@ -853,6 +875,12 @@ namespace DoseRateEditor.ViewModels
 
             _app.ClosePatient();
             var pat = _app.OpenPatientById(PatientId);
+
+            if(pat == null)
+            {
+                System.Windows.MessageBox.Show($"Could not find: {PatientId}. Please select another patient.");
+                return;
+            }
 
             // List all courses
             OpenPatient(pat);
@@ -908,6 +936,7 @@ namespace DoseRateEditor.ViewModels
 
         private void ResetPlot()
         {
+            // Clear plot
             DR0_series.Points.Clear();
             DRf_series.Points.Clear();
             GS0_series.Points.Clear();
@@ -916,6 +945,8 @@ namespace DoseRateEditor.ViewModels
             dMUf_series.Points.Clear();
 
             DRPlot.InvalidatePlot(true);
+
+
         }
 
       

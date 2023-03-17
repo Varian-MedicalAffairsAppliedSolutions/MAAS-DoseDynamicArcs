@@ -27,9 +27,11 @@ namespace DoseRateEditor.Models
                 Minimum = -50,
                 Maximum = 50,
                 Position = AxisPosition.Bottom,
-                IsAxisVisible = false,
-                Tag = "XAX"
-
+                IsAxisVisible = true,
+                Tag = "XAX",
+                AxislineColor = OxyColors.Red,
+                TickStyle = TickStyle.None,
+                TextColor = OxyColors.Transparent
             };
             Axes.Add(xAxis);
 
@@ -41,8 +43,11 @@ namespace DoseRateEditor.Models
                 Minimum = -50,
                 Maximum = 50,
                 Position = AxisPosition.Left,
-                IsAxisVisible = false,
-                Tag = "YAX"
+                IsAxisVisible = true,
+                Tag = "YAX",
+                AxislineColor = OxyColors.Red,
+                TickStyle = TickStyle.None,
+                TextColor= OxyColors.Transparent
             };
             Axes.Add(yAxes);
             
