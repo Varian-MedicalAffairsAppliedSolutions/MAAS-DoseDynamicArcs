@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.SessionState;
 using System.Windows;
 using VMS.TPS.Common.Model.API;
 using VMS.TPS.Common.Model.Types;
@@ -72,6 +73,17 @@ https://doi.org/10.1016/j.adro.2018.02.011.
 
         }
 
+        public static double cosmicFunc(double th_deg)
+        {
+            if(th_deg < 180) { 
+                return (th_deg * (180 - th_deg)) / (90 * 90);
+            }
+            else
+            {
+                return cosmicFunc(th_deg - 180);
+            }
+        }
+
 
         public string DRCreditsString;
         public Nullable<DRMethod> LastMethodCalculated;
@@ -80,7 +92,7 @@ https://doi.org/10.1016/j.adro.2018.02.011.
 
         private static func sinfunc = (theta) => Math.Sin(rad(theta));
         private static func BFfunc = (theta) => BFFunc(theta);
-        private static func cosmicfunc = (theta) => (theta * (180 - theta)) / (90 * 90);
+        private static func cosmicfunc = (theta) => cosmicFunc(theta);
 
         private static Dictionary<DRMethod, func> Delagate_dictionary = new Dictionary<DRMethod, func>
         {
