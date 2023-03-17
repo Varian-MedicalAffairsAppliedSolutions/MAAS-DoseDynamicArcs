@@ -17,24 +17,28 @@ namespace DoseRateEditor.Models
         {
             Sin,
             Parabola,
-            Cosmic,
-            Juha
+            Cosmic
+        // Juha
         }
 
-        private static string sincred = @"sin (gantry) : Richard A. Popple, Xingen Wu, Ivan A. Brezovich, James M. Markert
-            , Barton L. Guthrie, Evan M. Thomas, Markus Bredel, John B. Fiveash,
-            The virtual cone: A novel technique to generate spherical dose distributions using
-            a multileaf collimator and standardized control-point sequence for small target radiation surgery,
-            Advances in Radiation Oncology,
-            Volume 3, Issue 3,
-            2018,
-            Pages 421-430,
-            ISSN 2452-1094,
-            https://doi.org/10.1016/j.adro.2018.02.011.
-            (https://www.sciencedirect.com/science/article/pii/S2452109418300368)";
+        private static string sincred = @"DR(gantry) = Math.Sin((gantry * Math.PI) / 180);
 
-        private static string paracred = "para";
-        private static string coscred = "cos";
+: Richard A. Popple, Xingen Wu, Ivan A. Brezovich, James M. Markert
+, Barton L. Guthrie, Evan M. Thomas, Markus Bredel, John B. Fiveash,
+The virtual cone: A novel technique to generate 
+spherical dose distributions using
+a multileaf collimator and standardized control-point 
+sequence for small target radiation surgery,
+Advances in Radiation Oncology,
+Volume 3, Issue 3,
+2018,
+Pages 421-430,
+ISSN 2452-1094,
+https://doi.org/10.1016/j.adro.2018.02.011.
+(https://www.sciencedirect.com/science/article/pii/S2452109418300368)";
+
+        private static string paracred = "DR(gantry) = (16 * gantry * (Math.PI - gantry)) /\n ((5 * Math.PI * Math.PI) - 4 * gantry * (Math.PI - gantry));\n\nhttps://digitalcommons.ursinus.edu/cgi/viewcontent.cgi\n?article=1015&context=triumphs_calculus ";
+        private static string coscred = "DR(gantry) = (gantry * (180 - gantry)) / (90 * 90)\n\nhttps://en.formulasearchengine.com/wiki\n/Small-angle_approximation";
 
         private static string juhacred = @"Method and apparatus to deliver therapeutic radiation to a patient using field geography-based dose optimization
             Inventors: Juha Kauppinen Anthony Magliari Martin SABEL Amir Talakoub. 
@@ -44,8 +48,8 @@ namespace DoseRateEditor.Models
         {
             { DRMethod.Sin, sincred },
             { DRMethod.Parabola, paracred },
-            { DRMethod.Cosmic, coscred },
-            { DRMethod.Juha, juhacred }
+            { DRMethod.Cosmic, coscred }
+            //{ DRMethod.Juha, juhacred }
         };
 
 
@@ -131,10 +135,10 @@ namespace DoseRateEditor.Models
             FinalDRs.Clear();
             FinalMSWS.Clear();
 
-            if (method == DRMethod.Juha)
+            /*if (method == DRMethod.Juha)
             {
                 return; // Not implemented yet
-            }
+            }*/
 
             // Else compute and save Final DRS and GSs
             foreach(Beam b in Plan.Beams)

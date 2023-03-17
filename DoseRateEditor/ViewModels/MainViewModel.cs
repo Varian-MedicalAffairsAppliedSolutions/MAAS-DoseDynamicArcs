@@ -471,8 +471,8 @@ namespace DoseRateEditor.ViewModels
             {
                new Tuple<Nullable<DRMethod>, Nullable<bool>>(DRMethod.Sin, true),
                new Tuple<Nullable<DRMethod>, Nullable<bool>>(DRMethod.Cosmic, true),
-               new Tuple<Nullable<DRMethod>, Nullable<bool>>(DRMethod.Parabola, true),
-               new Tuple<Nullable<DRMethod>, Nullable<bool>>(DRMethod.Juha, false)
+               new Tuple<Nullable<DRMethod>, Nullable<bool>>(DRMethod.Parabola, true)
+               //new Tuple<Nullable<DRMethod>, Nullable<bool>>(DRMethod.Juha, false)
             };
 
 
@@ -508,10 +508,8 @@ namespace DoseRateEditor.ViewModels
             // Clear all DR related plots (3 of them!)
             ResetPlot();
 
-            // Check what is checked and Replot if needed
-            OnCurrentdMU();
-            OnCurrentDR();
-            OnCurrentGS();
+
+            
 
             // Cosmoplot stuff ...
             // View1 = Trans, View2 = Coro, View3 = Sag
@@ -521,6 +519,16 @@ namespace DoseRateEditor.ViewModels
 
             var dMU = DRCalc.InitialdMU[SelectedBeam.Id];
             var angles = Utils.GetBeamAngles(SelectedBeam);
+
+            // Check all current
+            CurrentdMU = true;
+            CurrentDR = true;   
+            CurrentGS= true;
+
+            // Check what is checked and Replot if needed
+            OnCurrentdMU();
+            OnCurrentDR();
+            OnCurrentGS();
 
 
             var deltaMU = dMU.Select(x => x.Y).ToList();
@@ -532,6 +540,8 @@ namespace DoseRateEditor.ViewModels
             OnPreviewGS();
             OnPreviewDR();
             //OnPreviewdMU();
+
+            
             
 
 
@@ -682,6 +692,7 @@ namespace DoseRateEditor.ViewModels
             DRCalc.CalcFinalDR(SelectedPlan, SelectedMethod.Value);
 
             // Update Credit Text
+            //var func_string = DRCalc.DelegateDictionary
             CreditText = DRCalc.DRCreditsString;
 
             DRPlot.InvalidatePlot(true);
@@ -849,9 +860,27 @@ namespace DoseRateEditor.ViewModels
 
         private void OnEditDR()
         {
-            //System.Windows.MessageBox.Show("Creating new plan with DR method.");
+            bool isConstant = true;
+            foreach (var key in DRCalc.InitialDRs.Keys)
+            {
+                var DRs = DRCalc.InitialDRs[key].Select(pt => pt.Y);
+                if (Math.Abs(DRs.Max() - DRs.Min()) > 1) {
+                    isConstant = false;
+                    break;
+                }
+            }
+
+            if (!isConstant)
+            {
+                var msg = "Warning: plan already contains non-constant dose rate. Are you sure you want to apply this function? Results may be unexpected.";
+                var res = System.Windows.MessageBox.Show(msg, "Warning", System.Windows.MessageBoxButton.YesNo);
+                if(res == System.Windows.MessageBoxResult.No)
+                {
+                    return;
+                }
+            }
+                
             DRCalc.CreateNewPlanWithMethod(SelectedMethod.Value);
-            //System.Windows.MessageBox.Show("Finished creating new plan with DR method.");
             _app.SaveModifications();
         }
 
