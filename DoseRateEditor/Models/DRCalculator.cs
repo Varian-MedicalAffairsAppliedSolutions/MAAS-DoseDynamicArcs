@@ -22,9 +22,8 @@ namespace DoseRateEditor.Models
         // Juha
         }
 
-        private static string sincred = @"DR(gantry) = Math.Sin((gantry * Math.PI) / 180);
-
-: Richard A. Popple, Xingen Wu, Ivan A. Brezovich, James M. Markert
+        private static string sincred = @"
+Richard A. Popple, Xingen Wu, Ivan A. Brezovich, James M. Markert
 , Barton L. Guthrie, Evan M. Thomas, Markus Bredel, John B. Fiveash,
 The virtual cone: A novel technique to generate 
 spherical dose distributions using
@@ -36,10 +35,43 @@ Volume 3, Issue 3,
 Pages 421-430,
 ISSN 2452-1094,
 https://doi.org/10.1016/j.adro.2018.02.011.
-(https://www.sciencedirect.com/science/article/pii/S2452109418300368)";
+(https://www.sciencedirect.com/science/article/pii/S2452109418300368)" + "\n\nDR(gantry) = Math.Sin((gantry * Math.PI) / 180);";
 
-        private static string BF_cred = "DR(gantry) = (16 * gantry * (Math.PI - gantry)) /\n ((5 * Math.PI * Math.PI) - 4 * gantry * (Math.PI - gantry));\n\nhttps://digitalcommons.ursinus.edu/cgi/viewcontent.cgi\n?article=1015&context=triumphs_calculus ";
-        private static string cosmic_cred = "DR(gantry) = (gantry * (180 - gantry)) / (90 * 90)\n\nhttps://en.formulasearchengine.com/wiki\n/Small-angle_approximation";
+        private static string bfstring = @"""
+public static double BFFunc(double th_deg)
+{
+    var theta = (th_deg * Math.PI) / 180;
+    var retval = 16 * theta * (Math.PI - theta);
+    var denom = 5 * Math.PI * Math.PI;
+    denom -= 4 * theta * (Math.PI - theta);
+    retval /= denom;
+
+    if(th_deg < 180)
+    {
+        return retval;
+    }
+    else
+    {
+        return -1 * BFFunc(th_deg - 180);
+
+    }
+}
+""";
+
+        private static string cosstring = @"""
+public static double cosmicFunc(double th_deg)
+{
+    if(th_deg < 180) { 
+        return (th_deg * (180 - th_deg)) / (90 * 90);
+    }
+    else
+    {
+        return cosmicFunc(th_deg - 180);
+    }
+}
+""";
+        private static string BF_cred = $"https://digitalcommons.ursinus.edu/cgi/viewcontent.cgi\n?article=1015&context=triumphs_calculus\n\n{bfstring}";
+        private static string cosmic_cred = $"https://en.formulasearchengine.com/wiki\n/Small-angle_approximation\n\n{cosstring}";
 
         private static string juhacred = @"Method and apparatus to deliver therapeutic radiation to a patient using field geography-based dose optimization
             Inventors: Juha Kauppinen Anthony Magliari Martin SABEL Amir Talakoub. 
@@ -70,7 +102,6 @@ https://doi.org/10.1016/j.adro.2018.02.011.
                 return -1 * BFFunc(th_deg - 180);
 
             }
-
         }
 
         public static double cosmicFunc(double th_deg)
