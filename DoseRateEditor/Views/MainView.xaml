@@ -47,20 +47,18 @@
             <RowDefinition Height="100*">
 
             </RowDefinition>
-            <RowDefinition Height="100*">
+            <RowDefinition Height="20*">
 
             </RowDefinition>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0">
-            <TextBlock HorizontalAlignment="Center" FontWeight="Bold"> Patient Id</TextBlock>
-            <TextBox  Text="{Binding PatientId}"></TextBox>
-            <Button Content="Open Patient" Command="{Binding OpenPatientCommand}"></Button>
-        </StackPanel>
+        <StackPanel Grid.Row="0" Grid.RowSpan="6">
+            <TextBlock Margin="10" HorizontalAlignment="Center" FontWeight="Bold"> Patient Id</TextBlock>
+            <TextBox  Margin="10" Text="{Binding PatientId}"></TextBox>
+            <Button Margin="10" Content="Open Patient" Command="{Binding OpenPatientCommand}"></Button>
 
-        <StackPanel Grid.Row="1" Margin="0">
-            <TextBlock FontWeight="Bold" Margin="0" HorizontalAlignment="Center">Courses</TextBlock>
-            <ComboBox  Margin="0" x:Name="CourseListBox" ItemsSource="{Binding Courses}" SelectedItem="{Binding SelectedCourse, Mode=TwoWay}">
+            <TextBlock Margin="10" FontWeight="Bold" HorizontalAlignment="Center">Courses</TextBlock>
+            <ComboBox  Margin="10" x:Name="CourseListBox" ItemsSource="{Binding Courses}" SelectedItem="{Binding SelectedCourse, Mode=TwoWay}">
                 <ie:Interaction.Triggers>
                     <ie:EventTrigger EventName="SelectionChanged">
                         <ie:InvokeCommandAction Command="{Binding ViewCourseCommand}"/>
@@ -74,11 +72,9 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-        </StackPanel>
 
-        <StackPanel Grid.Row="2" Margin="0">
-            <TextBlock Margin="0" FontWeight="Bold" HorizontalAlignment="Center">Plans</TextBlock>
-            <ComboBox Margin="0" ItemsSource="{Binding Plans}" SelectedItem="{Binding SelectedPlan, Mode=TwoWay}">
+            <TextBlock Margin="10" FontWeight="Bold" HorizontalAlignment="Center">Plans</TextBlock>
+            <ComboBox Margin="10" ItemsSource="{Binding Plans}" SelectedItem="{Binding SelectedPlan, Mode=TwoWay}">
                 <ie:Interaction.Triggers>
                     <ie:EventTrigger EventName="SelectionChanged">
                         <ie:InvokeCommandAction Command="{Binding OnPlanSelectCommand}"/>
@@ -92,12 +88,8 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-        </StackPanel>
 
-       
-        
-        <StackPanel Grid.Row="3">
-            <TextBlock Margin="0" FontWeight="Bold" HorizontalAlignment="Center">Fields</TextBlock>
+            <TextBlock Margin="10" FontWeight="Bold" HorizontalAlignment="Center">Fields</TextBlock>
             <ScrollViewer Height="300">
                 <ListBox Margin="8" ItemsSource="{Binding Beams}" SelectedItem="{Binding SelectedBeam, Mode=TwoWay}">
                     <ie:Interaction.Triggers>
@@ -114,9 +106,7 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
             </ScrollViewer>
-        </StackPanel>
 
-        <StackPanel Grid.Row="4" Grid.Column="0" Margin="0" Grid.RowSpan="2">
             <ComboBox Margin="10" 
                       ItemsSource="{Binding DRMethods}" 
                       SelectedValuePath="Item1"
@@ -133,19 +123,16 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-            <Button Margin="8" Content ="Edit DR for all fields" Command="{Binding EditDRCommand}">
+            <Button Margin="10" Content ="Edit DR for all fields" Command="{Binding EditDRCommand}"/>
 
-            </Button>
+
         </StackPanel>
 
-        <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="4">
-            <Grid>
-                <oxy:PlotView Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding DRPlot}"/>
-            </Grid>
-        </StackPanel>
+        <StackPanel Grid.Row="0" Grid.Column="1" Grid.RowSpan="6">
 
-        <StackPanel Grid.Row="4" Grid.Column="1" Margin="0">
-            <Grid>
+            <oxy:PlotView Margin="10" Height="350" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding DRPlot}"/>
+
+            <Grid Margin="50, 0, 0, 0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
@@ -180,37 +167,29 @@
 
             </Grid>
 
-        </StackPanel>
-        <StackPanel Grid.Row="6" Grid.Column="1" Margin="0" Grid.RowSpan="2">
             <TextBlock Text="{Binding CreditText}"></TextBlock>
+            
         </StackPanel>
 
 
 
 
 
-        <StackPanel Grid.Column="2" Grid.Row="0" Grid.RowSpan="4">
-            <oxy:PlotView Margin="8" Controller="{Binding TransController}"  Model="{Binding TransPlot}" Height="362"/>
+        <StackPanel Grid.Column="2" Grid.Row="0" Grid.RowSpan="6">
+            <oxy:PlotView Margin="10" Controller="{Binding TransController}"  Model="{Binding TransPlot}" Height="300" Width="300"/>
+            <oxy:PlotView Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding View1}" Height="300" Width="300"></oxy:PlotView>
         </StackPanel>
 
-        <StackPanel Grid.Row="0" Grid.Column="3" Grid.RowSpan="4">
-            <oxy:PlotView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding View1}" Height="300" Width="300"></oxy:PlotView>
-        </StackPanel>
-
-        <StackPanel Grid.Row="4" Grid.Column="3" Grid.RowSpan="2" Margin="0,60,0,0">
-            <oxy:PlotView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding View2}" Height="300" Width="300"></oxy:PlotView>
-        </StackPanel>
-
-        <StackPanel Grid.Row="4" Grid.Column="2" Grid.RowSpan="2" Margin="0,60,0,0">
-            <oxy:PlotView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding View3}" Height="300" Width="300"></oxy:PlotView>
+        <StackPanel Grid.Row="0" Grid.Column="3" Grid.RowSpan="6">
+            <oxy:PlotView Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding View2}" Height="300" Width="300"></oxy:PlotView>
+            <oxy:PlotView Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Model="{Binding View3}" Height="300" Width="300"></oxy:PlotView>
         </StackPanel>
 
 
-        <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" Background="PaleVioletRed" Margin="0,125,0,0" Grid.RowSpan="2">    
+        <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="4" Background="PaleVioletRed" Margin="0" Grid.RowSpan="1">    
             <Label Margin="0">
                 <Hyperlink Command="{Binding HyperlinkCmd}">Bound by the terms of the Varian LUSLA</Hyperlink>
             </Label>
-            <!--Button Command="{Binding HyperlinkCmd}">View agreement</Button-->
             <Label Margin="0" Content="{Binding PostText}"/>
         </TextBlock>
     </Grid>
