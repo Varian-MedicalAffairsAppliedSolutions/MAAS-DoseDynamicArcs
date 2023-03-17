@@ -127,9 +127,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Events\HyperlinkEvent.cs" />
-    <Compile Include="Launcher\DREditExplicitPathLauncher.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
     <Compile Include="Models\CosmoCoro.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
@@ -139,9 +136,9 @@
     <Compile Include="Models\CourseModel.cs" />
     <Compile Include="Models\DRCalculator.cs" />
     <Compile Include="Models\Utils.cs" />
-    <None Include="Launcher\DREditLauncher.cs">
+    <Compile Include="DREditLauncher.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    </Compile>
     <Compile Include="Properties\AssemblyExpirationDate.cs" />
     <Compile Include="Startup\Bootstrapper.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />

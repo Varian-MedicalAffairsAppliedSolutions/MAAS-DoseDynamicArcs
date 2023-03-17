@@ -457,7 +457,7 @@ namespace DoseRateEditor.ViewModels
 
 
             // TRANS PLOT
-            TransPlot = new PlotModel { Title = "IsoPlot Transverse" };
+            TransPlot = new PlotModel { Title = "CT Slice View" };
             AddAxes(TransPlot);
             TransController = new PlotController();
 
@@ -471,7 +471,7 @@ namespace DoseRateEditor.ViewModels
             {
                new Tuple<Nullable<DRMethod>, Nullable<bool>>(DRMethod.Sin, true),
                new Tuple<Nullable<DRMethod>, Nullable<bool>>(DRMethod.Cosmic, true),
-               new Tuple<Nullable<DRMethod>, Nullable<bool>>(DRMethod.Parabola, true)
+               new Tuple<Nullable<DRMethod>, Nullable<bool>>(DRMethod.Bhaskara, true)
                //new Tuple<Nullable<DRMethod>, Nullable<bool>>(DRMethod.Juha, false)
             };
 
@@ -631,7 +631,7 @@ namespace DoseRateEditor.ViewModels
         private int[,] GetCTData(int slice)
         {
 
-            var imgs = SelectedPlan.StructureSet.Image.Series.Images;
+            var imgs = SelectedPlan.StructureSet.Image.Series.Images;         
             var data = new int[imgs.First().XSize, imgs.First().YSize];
             imgs.First().GetVoxels((int)slice, data);
             //var newArray = Array.ConvertAll(array, item => (NewType)item);
@@ -845,10 +845,13 @@ namespace DoseRateEditor.ViewModels
             }
 
 
-            
+
 
             // Reset transaxial plot
-            SelectedSlice = 0;
+            //int z_mid = _CT.Length/2;
+            //SelectedSlice = z_mid;
+            //var isoSlice = SelectedPlan.StructureSet.Image.Series.Images.
+            SelectedSlice = SelectedPlan.StructureSet.Image.Series.Images.Count() / 2;
             UpdateSeries(TransPlot);
 
         }

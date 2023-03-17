@@ -31,7 +31,10 @@ namespace DoseRateEditor.Models
                 Tag = "XAX",
                 AxislineColor = OxyColors.Red,
                 TickStyle = TickStyle.None,
-                TextColor = OxyColors.Transparent
+                TextColor = OxyColors.Transparent,
+                IsPanEnabled= false,
+                IsZoomEnabled= false,
+                
             };
             Axes.Add(xAxis);
 
@@ -47,7 +50,9 @@ namespace DoseRateEditor.Models
                 Tag = "YAX",
                 AxislineColor = OxyColors.Red,
                 TickStyle = TickStyle.None,
-                TextColor= OxyColors.Transparent
+                TextColor= OxyColors.Transparent,
+                IsPanEnabled = false,
+                IsZoomEnabled= false,
             };
             Axes.Add(yAxes);
             

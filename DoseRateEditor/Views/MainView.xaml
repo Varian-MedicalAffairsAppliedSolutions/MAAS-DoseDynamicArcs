@@ -167,7 +167,7 @@
 
             </Grid>
 
-            <TextBlock Margin ="30" FontWeight="Bold" Text="{Binding CreditText}"></TextBlock>
+            <TextBox Margin ="30" FontWeight="Bold"  Text="{Binding CreditText}" IsReadOnly="True"></TextBox>
             
         </StackPanel>
 

@@ -16,7 +16,7 @@ namespace DoseRateEditor.Models
         public enum DRMethod
         {
             Sin,
-            Parabola,
+            Bhaskara,
             Cosmic
         // Juha
         }
@@ -37,8 +37,8 @@ ISSN 2452-1094,
 https://doi.org/10.1016/j.adro.2018.02.011.
 (https://www.sciencedirect.com/science/article/pii/S2452109418300368)";
 
-        private static string paracred = "DR(gantry) = (16 * gantry * (Math.PI - gantry)) /\n ((5 * Math.PI * Math.PI) - 4 * gantry * (Math.PI - gantry));\n\nhttps://digitalcommons.ursinus.edu/cgi/viewcontent.cgi\n?article=1015&context=triumphs_calculus ";
-        private static string coscred = "DR(gantry) = (gantry * (180 - gantry)) / (90 * 90)\n\nhttps://en.formulasearchengine.com/wiki\n/Small-angle_approximation";
+        private static string BF_cred = "DR(gantry) = (16 * gantry * (Math.PI - gantry)) /\n ((5 * Math.PI * Math.PI) - 4 * gantry * (Math.PI - gantry));\n\nhttps://digitalcommons.ursinus.edu/cgi/viewcontent.cgi\n?article=1015&context=triumphs_calculus ";
+        private static string cosmic_cred = "DR(gantry) = (gantry * (180 - gantry)) / (90 * 90)\n\nhttps://en.formulasearchengine.com/wiki\n/Small-angle_approximation";
 
         private static string juhacred = @"Method and apparatus to deliver therapeutic radiation to a patient using field geography-based dose optimization
             Inventors: Juha Kauppinen Anthony Magliari Martin SABEL Amir Talakoub. 
@@ -47,24 +47,46 @@ https://doi.org/10.1016/j.adro.2018.02.011.
         public static Dictionary<DRMethod, string> DRCredits = new Dictionary<DRMethod, string>
         {
             { DRMethod.Sin, sincred },
-            { DRMethod.Parabola, paracred },
-            { DRMethod.Cosmic, coscred }
+            { DRMethod.Bhaskara, BF_cred },
+            { DRMethod.Cosmic, cosmic_cred }
             //{ DRMethod.Juha, juhacred }
         };
+
+        public static double BFFunc(double th_deg)
+        {
+            var theta = (th_deg * Math.PI) / 180;
+            var retval = 16 * theta * (Math.PI - theta);
+            var denom = 5 * Math.PI * Math.PI;
+            denom -= 4 * theta * (Math.PI - theta);
+            retval /= denom;
+
+            if(th_deg < 180)
+            {
+                return retval;
+            }
+            else
+            {
+                return -1 * BFFunc(th_deg - 180);
+
+            }
+
+        }
 
 
         public string DRCreditsString;
         public Nullable<DRMethod> LastMethodCalculated;
 
-        private static func sinfunc = (theta) => Math.Sin((theta * Math.PI) / 180);
-        private static func cosmicfunc = (theta) => (16 * theta * (Math.PI - theta)) / ((5 * Math.PI * Math.PI) - 4 * theta * (Math.PI - theta));
-        private static func parafunc = (theta) => (theta * (180 - theta)) / (90 * 90);
+        private static func rad = (theta) => (theta * Math.PI)/180;
+
+        private static func sinfunc = (theta) => Math.Sin(rad(theta));
+        private static func BFfunc = (theta) => BFFunc(theta);
+        private static func cosmicfunc = (theta) => (theta * (180 - theta)) / (90 * 90);
 
         private static Dictionary<DRMethod, func> Delagate_dictionary = new Dictionary<DRMethod, func>
         {
             { DRMethod.Sin, sinfunc},
             { DRMethod.Cosmic, cosmicfunc},
-            { DRMethod.Parabola, parafunc}
+            { DRMethod.Bhaskara, BFfunc}
         };
 
         public Dictionary<string, List<DataPoint>> InitialDRs { get; set; }
