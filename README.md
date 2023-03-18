@@ -11,6 +11,7 @@
 * if applied to plans already with dynaamic dose rate, edited dose rate likely to be undesirable
 * Precomplied executables for Eclipse 15.6 - 18 availible in [Releases](https://github.com/Varian-Innovation-Center/MAAS-DoseDynamicArcs/releases)
 * [/ExampleNoncoplanarBeamTemplates](/ExampleNoncoplanarBeamTemplates)
+* Installation steps similar to [PlanScoreCard QuickStart}(https://github.com/Varian-Innovation-Center/MAAS-PlanScoreCard/blob/main/BasicInstallQuickStart.md) and [Install Part2](https://github.com/Varian-Innovation-Center/MAAS-PlanScoreCard/blob/main/InstallGuidePart2IntoSystemScriptsDirectory.md)
 
 
 ### Future Roadmap Wishlist
