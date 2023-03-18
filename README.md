@@ -9,8 +9,8 @@
 * edit current arc plan's dose rate and gantry speed independent of aperture (MLC/jaw) 
 * used to convert non-coplanar conformal arc with static dose rate and gantry speed into dynamic dose rate and gantry speed plans
 * if applied to plans already with dynaamic dose rate, edited dose rate likely to be undesirable
-* Precomplied executables availible in </releases>
-* </ExampleNoncoplanarBeamTemplates>
+* Precomplied executables availible in [/releases]
+* [/ExampleNoncoplanarBeamTemplates]
 
 ### Future Roadmap Wishlist
 - [ ] Working preview of Delta MU
