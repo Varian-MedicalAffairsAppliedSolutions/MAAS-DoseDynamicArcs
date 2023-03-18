@@ -9,7 +9,7 @@
 * edit current arc plan's dose rate and gantry speed independent of aperture (MLC/jaw) 
 * used to convert non-coplanar conformal arc with static dose rate and gantry speed into dynamic dose rate and gantry speed plans
 * if applied to plans already with dynaamic dose rate, edited dose rate likely to be undesirable
-* Precomplied executables availible in [/releases](/releases)
+* Precomplied executables for Eclipse 15.6 - 18 availible in [Releases](https://github.com/Varian-Innovation-Center/MAAS-DoseDynamicArcs/releases)
 * [/ExampleNoncoplanarBeamTemplates](/ExampleNoncoplanarBeamTemplates)
 
 
