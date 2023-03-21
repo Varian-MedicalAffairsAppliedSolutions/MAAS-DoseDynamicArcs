@@ -376,38 +376,177 @@ public static double cosmicFunc(double th_deg)
             return new Tuple<List<DataPoint>, List<DataPoint>, List<DataPoint>>(DRs, GSs, dMU);
         }
     
-        private List<DataPoint> ComputeDRBeamDNU(Beam bm, double gantry_speed_max=4.8, double DR_max=2400)
-        {
-            // Create a list of msws from current beam
-            var edits = bm.GetEditableParameters();
-            var msws = new List<double>();
-            var gantry = new List<double>();
+       
 
-            foreach (var cp in edits.ControlPoints)
+        private bool CheckIsClosed(Beam bm)
+        {
+            // Get the cps from beam
+            var edits = bm.GetEditableParameters();
+            var cps = edits.ControlPoints;
+
+            foreach (var cp in cps)
             {
-                msws.Add(cp.MetersetWeight);
-                gantry.Add(cp.GantryAngle);
+                var leaves = cp.LeafPositions;
+                for(int i=0; i < leaves.Length; i++)
+                {
+                    var bankA = leaves[i, 0];
+                    var bankB = leaves[i, 1];
+
+                    if (bankA + bankB != 0)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        /*private void AddGap(Beam bm)
+        {
+            // Get the cps from beam
+            var edits = bm.GetEditableParameters();
+            var cps = edits.ControlPoints;
+
+            foreach (var cp in cps)
+            {
+                var leaves = cp.LeafPositions;
+                for (int i = 0; i < leaves.Length; i++)
+                {
+                    var bankA = leaves[i, 0];
+                    var bankB = leaves[i, 1];
+
+                    if (bankA + bankB != 0)
+                    {
+                        
+                    }
+                }
+            }
+        }*/
+
+        private bool ConvertToDynamic(ExternalPlanSetup plan)
+        {
+            int replaceCount = 0;
+            bool agreeConvert = false;
+            // Loop through each field in the plan and copy it to dynamic version
+            foreach(var bm in plan.Beams)
+            {
+                // Skip if setup field
+                if (bm.IsSetupField)
+                {
+                    continue;
+                }
+
+                // Get info about the beam
+                var angles = Utils.GetBeamAngles(bm);
+
+                var gantry_angles = angles.Item1;
+                var col_angles = angles.Item2;
+                var couch_angles = angles.Item3;
+                var cps = angles.Item4;
+             
+                // Check if static
+                if (cps.Count() <= 2)
+                {
+                    if (!agreeConvert)
+                    {
+                        var res = MessageBox.Show($"Must convert all fields from static to dynamic to edit dose rate, would you like to continue?");
+                        if (res == MessageBoxResult.Cancel)
+                        {
+                            return false;
+                        }
+
+                        agreeConvert = res == MessageBoxResult.OK;
+                    }
+
+                    // Handle static
+                    // Create arc beam
+                    (string primary_fluence_mode, string energy_mode_id) = GetFluenceEnergyMode(bm);
+
+                    var ebmp = new ExternalBeamMachineParameters(
+                        bm.TreatmentUnit.Id,
+                        energy_mode_id,
+                        bm.DoseRate,
+                        "ARC",
+                        primary_fluence_mode
+                    );
+
+
+                    var new_bm = plan.AddArcBeam(
+                        ebmp,
+                        cps.First().JawPositions,
+                        col_angles.First(),
+                        gantry_angles.First(),
+                        gantry_angles.Last(),
+                        bm.GantryDirection,
+                        couch_angles.First(),
+                        bm.IsocenterPosition
+                        );
+
+                    // Now copy mlc positions of bm to new_bm
+                    var target_mlc = cps.First().LeafPositions;
+                    var target_jaws = cps.First().JawPositions;
+
+                    var edits_new = new_bm.GetEditableParameters();
+                    foreach (var cp in edits_new.ControlPoints)
+                    {
+                        cp.LeafPositions = target_mlc; // Copy over mlc 
+                        cp.JawPositions = target_jaws;
+                    }
+
+                    new_bm.ApplyParameters(edits_new);
+                    plan.RemoveBeam(bm);
+                    replaceCount++;
+                }
             }
 
-            var result_tuple = ComputeDRFromMSWS(msws, bm.Meterset.Value, gantry);
-            return result_tuple.Item1;
+            if(replaceCount> 0)
+            {
+                MessageBox.Show($"Converted {replaceCount} beams to dynamic arcs");
+            }
+            return true;
+
+        }
+
+        private Tuple<string, string> GetFluenceEnergyMode(Beam bm)
+        {
+            // Lifted from my python code @ craman96/MAAS
+            var energy_mode_splits = bm.EnergyModeDisplayName.Split('-');
+
+            var energy_mode_id = energy_mode_splits[0];
+
+            var primary_fluence_mode = "";
+            if (energy_mode_splits.Length > 1)
+            {
+                primary_fluence_mode = energy_mode_splits[1];
+            }
+
+            return new Tuple<string, string> (primary_fluence_mode, energy_mode_id);
         }
 
         public void CreateNewPlanWithMethod(DRMethod method) // TODO fix deletion within loop crash by tagging all beams to delete (somehow) and then deleing them after loop
-        {   
+        {
+
+            // Anthony fix for static mlc
+
+
+            
+
+
+            
+
+            
+
+
+
+
+
+
             // Helper for copying beam
             void copy_beam(Beam bm, List<double> msws, bool delete_original=false, ExternalPlanSetup new_plan=null)
             {
-                // Lifted from my python code @ craman96/MAAS
-                var energy_mode_splits = bm.EnergyModeDisplayName.Split('-');
+                
 
-                var energy_mode_id = energy_mode_splits[0];
-
-                var primary_fluence_mode = "";
-                if (energy_mode_splits.Length > 1)
-                {
-                    primary_fluence_mode = energy_mode_splits[1];
-                }
+                (string primary_fluence_mode, string energy_mode_id) = GetFluenceEnergyMode(bm);
 
                 // ASSERT
                 if (!new String[] {"", "FFF", "SRS"}.Contains(primary_fluence_mode))
@@ -422,6 +561,7 @@ public static double cosmicFunc(double th_deg)
                 var couch_angles = angles.Item3;
                 var cps = angles.Item4;
 
+                /*
                 var technique_id = "STATIC";
                 for (int i = 1; i < cps.Count(); i ++)
                 {
@@ -430,13 +570,14 @@ public static double cosmicFunc(double th_deg)
                         technique_id = "ARC";
                         break;
                     }
-                }
+
+                }*/
 
                 var ebmp = new ExternalBeamMachineParameters(
                     bm.TreatmentUnit.Id,
                     energy_mode_id,
                     bm.DoseRate,
-                    technique_id,
+                    "ARC",
                     primary_fluence_mode
                 );
 
@@ -486,10 +627,20 @@ public static double cosmicFunc(double th_deg)
             // Compute the final DR using selected method
             CalcFinalDR(Plan, method);
 
+      
+
             // Copy the plan, delete all beams
             // Call begin mods
             var pat = Plan.Course.Patient;
             pat.BeginModifications();
+
+            // Check static or dynamic (does the mlc have more than 2 control points)
+            // If static convert to dynamic (copy pattern to every cp) (if dynamic do nothing)
+            var conversionStatus = ConvertToDynamic(Plan);
+            if (!conversionStatus)
+            {
+                return; // Can't perform dr edit on a static plan
+            }
 
             // Create new course
             var newcourse = pat.AddCourse();
