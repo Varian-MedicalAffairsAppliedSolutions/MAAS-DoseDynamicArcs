@@ -1,6 +1,8 @@
-﻿using OxyPlot;
+﻿using MahApps.Metro.IconPacks;
+using OxyPlot;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web.SessionState;
 using System.Windows;
@@ -387,10 +389,10 @@ public static double cosmicFunc(double th_deg)
             foreach (var cp in cps)
             {
                 var leaves = cp.LeafPositions;
-                for(int i=0; i < leaves.Length; i++)
+                for(int i=0; i < 60; i++)
                 {
-                    var bankA = leaves[i, 0];
-                    var bankB = leaves[i, 1];
+                    var bankA = leaves[0, i];
+                    var bankB = leaves[1, i];
 
                     if (bankA + bankB != 0)
                     {
@@ -401,7 +403,7 @@ public static double cosmicFunc(double th_deg)
             return true;
         }
 
-        /*private void AddGap(Beam bm)
+        private void AddGap(Beam bm)
         {
             // Get the cps from beam
             var edits = bm.GetEditableParameters();
@@ -410,27 +412,28 @@ public static double cosmicFunc(double th_deg)
             foreach (var cp in cps)
             {
                 var leaves = cp.LeafPositions;
-                for (int i = 0; i < leaves.Length; i++)
-                {
-                    var bankA = leaves[i, 0];
-                    var bankB = leaves[i, 1];
+                
+                leaves[0, 30] = 0.105F;
+                leaves[1, 30] = 0.105F;
 
-                    if (bankA + bankB != 0)
-                    {
-                        
-                    }
-                }
+                leaves[0, 31] = 0.105F;
+                leaves[1, 31] = 0.105F;
             }
-        }*/
 
-        private bool ConvertToDynamic(ExternalPlanSetup plan)
+            bm.ApplyParameters(edits);
+        }
+
+        private Tuple<ExternalPlanSetup, bool> ConvertToDynamic(ExternalPlanSetup plan, Course newcourse)
         {
+            var newplan = newcourse.CopyPlanSetup(plan) as ExternalPlanSetup;
+            newplan.Id = "temp_dynamic";
+
             int replaceCount = 0;
             bool agreeConvert = false;
             // Loop through each field in the plan and copy it to dynamic version
 
             // Make list of beams we want to change
-            var to_modify = plan.Beams.Where(b => !b.IsSetupField).ToList();
+            var to_modify = newplan.Beams.Where(b => !b.IsSetupField).ToList();
 
             foreach(var bm in to_modify)
             {
@@ -451,7 +454,7 @@ public static double cosmicFunc(double th_deg)
                         var res = MessageBox.Show($"Must convert all fields from static to dynamic to edit dose rate, would you like to continue?");
                         if (res == MessageBoxResult.Cancel)
                         {
-                            return false;
+                            return new Tuple<ExternalPlanSetup, bool> (newplan, false);
                         }
 
                         agreeConvert = res == MessageBoxResult.OK;
@@ -469,16 +472,6 @@ public static double cosmicFunc(double th_deg)
                         primary_fluence_mode
                     );
 
-                    /*public Beam AddConformalArcBeam(
-                        ExternalBeamMachineParameters machineParameters,
-                        double collimatorAngle,
-                        int controlPointCount,
-                        double gantryAngle,
-                        double gantryStop,
-                        GantryDirection gantryDirection,
-                        double patientSupportAngle,
-                        VVector isocenter
-                    )*/
 
                     var d_theta = 180 - Math.Abs(Math.Abs(gantry_angles.First() - gantry_angles.Last()) - 180);
                     if (bm.GantryDirection == GantryDirection.Clockwise)
@@ -487,7 +480,7 @@ public static double cosmicFunc(double th_deg)
                     }
                     int n_cps = (int)Math.Ceiling(d_theta / 2) + 1;
 
-                    var new_bm = plan.AddConformalArcBeam(
+                    var new_bm = newplan.AddConformalArcBeam(
                         ebmp,
                         col_angles.First(),
                         n_cps,
@@ -514,17 +507,16 @@ public static double cosmicFunc(double th_deg)
                 }
             }
 
-
-            foreach(var old_bm in to_modify)
+            foreach(var bm in to_modify)
             {
-                plan.RemoveBeam(old_bm);
+                newplan.RemoveBeam(bm);
             }
 
             if(replaceCount> 0)
             {
                 MessageBox.Show($"Converted {replaceCount} beams to dynamic arcs");
             }
-            return true;
+            return new Tuple<ExternalPlanSetup, bool> (newplan, true) ;
 
         }
 
@@ -546,8 +538,18 @@ public static double cosmicFunc(double th_deg)
 
         public void CreateNewPlanWithMethod(DRMethod method) // TODO fix deletion within loop crash by tagging all beams to delete (somehow) and then deleing them after loop
         {
+            // Copy the plan, delete all beams
+            // Call begin mods
+            var pat = Plan.Course.Patient;
+            pat.BeginModifications();
+
+            // Create new course
+            var newcourse = pat.AddCourse();
+            var dt = DateTime.UtcNow.ToString("d");
 
             // Anthony fix for static mlc
+            var newplan = newcourse.CopyPlanSetup(Plan) as ExternalPlanSetup;
+            newplan.Id = Plan.Id;
 
             // Helper for copying beam
             void copy_beam(Beam bm, List<double> msws, bool delete_original=false, ExternalPlanSetup new_plan=null)
@@ -633,32 +635,58 @@ public static double cosmicFunc(double th_deg)
             }
 
 
-            // Copy the plan, delete all beams
-            // Call begin mods
-            var pat = Plan.Course.Patient;
-            pat.BeginModifications();
+            
 
             // Check static or dynamic (does the mlc have more than 2 control points)
             // If static convert to dynamic (copy pattern to every cp) (if dynamic do nothing)
-            var conversionStatus = ConvertToDynamic(Plan);
-            if (!conversionStatus)
+            (var dynPlan, var success) = ConvertToDynamic(Plan, newcourse);
+            Plan = dynPlan;
+            if (!success)
             {
                 return; // Can't perform dr edit on a static plan
             }
 
+
+            // -- Check closed --
+            /*
+            List<bool> beamsClosed = new List<bool>();
+            foreach(var bm in Plan.Beams.Where(b => !b.IsSetupField).ToList())
+            {
+                beamsClosed.Add(CheckIsClosed(bm));
+            }
+
+            var count_closed = beamsClosed.Where(val => val == true).Count();
+            
+            if (count_closed == beamsClosed.Count)
+            {
+                // All closed
+                var res = MessageBox.Show("All fields have closed MLC, would you like to create 2.1mm opening in center 2 leaf pairs?", "Closed MLC", MessageBoxButton.YesNo);
+                if(res == MessageBoxResult.Yes)
+                {
+                    foreach(var bm in Plan.Beams.Where(b => !b.IsSetupField).ToList())
+                    {
+                        AddGap(bm);
+                    }
+                }
+                else
+                {
+                    return; // Call the whole thing off
+                }
+            }
+            else if (count_closed > 0)
+            {
+                // Some closed (warning)
+                MessageBox.Show("Some arcs in this plan have a closed MLC. Please try again with an aperture on all fields or a plan with all MLCs closed.");
+                return; 
+            }*/
+
+
+
             // Compute the final DR using selected method
             CalcFinalDR(Plan, method);
 
-            // Create new course
-            var newcourse = pat.AddCourse();
-            var dt = DateTime.UtcNow.ToString("d");
 
-            // Generate a new course name until we find a new name
-            //int n = 1;
-            //while(pat.Courses.Select(c => c.Id == $"EditDR_{dt}_{n}").Count() > 0)
-            //{
-            //    n++;
-            //}
+            // Rename course
             string proposed_name;
             for(int n = 1; n < 100; n++)
             {
@@ -674,8 +702,6 @@ public static double cosmicFunc(double th_deg)
            
             }
 
-            var newplan = newcourse.CopyPlanSetup(Plan) as ExternalPlanSetup; 
-            newplan.Id = Plan.Id;
             
             // TODO remove the beams from newplan
             foreach (var copiedbeam in newplan.Beams.ToList())
@@ -691,10 +717,14 @@ public static double cosmicFunc(double th_deg)
                 copy_beam(bm, new_msws, false, newplan);
             }
 
+            
+
             MessageBox.Show(
                 $"New plan created with id: {newplan.Id} in course {newcourse.Id}" +
                 $"\nExit Dose Rate Editor and reload patient in Eclipse " +
                 $"to select new course and view plan");
+
+            
         }
     }
 }
