@@ -430,14 +430,6 @@ public static double cosmicFunc(double th_deg)
             // Get the cps from beam
             var edits = bm.GetEditableParameters();
             edits.SetAllLeafPositions(leaves);
-            //var cps = edits.ControlPoints.ToList();
-            /*
-            for (int j=0; j<edits.ControlPoints.Count(); j++)
-            {
-                var mlcCopied = leaves.Clone() as float[,];
-                cps[j].LeafPositions = mlcCopied;
-            }(*/
-
             bm.ApplyParameters(edits);
         }
 
@@ -480,7 +472,9 @@ public static double cosmicFunc(double th_deg)
 
                     // Handle static
                     // Create arc beam
-                    (string primary_fluence_mode, string energy_mode_id) = GetFluenceEnergyMode(bm);
+                    var unpack = GetFluenceEnergyMode(bm);
+                    string primary_fluence_mode = unpack.Item1;
+                    string energy_mode_id = unpack.Item2;
 
                     var ebmp = new ExternalBeamMachineParameters(
                         bm.TreatmentUnit.Id,
@@ -541,9 +535,6 @@ public static double cosmicFunc(double th_deg)
 
         }
 
-
-
-
         private Tuple<string, string> GetFluenceEnergyMode(Beam bm)
         {
             // Lifted from my python code @ craman96/MAAS
@@ -563,7 +554,10 @@ public static double cosmicFunc(double th_deg)
         // Helper for copying beam
         private void copy_beam(Beam bm, List<double> msws, bool delete_original = false, ExternalPlanSetup new_plan = null)
         {
-            (string primary_fluence_mode, string energy_mode_id) = GetFluenceEnergyMode(bm);
+            //(string primary_fluence_mode, string energy_mode_id) = GetFluenceEnergyMode(bm);
+            var unpack_getFluenceEnergyMode = GetFluenceEnergyMode(bm);
+            string primary_fluence_mode = unpack_getFluenceEnergyMode.Item1;
+            string energy_mode_id = unpack_getFluenceEnergyMode.Item2;
 
             // ASSERT
             if (!new String[] { "", "FFF", "SRS" }.Contains(primary_fluence_mode))
@@ -578,17 +572,7 @@ public static double cosmicFunc(double th_deg)
             var couch_angles = angles.Item3;
             var cps = angles.Item4;
 
-            /*
-            var technique_id = "STATIC";
-            for (int i = 1; i < cps.Count(); i ++)
-            {
-                if (gantry_angles[i] != gantry_angles[i - 1])
-                {
-                    technique_id = "ARC";
-                    break;
-                }
-
-            }*/
+           
 
             var ebmp = new ExternalBeamMachineParameters(
                 bm.TreatmentUnit.Id,
@@ -674,18 +658,6 @@ public static double cosmicFunc(double th_deg)
             var newplan = newcourse.CopyPlanSetup(Plan) as ExternalPlanSetup;
             newplan.Id = Plan.Id;
 
-            // TEST
-            /*
-            foreach(var bm in newplan.Beams.ToList())
-            {
-                AddGap(bm);
-            }
-            MessageBox.Show("About to save");
-            _app.SaveModifications();
-            MessageBox.Show("Test over");
-            return;
-            */
-            // -- END TEST --
 
             // -- Check closed to set target mlc
             List<bool> beamsClosed = new List<bool>();
@@ -723,33 +695,22 @@ public static double cosmicFunc(double th_deg)
 
             _app.SaveModifications();
 
-
-
-
             // Check static or dynamic (does the mlc have more than 2 control points)
             // If static convert to dynamic (copy pattern to every cp) (if dynamic do nothing)
-            (var dynPlan, var success) = ConvertToDynamic(Plan, newcourse);
+            var unpack = ConvertToDynamic(Plan, newcourse);
+            var dynPlan = unpack.Item1;
+            var success = unpack.Item2;
             Plan = dynPlan;
             if (!success)
             {
                 MessageBox.Show("Exiting, cant perform DR edit on static plan.");
                 return; // Can't perform dr edit on a static plan
             }
-
             
             _app.SaveModifications();
-            MessageBox.Show("Saved intermediate plan");
-
-            
-
-
 
             // Compute the final DR using selected method
             CalcFinalDR(Plan, method);
-
-
-            
-
             
             // TODO remove the beams from newplan
             foreach (var copiedbeam in newplan.Beams.ToList())
@@ -761,7 +722,6 @@ public static double cosmicFunc(double th_deg)
             foreach (var bm in Plan.Beams)
             {
                 var new_msws = FinalMSWS[bm.Id];
-
                 copy_beam(bm, new_msws, false, newplan);
             }
 
