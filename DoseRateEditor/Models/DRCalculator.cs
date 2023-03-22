@@ -627,10 +627,22 @@ public static double cosmicFunc(double th_deg)
 
         public void CreateNewPlanWithMethod(DRMethod method) // TODO fix deletion within loop crash by tagging all beams to delete (somehow) and then deleing them after loop
         {
+            // Check HD or MILLENIUM MLC as precheck
+            var mlc = Plan.Beams.Where(b => !b.IsSetupField).First().MLC;
+
+            var hdstring = "Varian High Definition 120";
+            var milstring = "Varian Millenium 120";
+            if (mlc.Model != hdstring && mlc.Model != milstring)
+            {
+                MessageBox.Show($"Invalid MLC type: {mlc.Model}. DREditor only designed for {hdstring} or {milstring}.");
+                return;
+            }
+
             // Copy the plan, delete all beams
             // Call begin mods
             var pat = Plan.Course.Patient;
             pat.BeginModifications();
+
 
             // Create new course
             var newcourse = pat.AddCourse();
@@ -670,19 +682,22 @@ public static double cosmicFunc(double th_deg)
             var count_closed = beamsClosed.Where(val => val == true).Count();
             if (count_closed == beamsClosed.Count)
             {
-                // All closed
-                var res = MessageBox.Show("All fields have closed MLC, would you like to create 2.1mm opening in center 2 leaf pairs?", "Closed MLC", MessageBoxButton.YesNo);
-                if (res == MessageBoxResult.Yes)
+                if (mlc.Model == "Varian High Definition 120")
                 {
-                    pat.BeginModifications();
-                    foreach (var bm in Plan.Beams.ToList())
+                    // All closed on HD machine, propose gap
+                    var res = MessageBox.Show("All fields have closed MLC, would you like to create 2.1mm opening in center 2 leaf pairs?", "Closed MLC", MessageBoxButton.YesNo);
+                    if (res == MessageBoxResult.Yes)
                     {
-                        AddGap(bm);
+                        pat.BeginModifications();
+                        foreach (var bm in Plan.Beams.ToList())
+                        {
+                            AddGap(bm);
+                        }
                     }
                 }
                 else
                 {
-                    MessageBox.Show("Exiting because some fields have closed MLCs.");
+                    MessageBox.Show("Exiting because all fields have closed MLCs. Plese use HD-MLC or create aperture with Millenium 120 MLC.");
                     return; // Call the whole thing off
                 }
             }
