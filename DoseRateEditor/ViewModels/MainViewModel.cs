@@ -809,7 +809,7 @@ namespace DoseRateEditor.ViewModels
             _SelectedBeam = null;
 
             // Create a DR calculator for selected plan
-            DRCalc = new DRCalculator(SelectedPlan);
+            DRCalc = new DRCalculator(SelectedPlan, _app);
 
             // Clear the previous initial and final dr/gs plots
             DR0_series.Points.Clear();

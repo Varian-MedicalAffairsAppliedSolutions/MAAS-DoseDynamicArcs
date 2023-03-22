@@ -1,4 +1,5 @@
-﻿using MahApps.Metro.IconPacks;
+﻿using ControlzEx.Standard;
+using MahApps.Metro.IconPacks;
 using OxyPlot;
 using System;
 using System.Collections.Generic;
@@ -148,9 +149,12 @@ public static double cosmicFunc(double th_deg)
 
         public int numbeams;
 
+        private VMS.TPS.Common.Model.API.Application _app { get; set; }
+
         private ExternalPlanSetup Plan { get; set; }
-        public DRCalculator(ExternalPlanSetup plan)
+        public DRCalculator(ExternalPlanSetup plan, VMS.TPS.Common.Model.API.Application app)
         {
+            _app = app;
             Plan = plan;
 
             if (plan.Dose == null)
@@ -342,6 +346,11 @@ public static double cosmicFunc(double th_deg)
                     var msw_current = cps[i].MetersetWeight;
                     var msw_prev = cps[i - 1].MetersetWeight;
 
+                    if (bm.Meterset.Value <= 0)
+                    {
+                        MessageBox.Show($"Warning: meterset value is {bm.Meterset.Value}");
+                    }
+
                     var mu_last = msw_prev * bm.Meterset.Value; // TODO: if dose not calculated bm.Meterset is null -> inaccurate DR calculation.
                     var mu_current = msw_current * bm.Meterset.Value;
                     var delta_mu = mu_current - mu_last;
@@ -394,7 +403,7 @@ public static double cosmicFunc(double th_deg)
                     var bankA = leaves[0, i];
                     var bankB = leaves[1, i];
 
-                    if (bankA + bankB != 0)
+                    if (bankA - bankB != 0)
                     {
                         return false;
                     }
@@ -405,20 +414,29 @@ public static double cosmicFunc(double th_deg)
 
         private void AddGap(Beam bm)
         {
+
+            // Build leaf bank
+            var leaves = new float[2, 60];
+            for (int i = 0; i < 60; i++)
+            {
+                leaves[0, i] = -37.5F;
+                leaves[1, i] = -37.5F;
+            }
+            leaves[0, 30] = -1.05F;
+            leaves[1, 30] = 1.05F;
+            leaves[0, 29] = -1.05F;
+            leaves[1, 29] = 1.05F;
+
             // Get the cps from beam
             var edits = bm.GetEditableParameters();
-            var cps = edits.ControlPoints;
-
-            foreach (var cp in cps)
+            edits.SetAllLeafPositions(leaves);
+            //var cps = edits.ControlPoints.ToList();
+            /*
+            for (int j=0; j<edits.ControlPoints.Count(); j++)
             {
-                var leaves = cp.LeafPositions;
-                
-                leaves[0, 30] = 0.105F;
-                leaves[1, 30] = 0.105F;
-
-                leaves[0, 31] = 0.105F;
-                leaves[1, 31] = 0.105F;
-            }
+                var mlcCopied = leaves.Clone() as float[,];
+                cps[j].LeafPositions = mlcCopied;
+            }(*/
 
             bm.ApplyParameters(edits);
         }
@@ -435,7 +453,7 @@ public static double cosmicFunc(double th_deg)
             // Make list of beams we want to change
             var to_modify = newplan.Beams.Where(b => !b.IsSetupField).ToList();
 
-            foreach(var bm in to_modify)
+            foreach (var bm in to_modify)
             {
 
                 // Get info about the beam
@@ -445,7 +463,7 @@ public static double cosmicFunc(double th_deg)
                 var col_angles = angles.Item2;
                 var couch_angles = angles.Item3;
                 var cps = angles.Item4;
-             
+
                 // Check if static
                 if (cps.Count() <= 2)
                 {
@@ -454,7 +472,7 @@ public static double cosmicFunc(double th_deg)
                         var res = MessageBox.Show($"Must convert all fields from static to dynamic to edit dose rate, would you like to continue?");
                         if (res == MessageBoxResult.Cancel)
                         {
-                            return new Tuple<ExternalPlanSetup, bool> (newplan, false);
+                            return new Tuple<ExternalPlanSetup, bool>(newplan, false);
                         }
 
                         agreeConvert = res == MessageBoxResult.OK;
@@ -507,18 +525,24 @@ public static double cosmicFunc(double th_deg)
                 }
             }
 
-            foreach(var bm in to_modify)
+            if (agreeConvert)
             {
-                newplan.RemoveBeam(bm);
+                foreach (var bm in to_modify)
+                {
+                    newplan.RemoveBeam(bm);
+                }
             }
 
-            if(replaceCount> 0)
+            if (replaceCount > 0)
             {
                 MessageBox.Show($"Converted {replaceCount} beams to dynamic arcs");
             }
-            return new Tuple<ExternalPlanSetup, bool> (newplan, true) ;
+            return new Tuple<ExternalPlanSetup, bool>(newplan, true);
 
         }
+
+
+
 
         private Tuple<string, string> GetFluenceEnergyMode(Beam bm)
         {
@@ -536,6 +560,87 @@ public static double cosmicFunc(double th_deg)
             return new Tuple<string, string> (primary_fluence_mode, energy_mode_id);
         }
 
+        // Helper for copying beam
+        private void copy_beam(Beam bm, List<double> msws, bool delete_original = false, ExternalPlanSetup new_plan = null)
+        {
+            (string primary_fluence_mode, string energy_mode_id) = GetFluenceEnergyMode(bm);
+
+            // ASSERT
+            if (!new String[] { "", "FFF", "SRS" }.Contains(primary_fluence_mode))
+            {
+                throw new Exception($"Primary fluence mode {primary_fluence_mode} not one of the valid options");
+            }
+
+            var angles = Utils.GetBeamAngles(bm);
+
+            var gantry_angles = angles.Item1;
+            var col_angles = angles.Item2;
+            var couch_angles = angles.Item3;
+            var cps = angles.Item4;
+
+            /*
+            var technique_id = "STATIC";
+            for (int i = 1; i < cps.Count(); i ++)
+            {
+                if (gantry_angles[i] != gantry_angles[i - 1])
+                {
+                    technique_id = "ARC";
+                    break;
+                }
+
+            }*/
+
+            var ebmp = new ExternalBeamMachineParameters(
+                bm.TreatmentUnit.Id,
+                energy_mode_id,
+                bm.DoseRate,
+                "ARC",
+                primary_fluence_mode
+            );
+
+            ExternalPlanSetup plan = null;
+            if (new_plan == null)
+            {
+                plan = (ExternalPlanSetup)bm.Plan;
+            }
+            else
+            {
+                plan = new_plan;
+            }
+
+
+            var new_bm = plan.AddVMATBeam(
+                ebmp,
+                msws,
+                col_angles.First(),
+                gantry_angles.First(),
+                gantry_angles.Last(),
+                bm.GantryDirection,
+                couch_angles.First(),
+                bm.IsocenterPosition
+                );
+
+            var edits_new = new_bm.GetEditableParameters();
+            var cps_new = edits_new.ControlPoints.ToList();
+
+            for (int j = 0; j < cps_new.Count(); j++)
+            {
+                cps_new[j].JawPositions = cps[j].JawPositions;
+                cps_new[j].LeafPositions = cps[j].LeafPositions;
+            }
+
+            new_bm.ApplyParameters(edits_new);
+            new_bm.Id = bm.Id + "_new"; // Truncate and add 'new' to the name
+
+            // Delete original beam if it's called for
+            if (delete_original)
+            {
+                var orig_plan = bm.Plan as ExternalPlanSetup;
+                orig_plan.RemoveBeam(bm);
+            }
+
+        }
+
         public void CreateNewPlanWithMethod(DRMethod method) // TODO fix deletion within loop crash by tagging all beams to delete (somehow) and then deleing them after loop
         {
             // Copy the plan, delete all beams
@@ -547,129 +652,65 @@ public static double cosmicFunc(double th_deg)
             var newcourse = pat.AddCourse();
             var dt = DateTime.UtcNow.ToString("d");
 
+            // Rename course
+            string proposed_name;
+            for (int n = 1; n < 100; n++)
+            {
+                proposed_name = $"EditDR_{n}";
+                if (pat.Courses.Count(c => c.Id == proposed_name) == 0) // If we don't find that name
+                {
+                    // use proposed name and break the loop
+                    newcourse.Id = proposed_name;
+                    break;
+                }
+                else if (n == 99)
+                {
+                    throw new Exception("Maximum new course index reached (99)");
+                }
+
+            }
+
             // Anthony fix for static mlc
             var newplan = newcourse.CopyPlanSetup(Plan) as ExternalPlanSetup;
             newplan.Id = Plan.Id;
 
-            // Helper for copying beam
-            void copy_beam(Beam bm, List<double> msws, bool delete_original=false, ExternalPlanSetup new_plan=null)
-            {
-                
-
-                (string primary_fluence_mode, string energy_mode_id) = GetFluenceEnergyMode(bm);
-
-                // ASSERT
-                if (!new String[] {"", "FFF", "SRS"}.Contains(primary_fluence_mode))
-                {
-                    throw new Exception($"Primary fluence mode {primary_fluence_mode} not one of the valid options");
-                }
-
-                var angles = Utils.GetBeamAngles(bm);
-
-                var gantry_angles = angles.Item1;
-                var col_angles = angles.Item2;
-                var couch_angles = angles.Item3;
-                var cps = angles.Item4;
-
-                /*
-                var technique_id = "STATIC";
-                for (int i = 1; i < cps.Count(); i ++)
-                {
-                    if (gantry_angles[i] != gantry_angles[i - 1])
-                    {
-                        technique_id = "ARC";
-                        break;
-                    }
-
-                }*/
-
-                var ebmp = new ExternalBeamMachineParameters(
-                    bm.TreatmentUnit.Id,
-                    energy_mode_id,
-                    bm.DoseRate,
-                    "ARC",
-                    primary_fluence_mode
-                );
-
-                ExternalPlanSetup plan = null;
-                if (new_plan == null)
-                {
-                    plan = (ExternalPlanSetup)bm.Plan;
-                }
-                else
-                {
-                    plan = new_plan;
-                }
-
-
-                var new_bm = plan.AddVMATBeam(
-                    ebmp,
-                    msws,
-                    col_angles.First(),
-                    gantry_angles.First(),
-                    gantry_angles.Last(),
-                    bm.GantryDirection,
-                    couch_angles.First(),
-                    bm.IsocenterPosition
-                    );
-
-                var edits_new = new_bm.GetEditableParameters();
-                var cps_new = edits_new.ControlPoints.ToList();
-
-                for (int j = 0; j < cps_new.Count(); j++)
-                {
-                    cps_new[j].JawPositions = cps[j].JawPositions;
-                    cps_new[j].LeafPositions = cps[j].LeafPositions;
-                }
-
-                new_bm.ApplyParameters(edits_new);
-                new_bm.Id = bm.Id +"_new"; // Truncate and add 'new' to the name
-
-                // Delete original beam if it's called for
-                if (delete_original)
-                {
-                    var orig_plan = bm.Plan as ExternalPlanSetup;
-                    orig_plan.RemoveBeam(bm);
-                }
-
-            }
-
-
-            
-
-            // Check static or dynamic (does the mlc have more than 2 control points)
-            // If static convert to dynamic (copy pattern to every cp) (if dynamic do nothing)
-            (var dynPlan, var success) = ConvertToDynamic(Plan, newcourse);
-            Plan = dynPlan;
-            if (!success)
-            {
-                return; // Can't perform dr edit on a static plan
-            }
-
-
-            // -- Check closed --
+            // TEST
             /*
-            List<bool> beamsClosed = new List<bool>();
-            foreach(var bm in Plan.Beams.Where(b => !b.IsSetupField).ToList())
+            foreach(var bm in newplan.Beams.ToList())
             {
-                beamsClosed.Add(CheckIsClosed(bm));
+                AddGap(bm);
             }
+            MessageBox.Show("About to save");
+            _app.SaveModifications();
+            MessageBox.Show("Test over");
+            return;
+            */
+            // -- END TEST --
 
+            // -- Check closed to set target mlc
+            List<bool> beamsClosed = new List<bool>();
+            var beams = Plan.Beams.Where(b => !b.IsSetupField).ToList();
+            foreach (var bm in beams)
+            {
+                var isclosed = CheckIsClosed(bm);
+                beamsClosed.Add(isclosed);
+            }
             var count_closed = beamsClosed.Where(val => val == true).Count();
-            
             if (count_closed == beamsClosed.Count)
             {
                 // All closed
                 var res = MessageBox.Show("All fields have closed MLC, would you like to create 2.1mm opening in center 2 leaf pairs?", "Closed MLC", MessageBoxButton.YesNo);
-                if(res == MessageBoxResult.Yes)
+                if (res == MessageBoxResult.Yes)
                 {
-                    foreach(var bm in Plan.Beams.Where(b => !b.IsSetupField).ToList())
+                    pat.BeginModifications();
+                    foreach (var bm in Plan.Beams.ToList())
                     {
                         AddGap(bm);
                     }
                 }
                 else
                 {
+                    MessageBox.Show("Exiting because some fields have closed MLCs.");
                     return; // Call the whole thing off
                 }
             }
@@ -677,8 +718,29 @@ public static double cosmicFunc(double th_deg)
             {
                 // Some closed (warning)
                 MessageBox.Show("Some arcs in this plan have a closed MLC. Please try again with an aperture on all fields or a plan with all MLCs closed.");
-                return; 
-            }*/
+                return;
+            }
+
+            _app.SaveModifications();
+
+
+
+
+            // Check static or dynamic (does the mlc have more than 2 control points)
+            // If static convert to dynamic (copy pattern to every cp) (if dynamic do nothing)
+            (var dynPlan, var success) = ConvertToDynamic(Plan, newcourse);
+            Plan = dynPlan;
+            if (!success)
+            {
+                MessageBox.Show("Exiting, cant perform DR edit on static plan.");
+                return; // Can't perform dr edit on a static plan
+            }
+
+            
+            _app.SaveModifications();
+            MessageBox.Show("Saved intermediate plan");
+
+            
 
 
 
@@ -686,21 +748,7 @@ public static double cosmicFunc(double th_deg)
             CalcFinalDR(Plan, method);
 
 
-            // Rename course
-            string proposed_name;
-            for(int n = 1; n < 100; n++)
-            {
-                proposed_name = $"EditDR_{n}";
-                if (pat.Courses.Count(c => c.Id == proposed_name) == 0) // If we don't find that name
-                {
-                    // use proposed name and break the loop
-                    newcourse.Id = proposed_name;
-                    break;  
-                }else if (n == 99) {
-                    throw new Exception("Maximum new course index reached (99)");
-                }
-           
-            }
+            
 
             
             // TODO remove the beams from newplan
@@ -716,8 +764,6 @@ public static double cosmicFunc(double th_deg)
 
                 copy_beam(bm, new_msws, false, newplan);
             }
-
-            
 
             MessageBox.Show(
                 $"New plan created with id: {newplan.Id} in course {newcourse.Id}" +
