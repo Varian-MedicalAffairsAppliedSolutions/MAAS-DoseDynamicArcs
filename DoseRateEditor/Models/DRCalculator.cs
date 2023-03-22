@@ -428,13 +428,12 @@ public static double cosmicFunc(double th_deg)
             int replaceCount = 0;
             bool agreeConvert = false;
             // Loop through each field in the plan and copy it to dynamic version
-            foreach(var bm in plan.Beams)
+
+            // Make list of beams we want to change
+            var to_modify = plan.Beams.Where(b => !b.IsSetupField).ToList();
+
+            foreach(var bm in to_modify)
             {
-                // Skip if setup field
-                if (bm.IsSetupField)
-                {
-                    continue;
-                }
 
                 // Get info about the beam
                 var angles = Utils.GetBeamAngles(bm);
@@ -470,17 +469,34 @@ public static double cosmicFunc(double th_deg)
                         primary_fluence_mode
                     );
 
+                    /*public Beam AddConformalArcBeam(
+                        ExternalBeamMachineParameters machineParameters,
+                        double collimatorAngle,
+                        int controlPointCount,
+                        double gantryAngle,
+                        double gantryStop,
+                        GantryDirection gantryDirection,
+                        double patientSupportAngle,
+                        VVector isocenter
+                    )*/
 
-                    var new_bm = plan.AddArcBeam(
+                    var d_theta = 180 - Math.Abs(Math.Abs(gantry_angles.First() - gantry_angles.Last()) - 180);
+                    if (bm.GantryDirection == GantryDirection.Clockwise)
+                    {
+                        d_theta = 360 - d_theta;
+                    }
+                    int n_cps = (int)Math.Ceiling(d_theta / 2) + 1;
+
+                    var new_bm = plan.AddConformalArcBeam(
                         ebmp,
-                        cps.First().JawPositions,
                         col_angles.First(),
+                        n_cps,
                         gantry_angles.First(),
                         gantry_angles.Last(),
                         bm.GantryDirection,
                         couch_angles.First(),
                         bm.IsocenterPosition
-                        );
+                    );
 
                     // Now copy mlc positions of bm to new_bm
                     var target_mlc = cps.First().LeafPositions;
@@ -494,9 +510,14 @@ public static double cosmicFunc(double th_deg)
                     }
 
                     new_bm.ApplyParameters(edits_new);
-                    plan.RemoveBeam(bm);
                     replaceCount++;
                 }
+            }
+
+
+            foreach(var old_bm in to_modify)
+            {
+                plan.RemoveBeam(old_bm);
             }
 
             if(replaceCount> 0)
@@ -527,19 +548,6 @@ public static double cosmicFunc(double th_deg)
         {
 
             // Anthony fix for static mlc
-
-
-            
-
-
-            
-
-            
-
-
-
-
-
 
             // Helper for copying beam
             void copy_beam(Beam bm, List<double> msws, bool delete_original=false, ExternalPlanSetup new_plan=null)
@@ -624,10 +632,6 @@ public static double cosmicFunc(double th_deg)
 
             }
 
-            // Compute the final DR using selected method
-            CalcFinalDR(Plan, method);
-
-      
 
             // Copy the plan, delete all beams
             // Call begin mods
@@ -641,6 +645,9 @@ public static double cosmicFunc(double th_deg)
             {
                 return; // Can't perform dr edit on a static plan
             }
+
+            // Compute the final DR using selected method
+            CalcFinalDR(Plan, method);
 
             // Create new course
             var newcourse = pat.AddCourse();
