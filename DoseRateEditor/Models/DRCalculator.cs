@@ -3,10 +3,12 @@ using MahApps.Metro.IconPacks;
 using OxyPlot;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
 using System.Web.SessionState;
 using System.Windows;
+using System.Windows.Media.Animation;
 using VMS.TPS.Common.Model.API;
 using VMS.TPS.Common.Model.Types;
 using static DoseRateEditor.Models.Utils;
@@ -625,38 +627,16 @@ public static double cosmicFunc(double th_deg)
 
         }
 
-        public void CreateNewPlanWithMethod(DRMethod method) // TODO fix deletion within loop crash by tagging all beams to delete (somehow) and then deleing them after loop
+        private string GetNewCourseID(Patient pat)
         {
-            // Check HD or MILLENIUM MLC as precheck
-            var mlc = Plan.Beams.Where(b => !b.IsSetupField).First().MLC;
-
-            var hdstring = "Varian High Definition 120";
-            var milstring = "Varian Millennium 120";
-            if (mlc.Model != hdstring && mlc.Model != milstring)
-            {
-                MessageBox.Show($"Invalid MLC type: {mlc.Model}. DREditor only designed for {hdstring} or {milstring}.");
-                return;
-            }
-
-            // Copy the plan, delete all beams
-            // Call begin mods
-            var pat = Plan.Course.Patient;
-            pat.BeginModifications();
-
-
-            // Create new course
-            var newcourse = pat.AddCourse();
-            var dt = DateTime.UtcNow.ToString("d");
-
             // Rename course
-            string proposed_name;
+            string proposed_name = null;
             for (int n = 1; n < 100; n++)
             {
                 proposed_name = $"EditDR_{n}";
                 if (pat.Courses.Count(c => c.Id == proposed_name) == 0) // If we don't find that name
                 {
                     // use proposed name and break the loop
-                    newcourse.Id = proposed_name;
                     break;
                 }
                 else if (n == 99)
@@ -665,31 +645,53 @@ public static double cosmicFunc(double th_deg)
                 }
 
             }
-
-            // Anthony fix for static mlc
-            var newplan = newcourse.CopyPlanSetup(Plan) as ExternalPlanSetup;
-            newplan.Id = Plan.Id;
+            return proposed_name;
+        }
 
 
+        private bool CheckValidMLC(IEnumerable<Beam> beams)
+        {
+
+            var hdstring = "Varian High Definition 120";
+            var milstring = "Varian Millennium 120";
+            foreach(var bm in beams.Where(b => !b.IsSetupField).ToList())
+            {
+                var mlc = bm.MLC;
+                if (mlc.Model != hdstring && mlc.Model != milstring)
+                {
+                    MessageBox.Show($"Invalid MLC type: {mlc.Model}. DREditor only designed for {hdstring} or {milstring}.");
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        private void CheckClosed(Patient pat, ExternalPlanSetup plan)
+        {
             // -- Check closed to set target mlc
             List<bool> beamsClosed = new List<bool>();
-            var beams = Plan.Beams.Where(b => !b.IsSetupField).ToList();
+            var beams = plan.Beams.Where(b => !b.IsSetupField).ToList();
             foreach (var bm in beams)
             {
                 var isclosed = CheckIsClosed(bm);
                 beamsClosed.Add(isclosed);
             }
+
+            // Check how many beams are closed
             var count_closed = beamsClosed.Where(val => val == true).Count();
+
+            // If all are closed and leaves are HD, give option to create gap
             if (count_closed == beamsClosed.Count)
             {
-                if (mlc.Model == "Varian High Definition 120")
+                if (beams.First().MLC.Model == "Varian High Definition 120")
                 {
                     // All closed on HD machine, propose gap
                     var res = MessageBox.Show("All fields have closed MLC, would you like to create 2.1mm opening in center 2 leaf pairs?", "Closed MLC", MessageBoxButton.YesNo);
                     if (res == MessageBoxResult.Yes)
                     {
                         pat.BeginModifications();
-                        foreach (var bm in Plan.Beams.ToList())
+                        foreach (var bm in plan.Beams.ToList())
                         {
                             AddGap(bm);
                         }
@@ -709,10 +711,38 @@ public static double cosmicFunc(double th_deg)
             }
 
             _app.SaveModifications();
+        }
+
+        public void CreateNewPlanWithMethod(DRMethod method) // TODO fix deletion within loop crash by tagging all beams to delete (somehow) and then deleing them after loop
+        {
+            // Check that we have a valid MLC
+            if (!CheckValidMLC(Plan.Beams))
+            {
+                return;
+            }
+
+            // Call begin mods
+            var pat = Plan.Course.Patient;
+            pat.BeginModifications();
+
+
+            // Create new course with unique ID
+            var newcourse = pat.AddCourse();
+            newcourse.Id = GetNewCourseID(pat);
+            var dt = DateTime.UtcNow.ToString("d");
+
+           
+            // Create a copy of target plan in new course
+            var newplan = newcourse.CopyPlanSetup(Plan) as ExternalPlanSetup;
+            newplan.Id = Plan.Id;
+
+            // Check closed (ON NEW PLAN!)
+            CheckClosed(pat, newplan);
+
 
             // Check static or dynamic (does the mlc have more than 2 control points)
             // If static convert to dynamic (copy pattern to every cp) (if dynamic do nothing)
-            var unpack = ConvertToDynamic(Plan, newcourse);
+            var unpack = ConvertToDynamic(newplan, newcourse);
             var dynPlan = unpack.Item1;
             var success = unpack.Item2;
             Plan = dynPlan;
