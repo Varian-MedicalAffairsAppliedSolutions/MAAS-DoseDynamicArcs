@@ -144,7 +144,7 @@ public static double cosmicFunc(double th_deg)
         public Dictionary<string, List<DataPoint>> InitialdMU { get; set; }
 
         public Dictionary<string, List<DataPoint>> FinalDRs { get; set; }
-
+        
         public Dictionary<string, List<double>> FinalMSWS { get; set; }
 
         public Dictionary<string, List<DataPoint>> FinalGSs { get; set; }
@@ -390,7 +390,6 @@ public static double cosmicFunc(double th_deg)
         }
     
        
-
         private bool CheckIsClosed(Beam bm)
         {
             // Get the cps from beam
@@ -435,7 +434,7 @@ public static double cosmicFunc(double th_deg)
             bm.ApplyParameters(edits);
         }
 
-        private Tuple<ExternalPlanSetup, bool> ConvertToDynamic(ExternalPlanSetup plan, Course newcourse)
+        private Tuple<ExternalPlanSetup, bool> ConvertToDynamic(ExternalPlanSetup plan, Course newcourse, bool toVmat=true)
         {
             var newplan = newcourse.CopyPlanSetup(plan) as ExternalPlanSetup;
             newplan.Id = "temp_dynamic";
@@ -494,16 +493,48 @@ public static double cosmicFunc(double th_deg)
                     }
                     int n_cps = (int)Math.Ceiling(d_theta / 2) + 1;
 
-                    var new_bm = newplan.AddConformalArcBeam(
-                        ebmp,
-                        col_angles.First(),
-                        n_cps,
-                        gantry_angles.First(),
-                        gantry_angles.Last(),
-                        bm.GantryDirection,
-                        couch_angles.First(),
-                        bm.IsocenterPosition
-                    );
+                    Beam new_bm = null;
+                    if (!toVmat)
+                    {
+                        // Conf arc
+                        new_bm = newplan.AddConformalArcBeam(
+                            ebmp,
+                            col_angles.First(),
+                            n_cps,
+                            gantry_angles.First(),
+                            gantry_angles.Last(),
+                            bm.GantryDirection,
+                            couch_angles.First(),
+                            bm.IsocenterPosition
+                        );
+                    }else
+                    {
+                        // MSWS
+                        var msws = new List<double>();
+                        for (int i = 0; i < 100; i++)
+                        {
+                            // Make 100 MSWS for now
+                            msws.Add((double)i);
+                            
+                        }
+                        var max_msw = msws.Max();
+                        for (int j=0; j < msws.Count(); j++)
+                        {
+                            msws[j] /= max_msw;
+                        }
+
+                        // VMAT
+                        new_bm = newplan.AddVMATBeam(
+                            ebmp,
+                            msws,
+                            col_angles.First(),
+                            gantry_angles.First(),
+                            gantry_angles.Last(),
+                            bm.GantryDirection,
+                            couch_angles.First(),
+                            bm.IsocenterPosition
+                        );
+                    }
 
                     // Now copy mlc positions of bm to new_bm
                     var target_mlc = cps.First().LeafPositions;
@@ -647,7 +678,6 @@ public static double cosmicFunc(double th_deg)
             }
             return proposed_name;
         }
-
 
         private bool CheckValidMLC(IEnumerable<Beam> beams)
         {
