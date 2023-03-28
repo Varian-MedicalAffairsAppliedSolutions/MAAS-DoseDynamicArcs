@@ -654,12 +654,13 @@ public static double cosmicFunc(double th_deg)
 
             var hdstring = "Varian High Definition 120";
             var milstring = "Varian Millennium 120";
+            var milstring2 = "Millennium 120";
             foreach(var bm in beams.Where(b => !b.IsSetupField).ToList())
             {
                 var mlc = bm.MLC;
-                if (mlc.Model != hdstring && mlc.Model != milstring)
+                if (mlc.Model != hdstring && mlc.Model != milstring && mlc.Model != milstring2)
                 {
-                    MessageBox.Show($"Invalid MLC type: {mlc.Model}. DREditor only designed for {hdstring} or {milstring}.");
+                    MessageBox.Show($"Invalid MLC model: {mlc.Model}. DREditor only designed for {hdstring} or {milstring} or {milstring2}.");
                     return false;
                 }
             }
