@@ -701,7 +701,7 @@ public static double cosmicFunc(double th_deg)
             return true;
         }
 
-        private void CheckClosed(Patient pat, ExternalPlanSetup plan)
+        private bool CheckClosed(Patient pat, ExternalPlanSetup plan)
         {
             // -- Check closed to set target mlc
             List<bool> beamsClosed = new List<bool>();
@@ -729,22 +729,25 @@ public static double cosmicFunc(double th_deg)
                         {
                             AddGap(bm);
                         }
+                        return false;
                     }
+                    return true;
+                    
                 }
                 else
                 {
                     MessageBox.Show("Exiting because all fields have closed MLCs. Plese use HD-MLC or create aperture with Millenium 120 MLC.");
-                    return; // Call the whole thing off
+                    return true; // Call the whole thing off
                 }
             }
             else if (count_closed > 0)
             {
                 // Some closed (warning)
                 MessageBox.Show("Some arcs in this plan have a closed MLC. Please try again with an aperture on all fields or a plan with all MLCs closed.");
-                return;
+                return true;
             }
+            return false;
 
-            _app.SaveModifications();
         }
 
         public void CreateNewPlanWithMethod(DRMethod method) // TODO fix deletion within loop crash by tagging all beams to delete (somehow) and then deleing them after loop
@@ -771,7 +774,13 @@ public static double cosmicFunc(double th_deg)
             newplan.Id = Plan.Id;
 
             // Check closed (ON NEW PLAN!)
-            CheckClosed(pat, newplan);
+            bool isClosed = CheckClosed(pat, newplan);
+            if (isClosed)
+            {
+                return;  // Exit if things are closed
+            }
+
+            _app.SaveModifications();
 
 
             // Check static or dynamic (does the mlc have more than 2 control points)
