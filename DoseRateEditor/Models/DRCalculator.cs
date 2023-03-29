@@ -159,12 +159,6 @@ public static double cosmicFunc(double th_deg)
             _app = app;
             Plan = plan;
 
-            if (plan.Dose == null)
-            {
-                // Warn user that beam.Meterset will be null
-                MessageBox.Show("Warning: Plan dose not calculated, this will lead to innacurate DR and GS calculations.");
-            }
-
             numbeams = Plan.Beams.Count();
             
             // Compute the initial DR for each beam in the plan
@@ -548,6 +542,15 @@ public static double cosmicFunc(double th_deg)
                     }
 
                     new_bm.ApplyParameters(edits_new);
+
+                    // If agree convert save original beam id and rename as old, then rename new beam
+                    if (agreeConvert)
+                    {
+                        var orig_id = bm.Id;
+                        bm.Id = bm.Id + "d";
+                        new_bm.Id = orig_id;
+                    }
+
                     replaceCount++;
                 }
             }
@@ -647,7 +650,7 @@ public static double cosmicFunc(double th_deg)
             }
 
             new_bm.ApplyParameters(edits_new);
-            new_bm.Id = bm.Id + "_new"; // Truncate and add 'new' to the name
+            new_bm.Id = bm.Id; //+ "_new"; // Truncate and add 'new' to the name
 
             // Delete original beam if it's called for
             if (delete_original)
@@ -800,6 +803,12 @@ public static double cosmicFunc(double th_deg)
                 var new_msws = FinalMSWS[bm.Id];
                 copy_beam(bm, new_msws, false, newplan);
             }
+
+            if (newcourse.CanRemovePlanSetup(dynPlan))
+            {
+                newcourse.RemovePlanSetup(dynPlan);
+            }
+            
 
             MessageBox.Show(
                 $"New plan created with id: {newplan.Id} in course {newcourse.Id}" +

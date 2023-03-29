@@ -186,7 +186,8 @@ namespace DoseRateEditor
                     var res = MessageBox.Show(msg, "Agreement  ", MessageBoxButton.YesNo);
                     if (res == MessageBoxResult.No)
                     {
-                        return;
+                        App.Current.Shutdown();
+                        return;       
                     }
                 }
                 else if (isValidated)

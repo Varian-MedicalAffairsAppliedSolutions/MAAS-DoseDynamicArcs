@@ -808,6 +808,8 @@ namespace DoseRateEditor.ViewModels
             // Unselect Beam
             _SelectedBeam = null;
 
+            
+
             // Create a DR calculator for selected plan
             DRCalc = new DRCalculator(SelectedPlan, _app);
 
@@ -854,6 +856,13 @@ namespace DoseRateEditor.ViewModels
             SelectedSlice = SelectedPlan.StructureSet.Image.Series.Images.Count() / 2;
             UpdateSeries(TransPlot);
 
+            /*
+            if (SelectedPlan.Dose == null)
+            {
+                // Warn user that beam.Meterset will be null
+                System.Windows.MessageBox.Show("Warning: Plan metersets are null. Plots will not display.");
+            }*/
+
         }
 
         private bool CanPlanSelect()
@@ -885,6 +894,8 @@ namespace DoseRateEditor.ViewModels
                 
             DRCalc.CreateNewPlanWithMethod(SelectedMethod.Value);
             _app.SaveModifications();
+
+            OnPlanSelect(); // Calling this so that the selected plan isn't disposed...
         }
 
         private void UncheckAll()
