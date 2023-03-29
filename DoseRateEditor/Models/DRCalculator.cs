@@ -718,7 +718,7 @@ public static double cosmicFunc(double th_deg)
                 if (beams.First().MLC.Model == "Varian High Definition 120")
                 {
                     // All closed on HD machine, propose gap
-                    var res = MessageBox.Show("All fields have closed MLC, would you like to create 2.1mm opening in center 2 leaf pairs?", "Closed MLC", MessageBoxButton.YesNo);
+                    var res = MessageBox.Show("All fields have closed MLC, would you like to create 2.1mm opening in center 2 leaf pairs?", "Closed HD MLC", MessageBoxButton.YesNo);
                     if (res == MessageBoxResult.Yes)
                     {
                         pat.BeginModifications();
