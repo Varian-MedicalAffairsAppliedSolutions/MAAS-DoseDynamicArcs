@@ -6,9 +6,9 @@
 
 ![image](https://user-images.githubusercontent.com/78000769/226110675-884f5268-f19c-4adf-ab0a-3b94b20abd2b.png)
 ### Features
-* copy current arc plan into a new course with new dynamic dose rate and gantry speed independent of aperture 
-* used to convert non-coplanar conformal arcs with static dose rate and gantry speed into dynamic dose rate and gantry speed plans
-* if applied to plans already with dynaamic dose rate, edited dose rate likely to be undesirable
+* Copy current arc plan into a new course with new dynamic dose rate and gantry speed independent of aperture 
+* Used to convert non-coplanar conformal arcs with static dose rate and gantry speed into dynamic dose rate and gantry speed plans
+* If applied to plans already with dynaamic dose rate, edited dose rate likely to be undesirable
 * Precomplied executables for Eclipse 15.6 - 18 availible in [Releases](https://github.com/Varian-Innovation-Center/MAAS-DoseDynamicArcs/releases)
 * [/ExampleNoncoplanarBeamTemplates](https://github.com/Varian-Innovation-Center/MAAS-DoseDynamicArcs/tree/main/ExamplePlanTemplates)
 * Installation steps similar to [PlanScoreCard QuickStart}(https://github.com/Varian-Innovation-Center/MAAS-PlanScoreCard/blob/main/BasicInstallQuickStart.md) and [Install Part2](https://github.com/Varian-Innovation-Center/MAAS-PlanScoreCard/blob/main/InstallGuidePart2IntoSystemScriptsDirectory.md)
@@ -29,7 +29,7 @@
 <br/>&nbsp;&nbsp;* Static MLC plans will be switched to dynamic and static aperatures will be copied to all control points
 <br/>&nbsp;&nbsp;* Dynamic MLC plans only have their dose rate and gantry speed edited
 * Open newly created course and plan as directed and calculate dose
-![image](https://user-images.githubusercontent.com/78000769/229161916-ecf2a082-6a74-4194-b1ac-628014377f8a.png)
+<br/>![image](https://user-images.githubusercontent.com/78000769/229161916-ecf2a082-6a74-4194-b1ac-628014377f8a.png)
 <br/>&nbsp;&nbsp;* Optionally, open the newly created plan in DoseRateEditor to verify expected result (and view Delta MU plot)
 
 ### Future Roadmap / Wishlist
