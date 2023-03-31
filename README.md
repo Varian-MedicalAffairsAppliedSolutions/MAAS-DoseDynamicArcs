@@ -11,7 +11,7 @@
 * If applied to plans already with dynaamic dose rate, edited dose rate likely to be undesirable
 * Precomplied executables for Eclipse 15.6 - 18 availible in [Releases](https://github.com/Varian-Innovation-Center/MAAS-DoseDynamicArcs/releases)
 * [/ExampleNoncoplanarBeamTemplates](https://github.com/Varian-Innovation-Center/MAAS-DoseDynamicArcs/tree/main/ExamplePlanTemplates)
-* Installation steps similar to [PlanScoreCard QuickStart}(https://github.com/Varian-Innovation-Center/MAAS-PlanScoreCard/blob/main/BasicInstallQuickStart.md) and [Install Part2](https://github.com/Varian-Innovation-Center/MAAS-PlanScoreCard/blob/main/InstallGuidePart2IntoSystemScriptsDirectory.md)
+* Installation steps similar to [PlanScoreCard QuickStart](https://github.com/Varian-Innovation-Center/MAAS-PlanScoreCard/blob/main/BasicInstallQuickStart.md) and [Install Part2](https://github.com/Varian-Innovation-Center/MAAS-PlanScoreCard/blob/main/InstallGuidePart2IntoSystemScriptsDirectory.md)
 
 ### Instructions For Use
 * Create non-coplanar arc beam plan (see templates above)
@@ -19,7 +19,7 @@
 <br/>![image](https://user-images.githubusercontent.com/78000769/229165841-bdc84bdb-b1b2-4ad3-98b6-c37f8e5dc202.png)
 <br/>&nbsp;&nbsp;* Control points every 2 degrees recommended for dynamic
 * Create MLC aperature for each beam manually or use fit to structure for dynamic MLC beams
-
+<br/>![image](https://user-images.githubusercontent.com/78000769/229167371-bdd8c716-e799-4b9c-b3a1-5786d6e81507.png)
 <br/>&nbsp;&nbsp;* Aperature required for Millennium 120 MLC
 <br/>&nbsp;&nbsp;![image](https://user-images.githubusercontent.com/78000769/229162975-5d3dff0f-b05a-4995-b9ed-eaad92c34111.png)
 <br/>&nbsp;&nbsp;* Closed HD-MLC will be offered a 2.1mm opening in center two leaves ([Virtual Cone](https://www.sciencedirect.com/science/article/pii/S2452109418300368) type treatments)
