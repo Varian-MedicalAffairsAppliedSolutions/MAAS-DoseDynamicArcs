@@ -18,7 +18,9 @@
 * Add MLC to beams either static or dynamic (control points every 2 degree recommended for dynamic)
 * Create static MLC aperature for each beam or use fit to structure for dynamic MLC beams
 <br/>&nbsp;&nbsp;* Aperature required for Millennium 120 MLC
+<br/>&nbsp;&nbsp;![image](https://user-images.githubusercontent.com/78000769/229148216-24a8967e-22c1-4e4d-b723-65a2aca28bae.png)
 <br/>&nbsp;&nbsp;* Closed HD-MLC will be offered a 2.1mm opening in center two leaves ([Virtual Cone](https://www.sciencedirect.com/science/article/pii/S2452109418300368) type treatments)
+<br/>&nbsp;&nbsp;
 * Launch DoseRateEditor (follow installation instructions above to optionally configure launcher)
 * Select method to edit dose rate (currently all methods are simple sine or sine-like with extreamly similar results)
 <br/>&nbsp;&nbsp;* Optionally, click the preview boxes to see what the resulting Dose Rate and Gantry Speed
