@@ -25,7 +25,7 @@
 <br/>&nbsp;&nbsp;* Closed HD-MLC will be offered a 2.1mm opening in center two leaves ([Virtual Cone](https://www.sciencedirect.com/science/article/pii/S2452109418300368) type treatments)
 <br/>&nbsp;&nbsp;![image](https://user-images.githubusercontent.com/78000769/229163577-610772eb-069b-4b64-be28-6646c7f08244.png)
 * Launch DoseRateEditor (follow installation instructions above to optionally configure launcher)
-* Select method to edit dose rate (currently all methods are simple sine or sine-like with extreamly similar results)
+* Select method to edit dose rate (currently all methods are simple sine or sine-like with extremely similar results)
 <br/>&nbsp;&nbsp;* Optionally, click the preview boxes to see what the resulting Dose Rate and Gantry Speed
 <br/>&nbsp;&nbsp;* Delta MU (the combined effect of dose rate and gantry speed) preview is not yet implemented
 * Click Edit DR for all fields to create a new dynamic dose rate and gantry speed version of selected plan 
