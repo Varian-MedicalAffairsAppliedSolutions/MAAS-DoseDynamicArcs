@@ -6,17 +6,32 @@
 
 ![image](https://user-images.githubusercontent.com/78000769/226110675-884f5268-f19c-4adf-ab0a-3b94b20abd2b.png)
 
-* edit current arc plan's dose rate and gantry speed independent of aperture (MLC/jaw) 
+* edit current arc plan's dose rate and gantry speed independent of aperture 
 * used to convert non-coplanar conformal arcs with static dose rate and gantry speed into dynamic dose rate and gantry speed plans
 * if applied to plans already with dynaamic dose rate, edited dose rate likely to be undesirable
 * Precomplied executables for Eclipse 15.6 - 18 availible in [Releases](https://github.com/Varian-Innovation-Center/MAAS-DoseDynamicArcs/releases)
 * [/ExampleNoncoplanarBeamTemplates](https://github.com/Varian-Innovation-Center/MAAS-DoseDynamicArcs/tree/main/ExamplePlanTemplates)
 * Installation steps similar to [PlanScoreCard QuickStart}(https://github.com/Varian-Innovation-Center/MAAS-PlanScoreCard/blob/main/BasicInstallQuickStart.md) and [Install Part2](https://github.com/Varian-Innovation-Center/MAAS-PlanScoreCard/blob/main/InstallGuidePart2IntoSystemScriptsDirectory.md)
 
+### Instructions For Use
+* Create non-coplanar arc beam plan (see templates above)
+* Add MLC to beams either static or dynamic (control points every 2 degree recommended for dynamic)
+* Create static MLC aperature for each beam or use fit to structure for dynamic MLC beams
+** Aperature required for Millennium 120 MLC
+** If all leaf pairs are closed wih HD-MLC DoseRateEditor will offer to create 2.1mm opening in center two leaves for "Virtual Cone" type treatments
+* Launch DoseRateEditor (follow installation instructions above to optionally configure launcher)
+* Select method to edit dose rate (currently all methods are simple sine or sine-like methods with extreamly similar results)
+** Optionally, click the preview boxes to see what the resulting Dose Rate and Gantry Speed
+** Delta MU (the combined effect of dose rate and gantry speed) preview is not yet implemented
+* Click Edit DR for all fields to create a new dynamic dose rate and gantry speed version of selected plan 
+** static MLC plans will be switched to dynamic and static aperatures will be copied to all control points
+** dynamic MLC plans only have their dose rate and gantry speed edited
+* Open newly created course and plan as directed and calculate dose
+** Optionally, open the newly created plan in DoseRateEditor to verify expected result (and view Delta MU plot)
 
-### Future Roadmap Wishlist
+### Future Roadmap / Wishlist
 - [ ] Working preview of Delta MU
-- [ ] Add/enable addtional intelligenent dose rate modification methods (not simple sin-like functions)
+- [ ] Add/enable addtional intelligenent dose rate modification methods (not only simple sine-like functions)
 - [ ] Show persistent warning when selected plan has no dose calulated (not current pop-up message box)
 - [ ] CT slice view move to isocenter, show structures, show dose, drag dose?
 - [ ] When block support is added to ESAPI, support cones?
