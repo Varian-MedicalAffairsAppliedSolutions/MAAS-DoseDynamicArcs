@@ -18,14 +18,14 @@
 * Add MLC to beams either static or dynamic (control points every 2 degree recommended for dynamic)
 * Create static MLC aperature for each beam or use fit to structure for dynamic MLC beams
 <br/>&nbsp;&nbsp;* Aperature required for Millennium 120 MLC
-<br/>&nbsp;&nbsp;* If all leaf pairs are closed wih HD-MLC DoseRateEditor will offer to create 2.1mm opening in center two leaves for [Virtual Cone](https://www.sciencedirect.com/science/article/pii/S2452109418300368) type treatments
+<br/>&nbsp;&nbsp;* Closed HD-MLC will be offered a 2.1mm opening in center two leaves ([Virtual Cone](https://www.sciencedirect.com/science/article/pii/S2452109418300368) type treatments)
 * Launch DoseRateEditor (follow installation instructions above to optionally configure launcher)
-* Select method to edit dose rate (currently all methods are simple sine or sine-like methods with extreamly similar results)
+* Select method to edit dose rate (currently all methods are simple sine or sine-like with extreamly similar results)
 <br/>&nbsp;&nbsp;* Optionally, click the preview boxes to see what the resulting Dose Rate and Gantry Speed
 <br/>&nbsp;&nbsp;* Delta MU (the combined effect of dose rate and gantry speed) preview is not yet implemented
 * Click Edit DR for all fields to create a new dynamic dose rate and gantry speed version of selected plan 
-<br/>&nbsp;&nbsp;* static MLC plans will be switched to dynamic and static aperatures will be copied to all control points
-<br/>&nbsp;&nbsp;* dynamic MLC plans only have their dose rate and gantry speed edited
+<br/>&nbsp;&nbsp;* Static MLC plans will be switched to dynamic and static aperatures will be copied to all control points
+<br/>&nbsp;&nbsp;* Dynamic MLC plans only have their dose rate and gantry speed edited
 * Open newly created course and plan as directed and calculate dose
 <br/>&nbsp;&nbsp;* Optionally, open the newly created plan in DoseRateEditor to verify expected result (and view Delta MU plot)
 
