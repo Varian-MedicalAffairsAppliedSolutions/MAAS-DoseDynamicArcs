@@ -15,8 +15,11 @@
 
 ### Instructions For Use
 * Create non-coplanar arc beam plan (see templates above)
-* Add MLC to beams either static or dynamic (control points every 2 degree recommended for dynamic)
-* Create static MLC aperature for each beam or use fit to structure for dynamic MLC beams
+* Add MLC to beams either static or dynamic
+<br/>![image](https://user-images.githubusercontent.com/78000769/229165841-bdc84bdb-b1b2-4ad3-98b6-c37f8e5dc202.png)
+<br/>&nbsp;&nbsp;* Control points every 2 degrees recommended for dynamic
+* Create MLC aperature for each beam manually or use fit to structure for dynamic MLC beams
+
 <br/>&nbsp;&nbsp;* Aperature required for Millennium 120 MLC
 <br/>&nbsp;&nbsp;![image](https://user-images.githubusercontent.com/78000769/229162975-5d3dff0f-b05a-4995-b9ed-eaad92c34111.png)
 <br/>&nbsp;&nbsp;* Closed HD-MLC will be offered a 2.1mm opening in center two leaves ([Virtual Cone](https://www.sciencedirect.com/science/article/pii/S2452109418300368) type treatments)
