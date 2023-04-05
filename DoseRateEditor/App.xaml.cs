@@ -139,8 +139,8 @@ namespace DoseRateEditor
 
             if (exp < DateTime.Now && !foundNoExpire)
             {
-                MessageBox.Show("Application has expired. Newer builds with future expiration dates can be found here: https://github.com/Varian-Innovation-Center/MAAS-DoseDynamicArcs");
-                return;
+                //MessageBox.Show("Application has expired. Newer builds with future expiration dates can be found here: https://github.com/Varian-Innovation-Center/MAAS-DoseDynamicArcs");
+                //return;
             }
 
             Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
