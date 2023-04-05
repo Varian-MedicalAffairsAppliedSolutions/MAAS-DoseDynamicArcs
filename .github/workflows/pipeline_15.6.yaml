@@ -35,12 +35,10 @@ jobs:
       id: update_assembly_info
       run: |
         .\.github\workflows\Update-AssemblyInfo.ps1 `
-          -AssemblyInfoFilePath .\${{env.PROJECT_NAME}}\Properties\AssemblyInfo.cs `
+          -AssemblyInfoFilePath .\${{ env.PROJECT_NAME}}\Properties\AssemblyInfo.cs `
           -ExpirationDate "${{ github.event.inputs.dateInput }}" `
-          -MajorVersion ${{ env.MAJOR_VERSION }} `
-          -MinorVersion ${{ env.MINOR_VERSION }} `
-          -PatchVersion ${{ env.PATCH_VERSION }} `
-          -BuildNumber ${{ env.BUILD_NUMBER }}
+          -BuildNumber ${{ env.BUILD_NUMBER }} `
+          -ProjectName ${{ env.PROJECT_NAME }}
 
     - name: Setup NuGet.exe for use with actions
       uses: NuGet/setup-nuget@v1
