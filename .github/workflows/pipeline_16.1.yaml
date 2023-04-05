@@ -49,7 +49,7 @@ jobs:
       run: |
         .\.github\workflows\Update-AssemblyInfo.ps1 `
           -AssemblyInfoFilePath .\${{ env.PROJECT_NAME}}\Properties\AssemblyInfo.cs `
-          -ExpirationDate ${{ github.event.inputs.dateInput }} `
+          -ExpirationDate "${{ github.event.inputs.dateInput }}" `
           -MajorVersion ${{ env.MAJOR_VERSION }} `
           -MinorVersion ${{ env.MINOR_VERSION }} `
           -PatchVersion ${{ env.PATCH_VERSION }} `
