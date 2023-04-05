@@ -50,10 +50,8 @@ jobs:
         .\.github\workflows\Update-AssemblyInfo.ps1 `
           -AssemblyInfoFilePath .\${{ env.PROJECT_NAME}}\Properties\AssemblyInfo.cs `
           -ExpirationDate "${{ github.event.inputs.dateInput }}" `
-          -MajorVersion ${{ env.MAJOR_VERSION }} `
-          -MinorVersion ${{ env.MINOR_VERSION }} `
-          -PatchVersion ${{ env.PATCH_VERSION }} `
-          -BuildNumber ${{ env.BUILD_NUMBER }}
+          -BuildNumber ${{ env.BUILD_NUMBER }} `
+          -ProjectName ${{ env.PROJECT_NAME }}
 
     - name: Download nuget packages
       run: nuget install .\${{ env.PROJECT_NAME}}\packages.config -OutputDirectory ${{ env.PROJECT_NAME}}\packages
