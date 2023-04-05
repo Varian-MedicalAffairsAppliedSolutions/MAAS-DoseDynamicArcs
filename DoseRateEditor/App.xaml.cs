@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using ControlzEx.Standard;
 using DoseRateEditor.Startup;
 using DoseRateEditor.ViewModels;
 using DoseRateEditor.Views;
@@ -133,14 +134,15 @@ namespace DoseRateEditor
             //if (configUpdate != null && DateTime.TryParse(asmCa.ConstructorArguments.FirstOrDefault().Value as string, provider, DateTimeStyles.None, out endDate) && eulaValue == "true")
 
             var asmCa = Assembly.GetExecutingAssembly().CustomAttributes.FirstOrDefault(ca => ca.AttributeType == typeof(AssemblyExpirationDate));
-            DateTime exp;
-            var provider = new CultureInfo("en-US");
-            DateTime.TryParse(asmCa.ConstructorArguments.FirstOrDefault().Value as string, provider, DateTimeStyles.None, out exp);
+            var datestring_asm = asmCa.ConstructorArguments.FirstOrDefault().Value as string;
+
+            DateTime exp = DateTime.ParseExact(datestring_asm, "M/d/yyyy", CultureInfo.InvariantCulture);
 
             if (exp < DateTime.Now && !foundNoExpire)
             {
-                //MessageBox.Show("Application has expired. Newer builds with future expiration dates can be found here: https://github.com/Varian-Innovation-Center/MAAS-DoseDynamicArcs");
-                //return;
+                MessageBox.Show($"Application expired on {exp.Date}. Newer builds with future expiration dates can be found here: https://github.com/Varian-Innovation-Center/MAAS-DoseDynamicArcss");
+                App.Current.Shutdown();
+                return;
             }
 
             Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
@@ -195,6 +197,7 @@ namespace DoseRateEditor
                     var res = MessageBox.Show(msg2, "Agreement  ", MessageBoxButton.YesNo);
                     if (res == MessageBoxResult.No)
                     {
+                        App.Current.Shutdown();
                         return;
                     }
                 }
