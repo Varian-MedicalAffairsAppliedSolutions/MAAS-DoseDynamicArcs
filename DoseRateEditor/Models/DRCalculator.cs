@@ -821,8 +821,8 @@ public static double cosmicFunc(double th_deg)
 
             MessageBox.Show(
                 $"New plan created with id: {newplan.Id} in course {newcourse.Id}" +
-                $"\nExit Dose Rate Editor and reload patient in Eclipse " +
-                $"to select new course and view plan");
+                $"\nExit Dose Rate Editor and reload patient in Eclipse." +
+                $"\nSelect new course and plan, calculate dose, and optionally review in Dose Rate Editor");
 
             
         }
