@@ -111,6 +111,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AOS_VirtualCone.cs" />
     <Compile Include="Helpers\Loggers.cs" />
     <Compile Include="Helpers\ToolBox.cs" />
     <Compile Include="Models\BeamInfo.cs" />
