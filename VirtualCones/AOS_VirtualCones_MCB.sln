@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34511.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AOS_VirtualCones_MCB", "AOS_VirtualCones_MCB.csproj", "{9CD21C0B-6792-46D5-BFA2-E1BB322BE15E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9CD21C0B-6792-46D5-BFA2-E1BB322BE15E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CD21C0B-6792-46D5-BFA2-E1BB322BE15E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CD21C0B-6792-46D5-BFA2-E1BB322BE15E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CD21C0B-6792-46D5-BFA2-E1BB322BE15E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {04D4CF4F-9557-4376-86CB-B38C07806BFC}
+	EndGlobalSection
+EndGlobal
