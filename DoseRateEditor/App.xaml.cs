@@ -3,6 +3,8 @@ using ControlzEx.Standard;
 using DoseRateEditor.Startup;
 using DoseRateEditor.ViewModels;
 using DoseRateEditor.Views;
+using MAAS.Common.EulaVerification;
+using Prism.Events;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -15,6 +17,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Imaging;
 using VMS.TPS.Common.Model.API;
 using MessageBox = System.Windows.MessageBox;
 
@@ -44,31 +47,27 @@ namespace DoseRateEditor
         private Course _course;
         private PlanSetup _plan;
 
-        private void shutdown()
-        {
-            _app.Dispose();
-
-            App.Current.Shutdown();
-
-        }
+        // Define the project information for EULA verification
+        private const string PROJECT_NAME = "DoseDynamicArcs";
+        private const string PROJECT_VERSION = "1.0.0";
+        private const string LICENSE_URL = "https://varian-medicalaffairsappliedsolutions.github.io/MAAS-DoseDynamicArcs";
+        private const string GITHUB_URL = "https://github.com/Varian-MedicalAffairsAppliedSolutions/MAAS-DoseDynamicArcs";
 
         private void start(object sender, StartupEventArgs e)
         {
             using (_app = VMS.TPS.Common.Model.API.Application.CreateApplication())
             {
-
                 if (e.Args.Count() > 0 && !String.IsNullOrWhiteSpace(e.Args.First()))
                 {
-
                     _patientId = e.Args.First().Split(';').First().Trim('\"');
                 }
                 else
                 {
                     MessageBox.Show("Patient not specified at application start.");
-                    App.Current.Shutdown();
+                    System.Windows.Application.Current.Shutdown();
                     return;
-
                 }
+
                 if (e.Args.First().Split(';').Count() > 1)
                 {
                     _courseId = e.Args.First().Split(';').ElementAt(1).TrimEnd('\"');
@@ -80,7 +79,7 @@ namespace DoseRateEditor
                 if (String.IsNullOrWhiteSpace(_patientId) || String.IsNullOrWhiteSpace(_courseId))
                 {
                     MessageBox.Show("Patient and/or Course not specified at application start. Please open a patient and course.");
-                    App.Current.Shutdown();
+                    System.Windows.Application.Current.Shutdown();
                     return;
                 }
                 _patient = _app.OpenPatientById(_patientId);
@@ -95,117 +94,194 @@ namespace DoseRateEditor
                 }
 
                 var bootstrap = new Bootstrapper();
-
                 var container = bootstrap.Bootstrap(_app.CurrentUser, _app, _patient, _course, _plan);
 
                 MV = container.Resolve<MainView>();
-
                 MV.DataContext = container.Resolve<MainViewModel>();
-
                 MV.ShowDialog();
 
                 _app.ClosePatient();
+                System.Windows.Application.Current.Shutdown();
             }
+        }
+
+        public Configuration GetUpdatedConfigFile()
+        {
+            var exePath = Assembly.GetExecutingAssembly().Location;
+            var configPath = exePath + ".config";
+            using (var fileStream = new FileStream(configPath, FileMode.Open))
+            {
+                if (!fileStream.CanWrite)
+                {
+                    System.Windows.MessageBox.Show($"Cannot update config file.\nUser does not have rights to {configPath}");
+                    return null;
+                }
+            }
+            //this needs to be the path running the application
+            return ConfigurationManager.OpenExeConfiguration(exePath);
         }
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            
-            // Check for NOEXPIRE file
-            var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var noexp_path = Path.Combine(path, "NOEXPIRE");
-            bool foundNoExpire = File.Exists(noexp_path);
-
-            // search for json config in current dir
-            //var json_path = Path.Combine(path, "config.json");
-            //if (!File.Exists(json_path)) { throw new Exception($"Could not locate json path {json_path}"); }
-
-            // Test
-            // Create serialized verion of settings
-            /*
-            var settings = new SettingsClass();
-            settings.Debug = false;
-            settings.EULAAgreed = false;
-            settings.Validated= false;
-            settings.ExpirationDate = DateTime.Parse("1/1/2024");
-            File.WriteAllText(Path.Combine(path, "config.json"), JsonConvert.SerializeObject(settings));*/
-
-            //var asmCa = typeof(StartupCore).Assembly.CustomAttributes.FirstOrDefault(ca => ca.AttributeType == typeof(AssemblyExpirationDate));
-            //if (configUpdate != null && DateTime.TryParse(asmCa.ConstructorArguments.FirstOrDefault().Value as string, provider, DateTimeStyles.None, out endDate) && eulaValue == "true")
-
-            var asmCa = Assembly.GetExecutingAssembly().CustomAttributes.FirstOrDefault(ca => ca.AttributeType == typeof(AssemblyExpirationDate));
-            var datestring_asm = asmCa.ConstructorArguments.FirstOrDefault().Value as string;
-
-            DateTime exp = DateTime.ParseExact(datestring_asm, "M/d/yyyy", CultureInfo.InvariantCulture);
-
-            if (exp < DateTime.Now && !foundNoExpire)
+            this.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            try
             {
-                MessageBox.Show($"Application expired on {exp.Date}. Newer builds with future expiration dates can be found here: https://github.com/Varian-Innovation-Center/MAAS-DoseDynamicArcss");
-                App.Current.Shutdown();
-                return;
-            }
+                IEventAggregator eventAggregator = new EventAggregator();
 
-            Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            bool EULAAgreed = config.AppSettings.Settings["EULAAgreed"].Value.ToLower() == "true";
+                // Check for NOEXPIRE file
+                var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                var noexp_path = Path.Combine(path, "NOEXPIRE");
+                bool foundNoExpire = File.Exists(noexp_path);
+                
+                // Check for NoAgree.txt file 
+                bool skipAgree = File.Exists(Path.Combine(path, "NoAgree.txt"));
 
-
-            // Initial EULA agreement
-            if (!EULAAgreed)
-            {
-                var msg0 = "You are bound by the terms of the Varian Limited Use Software License Agreement (LULSA). \"To stop viewing this message set EULA to \"true\" in DoseRateEditor.exe.config\"\nShow license agreement?";
-                string title = "Varian LULSA";
-                var buttons = System.Windows.MessageBoxButton.YesNo;
-                var result = MessageBox.Show(msg0, title, buttons);
-                if (result == System.Windows.MessageBoxResult.Yes)
+                // Verify EULA acceptance with the JotForm verification system
+                var eulaVerifier = new EulaVerifier(PROJECT_NAME, PROJECT_VERSION, LICENSE_URL);
+                
+                // Get access to the EulaConfig
+                var eulaConfig = EulaConfig.Load(PROJECT_NAME);
+                if (eulaConfig.Settings == null)
                 {
-                    Process.Start("notepad.exe", Path.Combine(path, "license.txt"));
+                    eulaConfig.Settings = new ApplicationSettings();
                 }
                 
-                // Save that they have seen EULA
-                config.AppSettings.Settings["EULAAgreed"].Value = "true";
-                config.Save(ConfigurationSaveMode.Modified);
-                
-            }
-
-            // Display opening msg
-            string msg = $"The current DoseDynamicArcs application is provided AS IS as a non-clinical, research only tool in evaluation only. The current " +
-            $"application will only be available until {exp.Date} after which the application will be unavailable. " +
-            "By Clicking 'Yes' you agree that this application will be evaluated and not utilized in providing planning decision support\n\n" +
-            "Newer builds with future expiration dates can be found here: https://github.com/Varian-Innovation-Center/MAAS-DoseDynamicArcs\n\n" +
-            "See the FAQ for more information on how to remove this pop-up and expiration";
-
-            string msg2 = $"Application will only be available until {exp.Date} after which the application will be unavailable. " +
-            "By Clicking 'Yes' you agree that this application will be evaluated and not utilized in providing planning decision support\n\n" +
-            "Newer builds with future expiration dates can be found here: https://github.com/Varian-Innovation-Center/MAAS-DoseDynamicArcs\n\n" +
-            "See the FAQ for more information on how to remove this pop-up and expiration";
-
-            bool isValidated = config.AppSettings.Settings["Validated"].Value == "true";
-
-            if (!foundNoExpire)
-            {
-                if (!isValidated)
+                // Show EULA dialog if not accepted yet and not skipping agreement
+                if (!eulaVerifier.IsEulaAccepted() && !skipAgree)
                 {
-                    var res = MessageBox.Show(msg, "Agreement  ", MessageBoxButton.YesNo);
-                    if (res == MessageBoxResult.No)
+                    // Subscribe to close event - modified to use a simpler approach without needing EULAView
+                    eventAggregator.GetEvent<CloseEulaEvent>().Subscribe(() => {
+                        // No action needed since we're not using a custom EULA view
+                    });
+                    
+                    MessageBox.Show(
+                        $"This version of {PROJECT_NAME} (v{PROJECT_VERSION}) requires license acceptance before first use.\n\n" +
+                        "You will be prompted to provide an access code. Please follow the instructions to obtain your code.",
+                        "License Acceptance Required",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+
+                    // Load QR code image
+                    BitmapImage qrCode = null;
+                    try
                     {
-                        App.Current.Shutdown();
-                        return;       
+                        string assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
+                        qrCode = new BitmapImage(new Uri($"pack://application:,,,/{assemblyName};component/Resources/qrcode.bmp"));
                     }
-                }
-                else if (isValidated)
-                {
-                    var res = MessageBox.Show(msg2, "Agreement  ", MessageBoxButton.YesNo);
-                    if (res == MessageBoxResult.No)
+                    catch (Exception ex)
                     {
-                        App.Current.Shutdown();
+                        System.Diagnostics.Debug.WriteLine($"Error loading QR code: {ex.Message}");
+                    }
+
+                    // Show dialog and check result
+                    if (!eulaVerifier.ShowEulaDialog(qrCode))
+                    {
+                        MessageBox.Show(
+                            "License acceptance is required to use this application.\n\n" +
+                            "The application will now close.",
+                            "License Not Accepted",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
+                        System.Windows.Application.Current.Shutdown();
                         return;
                     }
                 }
+
+                // Get expiration date from assembly attribute
+                var asmCa = Assembly.GetExecutingAssembly().CustomAttributes.FirstOrDefault(ca => ca.AttributeType == typeof(AssemblyExpirationDate));
+                DateTime exp;
+                var provider = new CultureInfo("en-US");
+                
+                // Try to parse expiration date
+                if (asmCa != null && DateTime.TryParse(asmCa.ConstructorArguments.FirstOrDefault().Value as string, provider, DateTimeStyles.None, out exp))
+                {
+                    // Check exp date
+                    if (exp < DateTime.Now && !foundNoExpire)
+                    {
+                        MessageBox.Show($"Application has expired. Newer builds with future expiration dates can be found here: {GITHUB_URL}");
+                        System.Windows.Application.Current.Shutdown();
+                        return;
+                    }
+
+                    // Display opening msg
+                    string msg = $"The current DoseDynamicArcs application is provided AS IS as a non-clinical, research only tool in evaluation only. The current " +
+                    $"application will only be available until {exp.Date} after which the application will be unavailable. " +
+                    "By Clicking 'Yes' you agree that this application will be evaluated and not utilized in providing planning decision support\n\n" +
+                    $"Newer builds with future expiration dates can be found here: {GITHUB_URL}\n\n" +
+                    "See the FAQ for more information on how to remove this pop-up and expiration";
+
+                    string msg2 = $"Application will only be available until {exp.Date} after which the application will be unavailable. " +
+                    "By Clicking 'Yes' you agree that this application will be evaluated and not utilized in providing planning decision support\n\n" +
+                    $"Newer builds with future expiration dates can be found here: {GITHUB_URL}\n\n" +
+                    "See the FAQ for more information on how to remove this pop-up and expiration";
+
+                    // Check if validated in EulaConfig
+                    bool isValidated = eulaConfig.Settings?.Validated ?? false;
+
+                    if (!foundNoExpire && !skipAgree)
+                    {
+                        if (!isValidated)
+                        {
+                            // Show the first-time message
+                            var res = MessageBox.Show(msg, "Agreement  ", MessageBoxButton.YesNo);
+
+                            if (res == MessageBoxResult.No)
+                            {
+                                System.Windows.Application.Current.Shutdown();
+                                return;
+                            }
+                            
+                            // Mark as validated for next time in the EulaConfig
+                            if (eulaConfig.Settings != null)
+                            {
+                                eulaConfig.Settings.Validated = true;
+                                eulaConfig.Save();
+                            }
+                        }
+                        else
+                        {
+                            // Show the returning user message
+                            var res = MessageBox.Show(msg2, "Agreement  ", MessageBoxButton.YesNo);
+
+                            if (res == MessageBoxResult.No)
+                            {
+                                System.Windows.Application.Current.Shutdown();
+                                return;
+                            }
+                        }
+                    }
+
+                    // If we make it this far start the app
+                    start(sender, e);
+                }
+                else
+                {
+                    MessageBox.Show("Unable to determine application expiration date. The application will now close.");
+                    System.Windows.Application.Current.Shutdown();
+                }
             }
-
-            // If we make it this far start the app
-            start(sender, e);
+            catch (Exception ex)
+            {
+                if (ConfigurationManager.AppSettings["Debug"] == "true")
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                else
+                {
+                    MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                
+                if (_app != null)
+                {
+                    _app.Dispose();
+                }
+                
+                System.Windows.Application.Current.Shutdown();
+            }
         }
-
     }
+}
+
+public class CloseEulaEvent : Prism.Events.PubSubEvent
+{
 }
