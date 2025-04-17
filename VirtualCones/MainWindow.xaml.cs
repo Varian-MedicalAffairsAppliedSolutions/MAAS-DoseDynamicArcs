@@ -32,48 +32,31 @@ namespace AOS_VirtualCones_MCB
         IEnumerable<string> _list;
 
         MainWindowViewModel vm;
-        private LicenseVerification _licenseVerification;
 
         public MainWindow(VMS.TPS.Common.Model.API.Application app, string[] args)
         {
-            VerifyLicense(app, args[3]);
-
             string computerName = Environment.MachineName;
+            string parentDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-            MainWindowViewModel.ParentDirectory = args[3];
+            // Handle command-line arguments if provided
+            if (args != null && args.Length > 3)
+            {
+                parentDirectory = args[3];
+            }
+
+            MainWindowViewModel.ParentDirectory = parentDirectory;
 
             vm = new MainWindowViewModel();
             vm._esapiX = app;
             DataContext = vm;
             _app = app;
 
-
-
-
             InitializeComponent();
 
             this.Closing += MainWindow_Closing;
 
-
-            //if (args.Length == 4)
-            //{
-            //    vm.SearchText = args[0];
-            //    vm.UpdateFilteredPatientIDs();
-            //    vm.PatientID = args[0];
-
-            //    vm.PtCBOOpen = false;
-            //}
-            //else if (args.Length == 2) 
-            //{
-
-            //    vm.SearchText = args[0];
-            //    vm.UpdateFilteredPatientIDs();
-            //    vm.PatientID = args[0];
-            //    vm.CourseId = args[1];
-
-            //    vm.PtCBOOpen = false;
-            //}
-            if (args.Length == 4)
+            // Handle patient/plan selection arguments if provided
+            if (args != null && args.Length >= 4)
             {
                 vm.SearchText = args[0];
                 vm.UpdateFilteredPatientIDs();
@@ -93,25 +76,6 @@ namespace AOS_VirtualCones_MCB
             }
         }
 
-        private void VerifyLicense(VMS.TPS.Common.Model.API.Application esapi, string parentDirectory)
-        {
-            _licenseVerification = new LicenseVerification();
-
-            // Example usage
-            string adminKey = "AOS24licensing#SHIELD"; // Replace with actual admin key input
-            string userKey = esapi.Calculation.AlgorithmsRootPath.TrimStart('\\').Split('\\')[0];
-
-            bool isValid = _licenseVerification.ValidateLicense(adminKey, userKey, parentDirectory);
-            if (!isValid)
-            {
-                // Handle invalid license
-                MessageBox.Show($"License is invalid for {userKey}. Exiting application...", "Invalid License", MessageBoxButton.OK, MessageBoxImage.Error);
-                Environment.Exit(1); // Terminate the application
-            }
-
-        }
-
-
         private void MainWindow_Closing(object sender, CancelEventArgs e)
         {
             vm._esapiX.Dispose();
@@ -120,10 +84,6 @@ namespace AOS_VirtualCones_MCB
             var process = Process.GetCurrentProcess();
             process.Kill();
         }
-
-
-
-
     }
 }
 

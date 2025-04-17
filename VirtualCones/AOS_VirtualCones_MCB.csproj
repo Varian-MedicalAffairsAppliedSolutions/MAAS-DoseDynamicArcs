@@ -124,7 +124,6 @@
     <Compile Include="Models\StructureInfo.cs" />
     <Compile Include="Models\StructureMatch.cs" />
     <Compile Include="Models\Utils.cs" />
-    <Compile Include="ViewModels\LicenseVerification.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\ProgressViewModel.cs" />
     <Compile Include="Views\ProgressView.xaml.cs">

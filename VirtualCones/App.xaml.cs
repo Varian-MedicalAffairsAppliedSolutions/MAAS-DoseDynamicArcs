@@ -22,9 +22,25 @@ namespace AOS_VirtualCones_MCB
         {
             var app = VMS.TPS.Common.Model.API.Application.CreateApplication();
 
-            Loggers.ProgressLogPath = GetProgressPath(e.Args[3]);
+            string progressPath = null;
+            
+            // Check if we have enough arguments (script mode) or standalone mode
+            if (e.Args != null && e.Args.Length > 3)
+            {
+                // Running as a script with arguments
+                progressPath = GetProgressPath(e.Args[3]);
+            }
+            else
+            {
+                // Running as standalone app
+                string appPath = AppDomain.CurrentDomain.BaseDirectory;
+                progressPath = Path.Combine(appPath, "Progress.xml");
+            }
 
-            MainWindow mainWindow = new MainWindow(app, e.Args);
+            Loggers.ProgressLogPath = progressPath;
+
+            // Pass the args array even if empty/null
+            MainWindow mainWindow = new MainWindow(app, e.Args ?? new string[0]);
             mainWindow.Show();
         }
 
@@ -32,13 +48,21 @@ namespace AOS_VirtualCones_MCB
         {
             string progressPath = Path.Combine(currentDir, "Progress.xml");
 
-                if (!File.Exists(progressPath))
+            // Delete the file if it exists to start fresh
+            if (File.Exists(progressPath))
+            {
+                try
                 {
                     File.Delete(progressPath);
                 }
+                catch (Exception ex)
+                {
+                    // Just log the error but continue
+                    Console.WriteLine($"Could not delete existing Progress.xml: {ex.Message}");
+                }
+            }
 
             return progressPath;
-
         }        
 
 
