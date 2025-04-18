@@ -16,6 +16,8 @@ using System.Windows;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
+// Expiration date for the assembly
+[assembly: AssemblyExpirationDate("2025-12-31")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
 // to COM components.  If you need to access a type in this assembly from
