@@ -16,7 +16,7 @@ namespace AOS_VirtualCones_MCB.Models
         public double Y { get; set; }
         public bool EnableSlidingLeaf { get; set; }
         public double SlidingLeafGapSize { get; set; }
-        public List<GapPair> AvailableGapsMM { get; set; }
+        public List<GapPair> AvailableGapsMM { get; set; }  = new List<GapPair>();
         public bool RemoveTempPlan { get; set; }
     }
 
