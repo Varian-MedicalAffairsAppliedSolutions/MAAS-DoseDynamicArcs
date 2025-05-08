@@ -1696,6 +1696,12 @@ namespace AOS_VirtualCones_MCB.ViewModels
                 defaultSettings.Y = 20;
                 defaultSettings.SlidingLeafGapSize = 2;
 
+                GapPair newGapPair = new GapPair();
+                newGapPair.NumberOfLeaves = 2;
+                newGapPair.GapSizeMM = 2.0;
+                newGapPair.EnergyMode = "6X-FFF";                
+                defaultSettings.AvailableGapsMM.Add(newGapPair);
+
                 ToolBox.SerializeToXmlFile<GapSettings>(defaultSettings, filePath);
             }
         }
