@@ -32,6 +32,7 @@ using VMS.TPS.Common.Model.Types;
 using static AOS_VirtualCones_MCB.Models.DRCalculator;
 using System.Reflection;
 using System.Xml.Linq;
+using System.Configuration;
 
 [assembly: ESAPIScript(IsWriteable = true)]
 
@@ -57,19 +58,19 @@ namespace AOS_VirtualCones_MCB.ViewModels
                 var validationSetting = config["Validation"];
 
                 // Default to showing the warning
-                ValidationWarning = "*** NOT VALIDATED FOR CLINICAL USE ***";
+                ValidationWarning = "VIRTUAL CONE     *** NOT VALIDATED FOR CLINICAL USE ***";
 
                 // If validation is explicitly set to "true", clear the warning
                 if (!string.IsNullOrEmpty(validationSetting) &&
                     validationSetting.Equals("true", StringComparison.OrdinalIgnoreCase))
                 {
-                    ValidationWarning = string.Empty;
+                    ValidationWarning = "VIRTUAL CONE";
                 }
             }
             catch (Exception)
             {
                 // Default to showing the warning on error
-                ValidationWarning = "*** NOT VALIDATED FOR CLINICAL USE ***";
+                ValidationWarning = "VIRTUAL CONE      *** NOT VALIDATED FOR CLINICAL USE ***";
             }
         }
 
@@ -906,12 +907,21 @@ namespace AOS_VirtualCones_MCB.ViewModels
         public (bool Pass, string energyMode) CheckEnergyVsBeamTemplate()
         {
             var energyMode = GetEnergyModeFromPlan();
+            if (SelectedBeamTemplate.BeamTemplateId == null) {
+                return (false, energyMode);
+            }
 
             return (energyMode.ToUpper().Equals(SelectedBeamTemplate.GapSize.EnergyMode.ToUpper()), energyMode);
         }
 
         private void InsertBeams()
         {
+            bool validCones = ConfigurationManager.AppSettings["MachineDeliveryValidationPerformed"] == "true";
+            if (!validCones)
+            {
+                MessageBox.Show("Cone delivery must be clinically validated, please review config file");
+                return;
+            }
 
             IsInsertBeams = true;
 
@@ -924,8 +934,13 @@ namespace AOS_VirtualCones_MCB.ViewModels
             }
 
             var energyCheck = CheckEnergyVsBeamTemplate();
-            if (!CheckEnergyVsBeamTemplate().Pass)
+            if (!energyCheck.Pass)
             {
+                if (SelectedBeamTemplate.BeamTemplateId == null)
+                {
+                    MessageBox.Show("Template has not been selected");
+                    return;
+                }
                 MessageBox.Show($"The beam energy of the stag plan {energyCheck.energyMode} " +
                     $"does not match the chosen Virtual Cone Size, {SelectedBeamTemplate.GapSize.EnergyMode}", 
                     "Error!", MessageBoxButton.OK, MessageBoxImage.Error);

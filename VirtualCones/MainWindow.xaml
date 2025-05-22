@@ -8,7 +8,7 @@
     xmlns:models="clr-namespace:AOS_VirtualCones_MCB.Models"
     xmlns:oxy="http://oxyplot.org/wpf"
     xmlns:vm="clr-namespace:AOS_VirtualCones_MCB.ViewModels"
-    Title="Virtual Cone"
+    Title="{Binding ValidationWarning}"    
     Width="1000"
     Height="800"
     d:DataContext="{d:DesignInstance vm:MainWindowViewModel}"
@@ -223,7 +223,7 @@
                                     Height="60"
                                     VerticalContentAlignment="Center"
                                     Background="Transparent"
-                                    Command="{Binding InsertBeamsCommand}">
+                                    Command="{Binding InsertBeamsCommand}" >
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Grid>
@@ -442,7 +442,7 @@
                   Bound by the terms of the Varian LUSLA
               </Hyperlink>
             </TextBlock>
-            <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Text="{Binding ValidationWarning}" FontSize="11"/>
+            
         </DockPanel>
     </Grid>
 </Window>

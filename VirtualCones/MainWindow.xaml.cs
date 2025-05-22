@@ -153,7 +153,8 @@ namespace AOS_VirtualCones_MCB
             var process = Process.GetCurrentProcess();
             process.Kill();
         }
-    }
+
+      }
 
     public class AppConfig
     {
