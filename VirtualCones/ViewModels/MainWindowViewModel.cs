@@ -30,6 +30,8 @@ using System.Xml.Serialization;
 using VMS.TPS.Common.Model.API;
 using VMS.TPS.Common.Model.Types;
 using static AOS_VirtualCones_MCB.Models.DRCalculator;
+using System.Reflection;
+using System.Xml.Linq;
 
 [assembly: ESAPIScript(IsWriteable = true)]
 
@@ -38,13 +40,83 @@ namespace AOS_VirtualCones_MCB.ViewModels
 
     public class MainWindowViewModel : ObservableObject
     {
-      
+
+        private string _validationWarning;
+
+        public string ValidationWarning
+        {
+            get { return _validationWarning; }
+            set { SetProperty(ref _validationWarning, value); }
+        }
+
+        private void CheckValidationStatus()
+        {
+            try
+            {
+                var config = new AppConfig(Assembly.GetExecutingAssembly().Location);
+                var validationSetting = config["Validation"];
+
+                // Default to showing the warning
+                ValidationWarning = "*** NOT VALIDATED FOR CLINICAL USE ***";
+
+                // If validation is explicitly set to "true", clear the warning
+                if (!string.IsNullOrEmpty(validationSetting) &&
+                    validationSetting.Equals("true", StringComparison.OrdinalIgnoreCase))
+                {
+                    ValidationWarning = string.Empty;
+                }
+            }
+            catch (Exception)
+            {
+                // Default to showing the warning on error
+                ValidationWarning = "*** NOT VALIDATED FOR CLINICAL USE ***";
+            }
+        }
+
+        public class AppConfig
+        {
+            private readonly IDictionary<string, string> m_appSettings;
+
+            public AppConfig(string executingAssemblyLocation)
+            {
+                if (string.IsNullOrWhiteSpace(executingAssemblyLocation))
+                {
+                    throw new ArgumentNullException();
+                }
+
+                var configPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(executingAssemblyLocation) ?? string.Empty,
+                                             $"{System.IO.Path.GetFileName(executingAssemblyLocation)}.config");
+
+                var doc = XDocument.Load(configPath);
+                m_appSettings = doc
+                    .Descendants("configuration")
+                    .Descendants("appSettings")
+                    .Descendants()
+                    .ToDictionary(
+                        xElement => xElement.Attribute("key")?.Value ?? string.Empty,
+                        xElement => xElement.Attribute("value")?.Value ?? string.Empty);
+            }
+
+            public string this[string name]
+            {
+                get
+                {
+                    var appSettingValue = m_appSettings.FirstOrDefault(kvp => kvp.Key == name);
+                    return appSettingValue.Equals(default(KeyValuePair<string, string>))
+                           || appSettingValue.Equals(new KeyValuePair<string, string>(string.Empty, string.Empty))
+                        ? null
+                        : appSettingValue.Value;
+                }
+            }
+        }
+
         public MainWindowViewModel()
         {
             TestForNecessaryFiles();
             LoadBeamTemplates();
             ImportSettings();
             GetGantryWeightMaps();
+            CheckValidationStatus();
 
             GSf_series = new LineSeries();
             DRf_series = new LineSeries();
