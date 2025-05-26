@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 using VMS.TPS.Common.Model.API;
 using VMS.TPS.Common.Model.Types;
 
-namespace AOS_VirtualCones_MCB.Helpers
+namespace VirtualCones_MCB.Helpers
 {
     public class ToolBox
     {

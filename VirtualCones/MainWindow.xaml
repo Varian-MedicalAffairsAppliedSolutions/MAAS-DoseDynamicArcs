@@ -1,13 +1,13 @@
 ﻿<Window
-    x:Class="AOS_VirtualCones_MCB.MainWindow"
+    x:Class="VirtualCones_MCB.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:AOS_VirtualCones_MCB"
+    xmlns:local="clr-namespace:VirtualCones_MCB"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="clr-namespace:AOS_VirtualCones_MCB.Models"
+    xmlns:models="clr-namespace:VirtualCones_MCB.Models"
     xmlns:oxy="http://oxyplot.org/wpf"
-    xmlns:vm="clr-namespace:AOS_VirtualCones_MCB.ViewModels"
+    xmlns:vm="clr-namespace:VirtualCones_MCB.ViewModels"
     Title="{Binding ValidationWarning}"    
     Width="1000"
     Height="800"
@@ -442,7 +442,7 @@
                   Bound by the terms of the Varian LUSLA
               </Hyperlink>
             </TextBlock>
-            
+
         </DockPanel>
     </Grid>
 </Window>

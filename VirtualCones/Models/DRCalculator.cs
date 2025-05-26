@@ -9,7 +9,7 @@ using System.Windows;
 using VMS.TPS.Common.Model.API;
 using VMS.TPS.Common.Model.Types;
 
-namespace AOS_VirtualCones_MCB.Models
+namespace VirtualCones_MCB.Models
 {
     public class DRCalculator
     {

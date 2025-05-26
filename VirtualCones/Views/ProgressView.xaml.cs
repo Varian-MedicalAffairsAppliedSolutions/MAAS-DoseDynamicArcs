@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace AOS_VirtualCones_MCB.Views
+namespace VirtualCones_MCB.Views
 {
     /// <summary>
     /// Interaction logic for ProgressView.xaml

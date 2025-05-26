@@ -197,6 +197,9 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="BeamTemplateCollections.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="lib\EulaVerification.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

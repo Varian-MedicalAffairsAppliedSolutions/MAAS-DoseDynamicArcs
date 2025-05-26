@@ -1,4 +1,4 @@
-﻿using AOS_VirtualCones_MCB.Helpers;
+﻿using VirtualCones_MCB.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using MAAS.Common.EulaVerification;
 using Prism.Events;
 
-namespace AOS_VirtualCones_MCB
+namespace VirtualCones_MCB
 {
     /// <summary>
     /// Interaction logic for App.xaml

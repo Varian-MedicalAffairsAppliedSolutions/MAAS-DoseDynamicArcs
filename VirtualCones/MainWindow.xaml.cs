@@ -1,4 +1,4 @@
-﻿using AOS_VirtualCones_MCB.ViewModels;
+﻿using VirtualCones_MCB.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,7 +21,7 @@ using System.Windows.Shapes;
 using System.Xml.Linq;
 using VMS.TPS.Common.Model.API;
 
-namespace AOS_VirtualCones_MCB
+namespace VirtualCones_MCB
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -109,7 +109,7 @@ namespace AOS_VirtualCones_MCB
             try
             {
                 var config = new AppConfig(Assembly.GetExecutingAssembly().Location);
-                var validationSetting = config["Validation"];
+                var validationSetting = config["softwareValidated"];
 
                 // Default to showing the warning
                 ValidationWarning = "*** NOT VALIDATED FOR CLINICAL USE ***";

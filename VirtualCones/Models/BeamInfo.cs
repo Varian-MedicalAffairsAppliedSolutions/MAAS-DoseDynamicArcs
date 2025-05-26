@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 
-namespace AOS_VirtualCones_MCB.Models
+namespace VirtualCones_MCB.Models
 {
     public class BeamInfo : ObservableObject, ICloneable
     {

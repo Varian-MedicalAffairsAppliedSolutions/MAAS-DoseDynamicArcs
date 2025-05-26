@@ -1,6 +1,6 @@
-﻿using AOS_VirtualCones_MCB.Helpers;
-using AOS_VirtualCones_MCB.Models;
-using AOS_VirtualCones_MCB.Views;
+﻿using VirtualCones_MCB.Helpers;
+using VirtualCones_MCB.Models;
+using VirtualCones_MCB.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OxyPlot.Series;
@@ -29,14 +29,14 @@ using System.Windows.Threading;
 using System.Xml.Serialization;
 using VMS.TPS.Common.Model.API;
 using VMS.TPS.Common.Model.Types;
-using static AOS_VirtualCones_MCB.Models.DRCalculator;
+using static VirtualCones_MCB.Models.DRCalculator;
 using System.Reflection;
 using System.Xml.Linq;
 using System.Configuration;
 
 [assembly: ESAPIScript(IsWriteable = true)]
 
-namespace AOS_VirtualCones_MCB.ViewModels
+namespace VirtualCones_MCB.ViewModels
 {
 
     public class MainWindowViewModel : ObservableObject
@@ -52,10 +52,10 @@ namespace AOS_VirtualCones_MCB.ViewModels
 
         private void CheckValidationStatus()
         {
-            try
-            {
+            //try
+            //{
                 var config = new AppConfig(Assembly.GetExecutingAssembly().Location);
-                var validationSetting = config["Validation"];
+                var validationSetting = config["softwareValidated"];
 
                 // Default to showing the warning
                 ValidationWarning = "VIRTUAL CONE     *** NOT VALIDATED FOR CLINICAL USE ***";
@@ -66,11 +66,38 @@ namespace AOS_VirtualCones_MCB.ViewModels
                 {
                     ValidationWarning = "VIRTUAL CONE";
                 }
+            //}
+            //catch (Exception)
+            //{
+            //    // Default to showing the warning on error
+            //    ValidationWarning = "VIRTUAL CONE      *** NOT VALIDATED FOR CLINICAL USE ***";
+            //}
+        }
+
+        private void CheckMachineValidation()
+        {
+            try
+            {
+                var config = new AppConfig(Assembly.GetExecutingAssembly().Location);
+                var machineValidationSetting = config["machineDeliveryValidationPerformed"]; // lowercase 'm'
+
+                // Check if machine validation is not performed (false or missing)
+                if (string.IsNullOrEmpty(machineValidationSetting) ||
+                    !machineValidationSetting.Equals("true", StringComparison.OrdinalIgnoreCase))
+                {
+                    MessageBox.Show("This tool is not machine validated. Please validate it and update config file.",
+                        "Machine Validation Warning",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                }
             }
             catch (Exception)
             {
-                // Default to showing the warning on error
-                ValidationWarning = "VIRTUAL CONE      *** NOT VALIDATED FOR CLINICAL USE ***";
+                // If there's an error reading config, show the warning as a precaution
+                MessageBox.Show("This tool is not machine validated. Use for research purposes only.",
+                    "Machine Validation Warning",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
             }
         }
 
@@ -118,6 +145,7 @@ namespace AOS_VirtualCones_MCB.ViewModels
             ImportSettings();
             GetGantryWeightMaps();
             CheckValidationStatus();
+            CheckMachineValidation(); 
 
             GSf_series = new LineSeries();
             DRf_series = new LineSeries();
@@ -916,7 +944,7 @@ namespace AOS_VirtualCones_MCB.ViewModels
 
         private void InsertBeams()
         {
-            bool validCones = ConfigurationManager.AppSettings["MachineDeliveryValidationPerformed"] == "true";
+            bool validCones = ConfigurationManager.AppSettings["machineDeliveryValidationPerformed"] == "true";
             if (!validCones)
             {
                 MessageBox.Show("Cone delivery must be clinically validated, please review config file");
@@ -1334,11 +1362,19 @@ namespace AOS_VirtualCones_MCB.ViewModels
                 return;
             }
 
+            //if (SelectedBeamTemplate.GapSize == null || SelectedBeamTemplate.GapSize.NumberOfLeaves == 0 ||
+            //    SelectedBeamTemplate.GapSize.GapSizeMM == 0 || SelectedBeamTemplate.GapSize.NumberOfLeaves % 2 !=0)
+            //{
+            //    MessageBox.Show($"Please select a gap size first.  Ensure the number of leaf pairs is even.",
+            //    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            //    return;
+            //}
+
             if (SelectedBeamTemplate.GapSize == null || SelectedBeamTemplate.GapSize.NumberOfLeaves == 0 ||
-                SelectedBeamTemplate.GapSize.GapSizeMM == 0 || SelectedBeamTemplate.GapSize.NumberOfLeaves % 2 !=0)
+                SelectedBeamTemplate.GapSize.GapSizeMM == 0 || SelectedBeamTemplate.GapSize.NumberOfLeaves % 2 != 0)
             {
-                MessageBox.Show($"Please select a gap size first.  Ensure the number of leaves is even.",
-                "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Please select a gap size first. Ensure the number of leaf pairs is even.",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -1732,6 +1768,7 @@ namespace AOS_VirtualCones_MCB.ViewModels
         {
           
             string filePath = Path.Combine(ParentDirectory, "BeamTemplateCollections.xml");
+            // MessageBox.Show($"Looking for file at: {filePath}\nFile exists: {File.Exists(filePath)}", "Debug File Path");
 
             XmlSerializer serializer = new XmlSerializer(typeof(BeamTemplatesCollection));
 

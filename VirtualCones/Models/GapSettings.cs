@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AOS_VirtualCones_MCB.Models
+namespace VirtualCones_MCB.Models
 {
     public class GapSettings
     {
@@ -49,7 +49,8 @@ namespace AOS_VirtualCones_MCB.Models
 
         public string Description
         {
-            get => $"{EnergyMode}, {GapSizeMM} mm, {NumberOfLeaves} leaves";
+            //get => $"{EnergyMode}, {GapSizeMM} mm, {NumberOfLeaves} leaves";
+            get => $"{EnergyMode}, {GapSizeMM} mm, {NumberOfLeaves / 2} leaf pairs";
         }
 
         // Override Equals

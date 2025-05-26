@@ -14,10 +14,10 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using System.Windows;
 using System.Xml.Serialization;
-using AOS_VirtualCones_MCB.Helpers;
-using AOS_VirtualCones_MCB.Models;
+using VirtualCones_MCB.Helpers;
+using VirtualCones_MCB.Models;
 
-namespace AOS_VirtualCones_MCB.ViewModels
+namespace VirtualCones_MCB.ViewModels
 {
     public class ProgressViewModel : ObservableObject
     {

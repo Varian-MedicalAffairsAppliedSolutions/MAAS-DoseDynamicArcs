@@ -1,4 +1,4 @@
-﻿using AOS_VirtualCones_MCB.Models;
+﻿using VirtualCones_MCB.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace AOS_VirtualCones_MCB.Helpers
+namespace VirtualCones_MCB.Helpers
 {
     public class Loggers
     {

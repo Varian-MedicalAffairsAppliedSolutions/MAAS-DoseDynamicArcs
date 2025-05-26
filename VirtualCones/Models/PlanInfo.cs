@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AOS_VirtualCones_MCB.Models
+namespace VirtualCones_MCB.Models
 {
     public class PlanInfo : ObservableObject
     {
