@@ -364,3 +364,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/.vs/DoseRateEditor/v17/.suo
+/DoseRateEditor/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
+/DoseRateEditor/obj/Debug/DoseRateEditor.csproj.AssemblyReference.cache
+/DoseRateEditor/obj/Debug/DoseRateEditor_MarkupCompile.i.cache
