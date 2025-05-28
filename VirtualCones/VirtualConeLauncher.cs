@@ -1,48 +1,42 @@
-﻿using System.Windows;
+using System;
+using System.Linq;
+using System.Text;
+using System.Windows;
+using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using VMS.TPS.Common.Model.API;
+using VMS.TPS.Common.Model.Types;
 using System.Diagnostics;
 using System.IO;
-using System;
 
 namespace VMS.TPS
 {
-    public class Script
+  public class Script
+  {
+    public Script()
     {
-        public Script()
-        {
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public void Execute(ScriptContext context)
-        {
-            try
-            {
-                if (context.PlanSetup != null)
-                {
-                    string launcherPath = Path.GetDirectoryName(GetSourceFilePath());
-                    string esapiStandaloneExecutable = @"AOS_VirtualCones.exe";
-                    string arguments = context.PlanSetup == null
-                                        ? string.Empty
-                                        : string.Format("\"{0}\"\"{1}\"\"{2}\"\"{3}\"", context.Patient.Id, context.Course.Id, context.PlanSetup.Id, launcherPath);
-                    Process.Start(Path.Combine(launcherPath, esapiStandaloneExecutable), arguments);
-                }
-                else
-                {
-                    MessageBox.Show("Please load a plan into the context.", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-
-                
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Failed to start application.", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        public string GetSourceFilePath([CallerFilePath] string sourceFilePath = "")
-        {
-            return sourceFilePath;
-        }
     }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public void Execute(ScriptContext context /*, System.Windows.Window window, ScriptEnvironment environment*/)
+    {
+        // insert path to run here. This way it doesn't have to be local to the root
+        string path = @"C:\Users\chris.brewer\source\repos\AOS_VirtualCones_MCB\bin\Debug\AOS_VirtualCones.exe";
+        string directoryPath = Path.GetDirectoryName(path);
+        ProcessStartInfo startInfo = new ProcessStartInfo(path);
+        
+        if (context.PlanSetup != null)
+        {
+            startInfo.Arguments = "\"" + context.PlanSetup.Course.Patient.Id + "\"" + " " + "\"" +
+                    context.PlanSetup.Course.Id + "\"" + " " + "\"" + context.PlanSetup.Id + "\"" + " " + "\"" + directoryPath +"\"";
+            Process.Start(startInfo);
+        }
+        else
+        {
+                MessageBox.Show("Please load a plan into the context.", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+    }
+  }
 }
