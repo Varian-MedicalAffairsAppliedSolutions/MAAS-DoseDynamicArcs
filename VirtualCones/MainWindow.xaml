@@ -1,0 +1,448 @@
+﻿<Window
+    x:Class="VirtualCones_MCB.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:VirtualCones_MCB"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:VirtualCones_MCB.Models"
+    xmlns:oxy="http://oxyplot.org/wpf"
+    xmlns:vm="clr-namespace:VirtualCones_MCB.ViewModels"
+    Title="{Binding ValidationWarning}"    
+    Width="1000"
+    Height="800"
+    d:DataContext="{d:DesignInstance vm:MainWindowViewModel}"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+
+        <!-- Main content area -->
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="160*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="100*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="100*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="100*" />
+            </Grid.RowDefinitions>
+
+            <ScrollViewer>
+                <StackPanel
+                    Grid.Row="0"
+                    Grid.RowSpan="2"
+                    Grid.Column="0"
+                    VerticalAlignment="Stretch">
+                    <StackPanel
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Margin="2"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal">
+
+                        <Label
+                            VerticalAlignment="Bottom"
+                            Content="Patient Opened:"
+                            FontWeight="Bold" />
+                        <StackPanel Orientation="Vertical">
+                            <StackPanel Orientation="Horizontal">
+                                <Label VerticalAlignment="Center" Content="Filter:" />
+                                <TextBox
+                                    Width="100"
+                                    Height="30"
+                                    Margin="2,2,2,2"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    FontWeight="Bold"
+                                    Foreground="#00a7df"
+                                    Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                    <TextBox.InputBindings>
+                                        <KeyBinding Key="Enter" Command="{Binding FilterPatientMainCommand}" />
+                                    </TextBox.InputBindings>
+                                </TextBox>
+
+
+                                <Button
+                                    Margin="2,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Background="#00a7df"
+                                    Command="{Binding FilterPatientMainCommand}"
+                                    Content="Go"
+                                    Foreground="#ffffff" />
+                                <Button
+                                    Margin="2,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Background="#00a7df"
+                                    Command="{Binding OpenGuideCommand}"
+                                    Content="?"
+                                    Foreground="#ffffff" />
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal">
+                                <ComboBox
+                                    Height="30"
+                                    MinWidth="141"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Center"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    FontWeight="Bold"
+                                    Foreground="#00a7df"
+                                    IsDropDownOpen="{Binding PtCBOOpen, Mode=TwoWay}"
+                                    ItemsSource="{Binding FilteredAvailablePatientIDs}"
+                                    SelectedItem="{Binding PatientID, Mode=TwoWay}" />
+                                <Button
+                                    Margin="2,0,2,0"
+                                    VerticalAlignment="Center"
+                                    Background="#00a7df"
+                                    Command="{Binding RefreshPatientCommand}"
+                                    Content="R"
+                                    Foreground="#ffffff"
+                                    ToolTip="Refresh Patient" />
+                            </StackPanel>
+
+
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Margin="2"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal">
+                        <Label Content="Course Id:" FontWeight="Bold" />
+                        <!--<TextBox Text="{Binding CourseName, Mode=TwoWay}" Width="20" HorizontalAlignment="Center" VerticalAlignment="Center" Height="30" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />-->
+                        <ComboBox
+                            Width="153"
+                            Height="30"
+                            VerticalAlignment="Center"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            ItemsSource="{Binding AvailableCourseIds}"
+                            SelectedItem="{Binding CourseId, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+
+                    </StackPanel>
+                    <StackPanel
+                        Grid.Row="0"
+                        Grid.Column="2"
+                        Margin="2"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal">
+                        <Label Content="Plan Id:" FontWeight="Bold" />
+                        <ComboBox
+                            Width="168"
+                            Height="30"
+                            VerticalAlignment="Center"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            ItemsSource="{Binding AvailablePlanIds}"
+                            SelectedItem="{Binding PlanId, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                        <Button
+                            Margin="2,0,0,0"
+                            VerticalAlignment="Center"
+                            Background="#00a7df"
+                            Command="{Binding ExtractCommand}"
+                            Content="T"
+                            Foreground="#ffffff"
+                            ToolTip="Load the patient for development."
+                            Visibility="{Binding TestPatientVisibility}" />
+                    </StackPanel>
+                    <StackPanel
+                        Margin="2"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal">
+                        <Label Content="Structure Set:" FontWeight="Bold" />
+                        <Label
+                            MinWidth="50"
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Content="{Binding PlanStructureSetId}" />
+                    </StackPanel>
+                    <StackPanel
+                        Margin="2"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal">
+                        <Label Content="Number of beams:" FontWeight="Bold" />
+                        <Label
+                            MinWidth="50"
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Content="{Binding NumberOfBeams}" />
+                    </StackPanel>
+
+
+
+                </StackPanel>
+            </ScrollViewer>
+
+            <GridSplitter
+                Grid.Row="1"
+                Height="5"
+                HorizontalAlignment="Stretch" />
+
+            <ScrollViewer Grid.Row="2">
+                <StackPanel Orientation="Vertical">
+                    <GroupBox Header="Insert Beams">
+                        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+
+                            <StackPanel Orientation="Vertical">
+
+                                <StackPanel Orientation="Horizontal">
+                                    <ComboBox
+                                        MinWidth="150"
+                                        Margin="5"
+                                        DisplayMemberPath="BeamTemplateId"
+                                        ItemsSource="{Binding FilteredBeamTemplates}"
+                                        SelectedItem="{Binding SelectedBeamTemplate, Mode=TwoWay}" />
+                                    <Button
+                                        Margin="5"
+                                        Background="#00a7df"
+                                        Command="{Binding DeleteTemplateCommand}"
+                                        Content="X"
+                                        Foreground="#ffffff"
+                                        ToolTip="Delete the selected template."
+                                        Visibility="Visible" />
+
+
+                                </StackPanel>
+
+                                <Button
+                                    Width="100"
+                                    Height="60"
+                                    VerticalContentAlignment="Center"
+                                    Background="Transparent"
+                                    Command="{Binding InsertBeamsCommand}" >
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Grid>
+                                                <!--  Define the arrow shape using a Path with custom Geometry  -->
+                                                <Path
+                                                    Data="M 0,15 L 60,15 L 60,0 L 100,30 L 60,60 L 60,45 L 0,45 Z"
+                                                    Fill="#00a7df"
+                                                    Stroke="Black"
+                                                    StrokeThickness="1" />
+                                                <!--  Center the ContentPresenter on top of the Path  -->
+                                                <ContentPresenter
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    RenderTransformOrigin="0.5,0.5">
+                                                    <ContentPresenter.RenderTransform>
+                                                        <!--  Adjust the Y offset to move the text visually into the arrow's center  -->
+                                                        <TranslateTransform Y="-2" />
+                                                    </ContentPresenter.RenderTransform>
+                                                </ContentPresenter>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                    <Button.Content>
+                                        <!--  You can further customize font style and size here  -->
+                                        <TextBlock
+                                            Margin="0,4,0,0"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Foreground="White"
+                                            Text="Insert Beams" />
+                                    </Button.Content>
+                                </Button>
+                            </StackPanel>
+
+
+
+                            <StackPanel Orientation="Vertical" />
+
+
+                        </StackPanel>
+                    </GroupBox>
+                    <!--<GroupBox Header="Dose Rate">
+
+                        <StackPanel Orientation="Vertical">
+                            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                <ComboBox
+                                    MinWidth="100"
+                                    VerticalAlignment="Center"
+                                    DisplayMemberPath=" "
+                                    ItemsSource="{Binding DRMethods}"
+                                    SelectedItem="{Binding SelectedMethod}" />
+
+                                <Button
+                                    Margin="5"
+                                    Background="#00a7df"
+                                    Command="{Binding EditDRCommand}"
+                                    Content="Apply Dose Rates"
+                                    Foreground="#ffffff"
+                                    Visibility="Visible" />
+                            </StackPanel>
+
+                            <TextBox
+                                Margin="10"
+                                HorizontalAlignment="Stretch"
+                                FontWeight="Bold"
+                                IsReadOnly="True"
+                                Text="{Binding CreditText}" />
+
+
+                        </StackPanel>
+                    </GroupBox>-->
+
+                </StackPanel>
+            </ScrollViewer>
+
+
+            <GridSplitter
+                Grid.Row="3"
+                Height="5"
+                HorizontalAlignment="Stretch" />
+
+            <GroupBox Grid.Row="4" Header="Settings">
+                <ScrollViewer>
+                    <StackPanel Orientation="Vertical">
+                        <Label Content="{Binding SettingsLabel}" />
+                        <Button
+                            Margin="5"
+                            Background="#00a7df"
+                            Command="{Binding OpenDirectoryCommand}"
+                            Content="Open Directory"
+                            Foreground="#ffffff" />
+                    </StackPanel>
+                </ScrollViewer>
+            </GroupBox>
+
+
+            <GridSplitter
+                Grid.Row="5"
+                Height="5"
+                HorizontalAlignment="Stretch" />
+            <GroupBox Grid.Row="6" Header="Beam Template Creation">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+
+                        <StackPanel Orientation="Vertical">
+                            <CheckBox
+                                Content="Beam Template Creation Mode"
+                                IsChecked="{Binding BeamTemplateCreationMode}"
+                                ToolTip="Shows all Beam Template and Gap Options, regardless of energy." />
+                            <Button
+                                Margin="5"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Background="#00a7df"
+                                Command="{Binding CreateTemplateCommand}"
+                                Content="Create Beam Template with the Id: "
+                                Foreground="#ffffff"
+                                Visibility="Visible" />
+                            <Button
+                                Margin="5"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Background="#00a7df"
+                                Command="{Binding DuplicateTemplateCommand}"
+                                Content="Duplicate Beam Template with the Id: "
+                                Foreground="#ffffff"
+                                Visibility="Visible" />
+                        </StackPanel>
+                        <TextBox
+                            MinWidth="100"
+                            Margin="5"
+                            VerticalAlignment="Center"
+                            Text="{Binding NewBeamTemplateId}" />
+
+                    </StackPanel>
+                    <Button
+                        Margin="5"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Background="#00a7df"
+                        Command="{Binding UpdateTemplateCommand}"
+                        Content="Save Template"
+                        Foreground="#ffffff"
+                        Visibility="Visible" />
+                </StackPanel>
+            </GroupBox>
+
+            <Grid
+                Grid.Row="2"
+                Grid.RowSpan="3"
+                Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <Label Content="Virtual Cone Size: " />
+                    <ComboBox
+                        Width="200"
+                        VerticalAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        DisplayMemberPath="Description"
+                        ItemsSource="{Binding FilteredAvailableGaps}"
+                        SelectedItem="{Binding SelectedBeamTemplate.GapSize, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                </StackPanel>
+                <ScrollViewer Grid.Row="1">
+                    <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding SelectedBeamTemplate.BeamInfos}">
+                        <DataGrid.Columns>
+
+                            <DataGridTextColumn
+                                Width="*"
+                                Binding="{Binding BeamID}"
+                                Header="BeamID" />
+
+                            <DataGridTextColumn
+                                Width="*"
+                                Binding="{Binding Weight}"
+                                Header="Field Weight" />
+
+                            <!--<DataGridTextColumn
+                                Width="*"
+                                Binding="{Binding Gap}"
+                                Header="Gap(mm)"
+                                IsReadOnly="True" />-->
+
+
+                            <DataGridTemplateColumn Width="*" Header="Map">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding MapId}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                                <DataGridTemplateColumn.CellEditingTemplate>
+                                    <DataTemplate>
+                                        <ComboBox
+                                            DisplayMemberPath="MapId"
+                                            ItemsSource="{Binding DataContext.Maps, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            SelectedValue="{Binding MapId, Mode=TwoWay}"
+                                            SelectedValuePath="MapId" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellEditingTemplate>
+                            </DataGridTemplateColumn>
+
+
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </ScrollViewer>
+
+            </Grid>
+        </Grid>
+
+        <!-- Bottom ribbon with license link -->
+        <DockPanel Grid.Row="1" Background="PaleVioletRed" LastChildFill="True" Height="20">
+            <TextBlock VerticalAlignment="Center" Margin="5,0,0,0" FontSize="11">
+              <Hyperlink NavigateUri="http://medicalaffairs.varian.com/download/VarianLUSLA.pdf" RequestNavigate="Hyperlink_RequestNavigate">
+                  Bound by the terms of the Varian LUSLA
+              </Hyperlink>
+            </TextBlock>
+
+        </DockPanel>
+    </Grid>
+</Window>
