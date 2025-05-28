@@ -1034,10 +1034,10 @@ namespace VirtualCones_MCB.ViewModels
             }
 
             var firstBeam = SelectedPlan.Beams.First(x => !x.IsSetupField);
-
+            
             if (firstBeam.MLC == null || firstBeam.MLC.Model != "Varian High Definition 120")
             {
-                MessageBox.Show(fieldErrorMessage, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(fieldErrorMessage+"\nPlease add an MLC to your field", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
                 IsInsertBeams = false;
                 return;
             }
@@ -1885,7 +1885,7 @@ namespace VirtualCones_MCB.ViewModels
         public void GetGantryWeightMaps()
         {
             // Get the path of the "Maps" folder in the same directory as the executable
-            string folderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Maps");
+            string folderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Maps");
             try
             {
                 if (!Directory.Exists(folderPath))
