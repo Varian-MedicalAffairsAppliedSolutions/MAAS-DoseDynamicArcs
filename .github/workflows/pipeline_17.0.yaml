@@ -10,10 +10,14 @@ on:
 
 jobs:
   build:
-    runs-on: windows-2019
+    runs-on: windows-latest
     env:
-      GITHUB_WORKSPACE_PACKAGES_PATH: packages\ESAPI.17.0.0\lib\net48\
-      PROJECT_NAME: DoseRateEditor
+      GITHUB_WORKSPACE_PACKAGES_PATH: ..\packages\ESAPI.17.0.0\lib\net48\
+      SOLUTION_NAME: DoseRateEditor
+      PROJECT_NAME_DOSERATEEDITOR: DoseRateEditor
+      PROJECT_NAME_VIRTUALCONE: VirtualCones_MCB
+      FOLDER_NAME_VIRTUALCONE: VirtualCones
+      CONFIGURATION: Debug
       MAJOR_VERSION: 1
       MINOR_VERSION: 0
       PATCH_VERSION: 0
@@ -37,29 +41,47 @@ jobs:
     - name: Navigate to Workspace
       run: cd $GITHUB_WORKSPACE
 
-    - name: Update Target Framework Version to 4.8
+    - name: Update Target Framework Version to 4.8 for DoseRateEditor
       uses: Nambers/ReplaceStringInFile@v1.1
       with:
-        path: .\${{ env.PROJECT_NAME}}\${{ env.PROJECT_NAME}}.csproj
+        path: .\${{ env.PROJECT_NAME_DOSERATEEDITOR }}\${{ env.PROJECT_NAME_DOSERATEEDITOR }}.csproj
         oldString: "TargetFrameworkVersion>v[\\d\\.]+<"
         newString: 'TargetFrameworkVersion>v4.8<'
 
-    - name: Update AssemblyInfo.cs
+    - name: Update Target Framework Version to 4.8 for VirtualCones
+      uses: Nambers/ReplaceStringInFile@v1.1
+      with:
+        path: .\${{ env.FOLDER_NAME_VIRTUALCONE }}\${{ env.PROJECT_NAME_VIRTUALCONE }}.csproj
+        oldString: "TargetFrameworkVersion>v[\\d\\.]+<"
+        newString: 'TargetFrameworkVersion>v4.8<'
+
+    - name: Update AssemblyInfo.cs for DoseRateEditor
       id: update_assembly_info
       run: |
         .\.github\workflows\Update-AssemblyInfo.ps1 `
-          -AssemblyInfoFilePath .\${{ env.PROJECT_NAME}}\Properties\AssemblyInfo.cs `
+          -AssemblyInfoFilePath .\${{ env.PROJECT_NAME_DOSERATEEDITOR}}\Properties\AssemblyInfo.cs `
           -ExpirationDate "${{ github.event.inputs.dateInput }}" `
           -BuildNumber ${{ env.BUILD_NUMBER }} `
-          -ProjectName ${{ env.PROJECT_NAME }}
+          -ProjectName ${{ env.PROJECT_NAME_DOSERATEEDITOR }}
+
+    - name: Update AssemblyInfo.cs for VirtualCones
+      run: |
+        .\.github\workflows\Update-AssemblyInfo.ps1 `
+          -AssemblyInfoFilePath .\${{ env.FOLDER_NAME_VIRTUALCONE}}\Properties\AssemblyInfo.cs `
+          -ExpirationDate "${{ github.event.inputs.dateInput }}" `
+          -BuildNumber ${{ env.BUILD_NUMBER }} `
+          -ProjectName ${{ env.PROJECT_NAME_VIRTUALCONE }}
 
     - name: Setup NuGet.exe for use with actions
       uses: NuGet/setup-nuget@v1.0.6
       with:
         nuget-version: latest
 
-    - name: Download nuget packages
-      run: nuget install .\${{ env.PROJECT_NAME}}\packages.config -OutputDirectory ${{ env.PROJECT_NAME}}\packages
+    - name: Download nuget packages for DoseRateEditor
+      run: nuget install .\${{ env.PROJECT_NAME_DOSERATEEDITOR}}\packages.config -OutputDirectory .\packages
+
+    - name: Download nuget packages for VirtualCones
+      run: nuget install .\\${{ env.FOLDER_NAME_VIRTUALCONE}}\packages.config -OutputDirectory .\packages
 
     - name: Add VIC GitHub NuGet repository
       run: nuget source add `
@@ -70,21 +92,27 @@ jobs:
         -StorePasswordInClearText
 
     - name: Download ESAPI package
-      run: nuget install ESAPI -Version 17.0.0 -OutputDirectory ${{ env.PROJECT_NAME}}/packages
+      run: nuget install ESAPI -Version 17.0.0 -OutputDirectory ./packages
 
-    - name: Update hint paths in the csproj file
+    - name: Update hint paths in the csproj file for DoseRateEditor
       run: |
         .\.github\workflows\Update-EsapiHintPaths.ps1 `
-        -CsprojFilePath .\${{ env.PROJECT_NAME}}\ `
-        -CsprojFileName ${{ env.PROJECT_NAME}}.csproj
+        -CsprojFilePath .\${{ env.PROJECT_NAME_DOSERATEEDITOR}}\ `
+        -CsprojFileName ${{ env.PROJECT_NAME_DOSERATEEDITOR}}.csproj
+
+    - name: Update hint paths in the csproj file for VirtualCones
+      run: |
+        .\.github\workflows\Update-EsapiHintPaths.ps1 `
+        -CsprojFilePath .\${{ env.FOLDER_NAME_VIRTUALCONE}}\ `
+        -CsprojFileName ${{ env.PROJECT_NAME_VIRTUALCONE}}.csproj
 
     - name: Build Solution
-      run: msbuild.exe .\${{ env.PROJECT_NAME}}.sln /nologo /nr:false /p:DeleteExistingFiles=True /p:platform="Any CPU" /p:configuration="Debug"
+      run: msbuild.exe .\${{ env.SOLUTION_NAME}}.sln /nologo /nr:false /p:DeleteExistingFiles=True /p:platform="x64" /p:configuration="${{ env.CONFIGURATION}}"
 
     - name: Zip
       run: |
         Compress-Archive `
-          -Path ".\${{ env.PROJECT_NAME}}\bin\Debug\*" `
+          -Path ".\bin\x64\${{ env.CONFIGURATION}}\*" `
           -DestinationPath "${{ github.workspace }}/${{ steps.update_assembly_info.outputs.RELEASE_FILE_NAME }}-EclipseV170.zip"
     
     - name: Create Release
@@ -96,7 +124,7 @@ jobs:
         draft: false
         prerelease: false
         body: |
-          This is an official release of the **`${{ env.PROJECT_NAME }}`** project.
+          This is an official release of the **`${{ env.SOLUTION_NAME }}`** project.
           Supported Eclipse version: `v17.0`.
           The generated dll is valid until `${{ github.event.inputs.dateInput }}`, and generated on `${{ steps.currentDate.outputs.time }}`.
         files: ${{ github.workspace }}/${{ steps.update_assembly_info.outputs.RELEASE_FILE_NAME }}-EclipseV170.zip
