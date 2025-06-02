@@ -22,7 +22,7 @@ namespace VMS.TPS
     public void Execute(ScriptContext context /*, System.Windows.Window window, ScriptEnvironment environment*/)
     {
         // insert path to run here. This way it doesn't have to be local to the root
-        string path = @"C:\Users\chris.brewer\source\repos\VirtualCones_MCB\bin\Debug\AOS_VirtualCones.exe";
+        string path = @"C:\Users\chris.brewer\source\repos\AOS_VirtualCones_MCB\bin\Debug\AOS_VirtualCones.exe";
         string directoryPath = Path.GetDirectoryName(path);
         ProcessStartInfo startInfo = new ProcessStartInfo(path);
         
