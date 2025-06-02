@@ -15,7 +15,7 @@ jobs:
       GITHUB_WORKSPACE_PACKAGES_PATH: ..\packages\ESAPI.18.0.0.1\lib\net48\
       SOLUTION_NAME: DoseRateEditor
       PROJECT_NAME_DOSERATEEDITOR: DoseRateEditor
-      PROJECT_NAME_VIRTUALCONE: AOS_VirtualCones_MCB
+      PROJECT_NAME_VIRTUALCONE: VirtualCones_MCB
       FOLDER_NAME_VIRTUALCONE: VirtualCones
       CONFIGURATION: Debug
       MAJOR_VERSION: 1
