@@ -106,17 +106,7 @@ namespace VirtualCones_MCB
                         return;
                     }
 
-                    // Display opening msg
-                    string msg = $"The current DoseDynamicArcs application is provided AS IS as a non-clinical, research only tool in evaluation only. The current " +
-                    $"application will only be available until {endDate.Date} after which the application will be unavailable. " +
-                    "By Clicking 'Yes' you agree that this application will be evaluated and not utilized in providing planning decision support\n\n" +
-                    $"Newer builds with future expiration dates can be found here: {GITHUB_URL}\n\n" +
-                    "See the FAQ for more information on how to remove this pop-up and expiration";
 
-                    string msg2 = $"Application will only be available until {endDate.Date} after which the application will be unavailable. " +
-                    "By Clicking 'Yes' you agree that this application will be evaluated and not utilized in providing planning decision support\n\n" +
-                    $"Newer builds with future expiration dates can be found here: {GITHUB_URL}\n\n" +
-                    "See the FAQ for more information on how to remove this pop-up and expiration";
 
                     // Show expiration notice based on validation status
                     if (!bNoExpire && !skipAgree)
