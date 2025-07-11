@@ -47,7 +47,7 @@ namespace VMS.TPS
 
             //Prepare and launch application
             string launcherPath = Path.GetDirectoryName(GetSourceFilePath());
-            string esapiStandaloneExecutable = @"AOS_VirtualCones.exe";
+            string esapiStandaloneExecutable = @"VirtualCones.exe";
             string executablePath = Path.Combine(launcherPath, esapiStandaloneExecutable);
 
             // Validates the executable path

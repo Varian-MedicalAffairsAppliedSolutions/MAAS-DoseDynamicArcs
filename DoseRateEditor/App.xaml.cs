@@ -146,21 +146,12 @@ namespace DoseRateEditor
                     eulaConfig.Settings = new ApplicationSettings();
                 }
                 
-                // Show EULA dialog if not accepted yet and not skipping agreement
-                if (!eulaVerifier.IsEulaAccepted() && !skipAgree)
-                {
-                    // Subscribe to close event - modified to use a simpler approach without needing EULAView
-                    eventAggregator.GetEvent<CloseEulaEvent>().Subscribe(() => {
-                        // No action needed since we're not using a custom EULA view
-                    });
-                    
-                    MessageBox.Show(
-                        $"This version of {PROJECT_NAME} (v{PROJECT_VERSION}) requires license acceptance before first use.\n\n" +
-                        "You will be prompted to provide an access code. Please follow the instructions to obtain your code.",
-                        "License Acceptance Required",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Information);
+                bool eulaRequired = !skipAgree &&
+                                    !eulaVerifier.IsEulaAccepted() &&
+                                    !eulaConfig.Settings.EULAAgreed;
 
+                if (eulaRequired)
+                {
                     // Load QR code image
                     BitmapImage qrCode = null;
                     try
@@ -174,14 +165,15 @@ namespace DoseRateEditor
                     }
 
                     // Show dialog and check result
-                    if (!eulaVerifier.ShowEulaDialog(qrCode))
+                    if (eulaVerifier.ShowEulaDialog(qrCode))
                     {
-                        MessageBox.Show(
-                            "License acceptance is required to use this application.\n\n" +
-                            "The application will now close.",
-                            "License Not Accepted",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Warning);
+                        eulaConfig.Settings.EULAAgreed = true;
+                        eulaConfig.Settings.Validated = false;
+                        eulaConfig.Save();
+                    }
+                    else
+                    {
+                        MessageBox.Show("You must accept the license to use this application.");
                         System.Windows.Application.Current.Shutdown();
                         return;
                     }
@@ -215,39 +207,33 @@ namespace DoseRateEditor
                     $"Newer builds with future expiration dates can be found here: {GITHUB_URL}\n\n" +
                     "See the FAQ for more information on how to remove this pop-up and expiration";
 
-                    // Check if validated in EulaConfig
-                    bool isValidated = eulaConfig.Settings?.Validated ?? false;
-
+                    // Show expiration notice based on validation status
                     if (!foundNoExpire && !skipAgree)
                     {
-                        if (!isValidated)
-                        {
-                            // Show the first-time message
-                            var res = MessageBox.Show(msg, "Agreement  ", MessageBoxButton.YesNo);
+                        string msg;
 
-                            if (res == MessageBoxResult.No)
-                            {
-                                System.Windows.Application.Current.Shutdown();
-                                return;
-                            }
-                            
-                            // Mark as validated for next time in the EulaConfig
-                            if (eulaConfig.Settings != null)
-                            {
-                                eulaConfig.Settings.Validated = true;
-                                eulaConfig.Save();
-                            }
+                        if (!eulaConfig.Settings.Validated)
+                        {
+                            // First-time message
+                            msg = $"The current DoseDynamicArcs application is provided AS IS as a non-clinical, research only tool in evaluation only. The current " +
+                            $"application will only be available until {exp.Date} after which the application will be unavailable. " +
+                            "By Clicking 'Yes' you agree that this application will be evaluated and not utilized in providing planning decision support\n\n" +
+                            $"Newer builds with future expiration dates can be found here: {GITHUB_URL}\n\n" +
+                            "See the FAQ for more information on how to remove this pop-up and expiration";
                         }
                         else
                         {
-                            // Show the returning user message
-                            var res = MessageBox.Show(msg2, "Agreement  ", MessageBoxButton.YesNo);
+                            // Returning user message
+                            msg = $"Application will only be available until {exp.Date} after which the application will be unavailable. " +
+                            "By Clicking 'Yes' you agree that this application will be evaluated and not utilized in providing planning decision support\n\n" +
+                            $"Newer builds with future expiration dates can be found here: {GITHUB_URL}\n\n" +
+                            "See the FAQ for more information on how to remove this pop-up and expiration";
+                        }
 
-                            if (res == MessageBoxResult.No)
-                            {
-                                System.Windows.Application.Current.Shutdown();
-                                return;
-                            }
+                        if (MessageBox.Show(msg, "Agreement", MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+                        {
+                            System.Windows.Application.Current.Shutdown();
+                            return;
                         }
                     }
 
