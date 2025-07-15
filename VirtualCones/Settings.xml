@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GapSettings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <X>20</X>
+  <Y>20</Y>
+  <EnableSlidingLeaf>true</EnableSlidingLeaf>
+  <SlidingLeafGapSize>2</SlidingLeafGapSize>
+  <AvailableGapsMM>
+    <GapPair>
+      <EnergyMode>6X-FFF</EnergyMode>
+      <GapSizeMM>2</GapSizeMM>
+      <NumberOfLeaves>2</NumberOfLeaves>
+    </GapPair>
+  </AvailableGapsMM>
+  <RemoveTempPlan>false</RemoveTempPlan>
+</GapSettings>
