@@ -69,10 +69,16 @@
 
 * Each value is in millimeters.
 * GapPair > GapSize & NumberOfLeaves: The script will create an MLC-defined aperture. The aperture is the central “NumberOfLeaves” MLC pairs by the “GapSize.”
-  - NumberOfLeaves must be even.
+- NumberOfLeaves must be even.
+
+<img width="893" height="792" alt="image" src="https://github.com/user-attachments/assets/15742eec-72db-4102-838b-00f91762cf73" />
+
 * “X” and “Y” represent the jaw size. In the above image, X & Y are set to 20 mm.
 * “EnableSlidingLeaf” – The field must have a technique of VMAT to modulate the dose. Setting this to true causes leaf-pair at the very edge to move during treatment.
 * SlidingLeafGapSize is the gap between the ends of the moving leaf pair.
+
+<img width="995" height="685" alt="image" src="https://github.com/user-attachments/assets/9543f01d-8e5d-4047-b027-ff6bafa77710" />
+
 * Set these values and save the file.
 * Approve the script.
 - In Eclipse, go to Tools > Scripts Approvals.
@@ -90,9 +96,13 @@
 * The script will interpolate between map values by Gantry Angle.
 * Here is an example of the first entries of a sinusoidal dose rate map.
 
+<img width="357" height="949" alt="image" src="https://github.com/user-attachments/assets/dc4ab66c-8789-401d-b71d-6f6fda9a9599" />
+
 # Dose Rate Map Tips
 * Not all dose-rate maps are deliverable. You may need to modify the dose map based on energy, dose rate, arc length, prescription dose, number of beams, etc.
-The most likely failure is a too low MU/Deg (i.e. <0.1 MU/Deg for TrueBeam).
+- The most likely failure is a too low MU/Deg (i.e. <0.1 MU/Deg for TrueBeam).
+
+<img width="1212" height="727" alt="image" src="https://github.com/user-attachments/assets/55db7e0a-9437-479a-8cc6-91210b30aeaf" />
 
 # Template Creation
 * The script can create beams based on a template. One template is provided; however, the user may wish to create different templates
