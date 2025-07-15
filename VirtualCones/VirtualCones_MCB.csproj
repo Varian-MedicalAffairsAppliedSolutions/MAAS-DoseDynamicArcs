@@ -204,6 +204,17 @@
     <Content Include="lib\EulaVerification.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Settings.xml" />
+    <Resource Include="Maps\Exponential_Inv.txt" />
+    <Resource Include="Maps\Eyes.txt" />
+    <Resource Include="Maps\Linear180.txt" />
+    <Resource Include="Maps\Linear180_Inv.txt" />
+    <Resource Include="Maps\Linear90.txt" />
+    <Resource Include="Maps\Linear90_Inv.txt" />
+    <Resource Include="Maps\Sin360.txt" />
+    <Resource Include="Maps\Exponential.txt" />
+    <Resource Include="Maps\Cos360.txt" />
+    <Resource Include="Maps\Constant.txt" />
     <Resource Include="Resources\Maps\Constant.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
