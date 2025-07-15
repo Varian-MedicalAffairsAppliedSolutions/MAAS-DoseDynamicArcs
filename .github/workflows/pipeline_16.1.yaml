@@ -49,6 +49,13 @@ jobs:
         oldString: "TargetFrameworkVersion>v[\\d\\.]+<"
         newString: 'TargetFrameworkVersion>v4.6.1<'
 
+    - name: Update Target Framework Version to 4.6.1 for VirtualCones
+      uses: Nambers/ReplaceStringInFile@v1.1
+      with:
+        path: .\${{ env.FOLDER_NAME_VIRTUALCONE }}\${{ env.PROJECT_NAME_VIRTUALCONE }}.csproj
+        oldString: "TargetFrameworkVersion>v[\\d\\.]+<"
+        newString: 'TargetFrameworkVersion>v4.6.1<'
+
     - name: Update AssemblyInfo.cs for DoseRateEditor
       id: update_assembly_info
       run: |
@@ -57,7 +64,15 @@ jobs:
           -ExpirationDate "${{ github.event.inputs.dateInput }}" `
           -BuildNumber ${{ env.BUILD_NUMBER }} `
           -ProjectName ${{ env.PROJECT_NAME_DOSERATEEDITOR }}
-        
+
+    - name: Update AssemblyInfo.cs for VirtualCones
+      run: |
+        .\.github\workflows\Update-AssemblyInfo.ps1 `
+          -AssemblyInfoFilePath .\${{ env.FOLDER_NAME_VIRTUALCONE}}\Properties\AssemblyInfo.cs `
+          -ExpirationDate "${{ github.event.inputs.dateInput }}" `
+          -BuildNumber ${{ env.BUILD_NUMBER }} `
+          -ProjectName ${{ env.PROJECT_NAME_VIRTUALCONE }}
+
     - name: Setup NuGet.exe for use with actions
       uses: NuGet/setup-nuget@v1.0.6
       with:
@@ -68,6 +83,9 @@ jobs:
 
     - name: Download nuget packages for DoseRateEditor
       run: nuget install .\${{ env.PROJECT_NAME_DOSERATEEDITOR}}\packages.config -OutputDirectory .\packages
+
+    - name: Download nuget packages for VirtualCones
+      run: nuget install .\\${{ env.FOLDER_NAME_VIRTUALCONE}}\packages.config -OutputDirectory .\packages
 
     - name: Add VIC GitHub NuGet repository
       run: nuget source add `
@@ -86,8 +104,14 @@ jobs:
         -CsprojFilePath .\${{ env.PROJECT_NAME_DOSERATEEDITOR}}\ `
         -CsprojFileName ${{ env.PROJECT_NAME_DOSERATEEDITOR}}.csproj
 
+    - name: Update hint paths in the csproj file for VirtualCones
+      run: |
+        .\.github\workflows\Update-EsapiHintPaths.ps1 `
+        -CsprojFilePath .\${{ env.FOLDER_NAME_VIRTUALCONE}}\ `
+        -CsprojFileName ${{ env.PROJECT_NAME_VIRTUALCONE}}.csproj
+
     - name: Build Solution
-      run: msbuild.exe .\${{ env.PROJECT_NAME_DOSERATEEDITOR}}\${{ env.PROJECT_NAME_DOSERATEEDITOR}}.csproj /nologo /nr:false /p:DeleteExistingFiles=True /p:platform="x64" /p:configuration="${{ env.CONFIGURATION}}"
+      run: msbuild.exe .\${{ env.SOLUTION_NAME}}.sln /nologo /nr:false /p:DeleteExistingFiles=True /p:platform="x64" /p:configuration="${{ env.CONFIGURATION}}"
 
     - name: Zip
       run: |

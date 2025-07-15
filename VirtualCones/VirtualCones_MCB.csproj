@@ -204,7 +204,9 @@
     <Content Include="lib\EulaVerification.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Resource Include="Settings.xml" />
+    <Content Include="Settings.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Resource Include="Maps\Exponential_Inv.txt" />
     <Resource Include="Maps\Eyes.txt" />
     <Resource Include="Maps\Linear180.txt" />
