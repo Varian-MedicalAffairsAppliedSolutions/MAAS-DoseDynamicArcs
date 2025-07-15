@@ -112,7 +112,7 @@ jobs:
     - name: Zip
       run: |
         Compress-Archive `
-          -Path ".\bin\x64\${{ env.CONFIGURATION}}\*" `
+          -Path ".\bin\x64\${{ env.CONFIGURATION}}\*", ".\${{ env.FOLDER_NAME_VIRTUALCONE}}\Maps", ".\${{ env.FOLDER_NAME_VIRTUALCONE}}\Settings.xml" `
           -DestinationPath "${{ github.workspace }}/${{ steps.update_assembly_info.outputs.RELEASE_FILE_NAME }}-EclipseV170.zip"
     
     - name: Create Release
