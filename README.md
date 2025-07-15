@@ -77,7 +77,7 @@
 * “EnableSlidingLeaf” – The field must have a technique of VMAT to modulate the dose. Setting this to true causes leaf-pair at the very edge to move during treatment.
 * SlidingLeafGapSize is the gap between the ends of the moving leaf pair.
 
-<img width="995" height="685" alt="image" src="https://github.com/user-attachments/assets/9543f01d-8e5d-4047-b027-ff6bafa77710" />
+<img width="772" height="492" alt="image" src="https://github.com/user-attachments/assets/b5c25116-41b9-4a89-8435-a9c7e5c9162a" />
 
 * Set these values and save the file.
 * Approve the script.
