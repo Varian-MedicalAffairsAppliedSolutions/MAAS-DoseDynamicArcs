@@ -111,9 +111,13 @@ jobs:
 
     - name: Zip
       run: |
+        New-Item -ItemType Directory -Path ".\temp_zip\${{ env.FOLDER_NAME_VIRTUALCONE}}" -Force
+        Copy-Item -Path ".\${{ env.FOLDER_NAME_VIRTUALCONE}}\Maps" -Destination ".\temp_zip\${{ env.FOLDER_NAME_VIRTUALCONE}}" -Recurse
+        Copy-Item -Path ".\${{ env.FOLDER_NAME_VIRTUALCONE}}\Settings.xml" -Destination ".\temp_zip\${{ env.FOLDER_NAME_VIRTUALCONE}}"
         Compress-Archive `
-          -Path ".\bin\x64\${{ env.CONFIGURATION}}\*", ".\${{ env.FOLDER_NAME_VIRTUALCONE}}\Maps", ".\${{ env.FOLDER_NAME_VIRTUALCONE}}\Settings.xml" `
+          -Path ".\bin\x64\${{ env.CONFIGURATION}}\*", ".\temp_zip\${{ env.FOLDER_NAME_VIRTUALCONE}}" `
           -DestinationPath "${{ github.workspace }}/${{ steps.update_assembly_info.outputs.RELEASE_FILE_NAME }}-EclipseV170.zip"
+        Remove-Item -Path ".\temp_zip" -Recurse -Force
     
     - name: Create Release
       uses: softprops/action-gh-release@v2.0.9
