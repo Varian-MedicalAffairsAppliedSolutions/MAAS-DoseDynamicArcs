@@ -49,7 +49,7 @@
 <br>
 
 # VirtualCones
-### A special-purpose tool which leverages precomputed dose rate and gantry speed tables (Maps) to implemnet [Popple Et al's Virtual Cone method](https://www.advancesradonc.org/article/S2452-1094(18)30036-8/pdf)
+### A special-purpose tool which leverages precomputed dose rate and gantry speed tables (Maps) to implement [Popple Et al's Virtual Cone method](https://www.advancesradonc.org/article/S2452-1094(18)30036-8/pdf)
 
 <img width="988" height="794" alt="image" src="https://github.com/user-attachments/assets/2e44bdd9-560e-4683-8d66-111886065c9c" />
 
