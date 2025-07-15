@@ -1,6 +1,7 @@
 ## MAAS-DoseDynamicArcs
-### a collection of tools for making spherical dose dirstubutions by varying the dose rate and gantry speed of non-coplanar arc treatment plans
+### A collection of tools for making spherical dose dirstubutions by varying the dose rate and gantry speed of non-coplanar arc treatment plans
 <br>
+
 # DoseRateEditor
 ### A general-purpose tool which employs mathmatical functions to edit the dose rate and gantry speed of existing static speed and rate conformal arc treatment plans
 
@@ -46,7 +47,7 @@
 - [ ] CT slice view move to isocenter, show structures, show dose, drag dose?
 - [ ] When block support is added to ESAPI, support cones?
 <br>
-<br>
+
 # VirtualCones
 ### A special-purpose tool which leverages precomputed dose rate and gantry speed tables (Maps) to implemnet [Popple Et al's Virtual Cone method](https://www.advancesradonc.org/article/S2452-1094(18)30036-8/pdf)
 
@@ -57,12 +58,15 @@
 
 
 * Unzip the file in [Releases](https://github.com/Varian-MedicalAffairsAppliedSolutions/MAAS-DoseDynamicArcs/releases) to a location that has access to Eclipse. A normal location would be a subfolder of Published scripts
-  - \\SERVER\va_data$\ProgramData\Vision\PublishedScripts\DoseRateEditor-V1.0.0.X-07-14-2025.12-31-2025-EclipseVXXX\virtualcones
+  - "\\SERVER\va_data$\ProgramData\Vision\PublishedScripts\DoseRateEditor-V1.0.0.X-07-14-2025.12-31-2025-EclipseVXXX\virtualcones"
 * Launch "Scripts" from the Planning menu in Eclipse, click "Change Folder..." to the above location, then click OK and finally set VirtualConeLauncher.cs as a favorite
+
 <img width="570" height="590" alt="image" src="https://github.com/user-attachments/assets/e488e438-496d-4727-be46-2a43106f1343" />
+
 * Use a text editor to open the Settings.XML file found in the installation directory.
 
 <img width="981" height="418" alt="image" src="https://github.com/user-attachments/assets/7fa77b48-d82a-4113-b5c4-700d20bb1969" />
+
 * Each value is in millimeters.
 * GapPair > GapSize & NumberOfLeaves: The script will create an MLC-defined aperture. The aperture is the central “NumberOfLeaves” MLC pairs by the “GapSize.”
   - NumberOfLeaves must be even.
@@ -116,12 +120,12 @@ Mode
 * Save Template
 * After making changes, ensure that you have click “Save Template.”
 
-## Overview
+# Overview
 The user starts by creating a “staging plan.” This plan contains information the script will use to create
 the Virtual Cone plan. The “Insert Beams” function of the script will insert the selected beams and set
 their geometries and modulated dose rates.
-```
-## Staging Plan
+
+# Staging Plan
 * Create a staging course and plan.
 - The prescription from this plan will be copied to the Virtual Cone Plan.
 * Add a beam.
@@ -129,12 +133,12 @@ their geometries and modulated dose rates.
 - Set each of the following as it should be in the final plan: MLC, Energy and Fluence Mode, Isocenter, Machine
 - Nothing more needs to be done (e.g. do not set blocking).
 
-## Run Script
+# Run Script
 * With the staging plan in context, open the script.
 * The information will be automatically loaded in the script.
 - *Note: You can modify machine/course/plan selection in the script if necessary.
 
-### Insert Beams
+# Insert Beams
 * Choose the beam template you wish to use.
 - The script comes with the standard beam configuration.
 - If your clinic uses Varian-IEC, then use VarianIEC.
